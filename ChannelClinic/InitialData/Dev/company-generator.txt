@@ -1,0 +1,11 @@
+﻿[
+'{{repeat(5, 50)}}',
+	{
+	id: '{{guid()}}',
+	firstName: '{{company().toUpperCase()}}',
+	lastName: '{{surname()}}',
+	otherName: '{{firstName()}}',
+	email: '{{email()}}',
+	address: '{{integer(100, 999)}} {{street()}}, {{city()}}, {{state()}}, {{integer(100, 10000)}}'
+	}
+]
