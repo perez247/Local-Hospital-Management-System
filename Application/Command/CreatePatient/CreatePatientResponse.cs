@@ -8,6 +8,6 @@ namespace Application.Command.CreatePatient
 {
     public class CreatePatientResponse
     {
-        public string? PatientId { get; set; }
+        public string? UserId { get; set; }
     }
 }

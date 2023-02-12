@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Query.GetStaffList
+namespace Models
 {
-    public class GetStaffListFilter
+    public class AppFile : BaseEntity
     {
         public string? Name { get; set; }
-        public bool? Active { get; set; }
+        public string? Base64String { get; set; }
     }
 }

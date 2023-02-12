@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Application.Command.AddAppointment
 {
-    public class AppAppointmentCommand : TokenCredentials, IRequest<Unit>
+    public class AppAppointmentCommand : TokenCredentials, IRequest<AddAppointmentResponse>
     {
         [VerifyGuidAnnotation]
         public string? DoctorId { get; set; }
@@ -23,7 +23,7 @@ namespace Application.Command.AddAppointment
         public DateTime? AppointmentDate { get; set; }
     }
 
-    public class AppAppointmentHandler : IRequestHandler<AppAppointmentCommand, Unit>
+    public class AppAppointmentHandler : IRequestHandler<AppAppointmentCommand, AddAppointmentResponse>
     {
         private readonly IPatientRepository iPatientRepository;
         private readonly IStaffRepository iStaffRepository;
@@ -35,14 +35,14 @@ namespace Application.Command.AddAppointment
             iDBRepository = IDBRepository;
             iStaffRepository = IStaffRepository;
         }
-        public async Task<Unit> Handle(AppAppointmentCommand request, CancellationToken cancellationToken)
+        public async Task<AddAppointmentResponse> Handle(AppAppointmentCommand request, CancellationToken cancellationToken)
         {
             AppAppointment appointment = await TicketHelper.CreateAppointment(request, iStaffRepository, iPatientRepository);
 
             await iDBRepository.AddAsync<AppAppointment>(appointment);
             await iDBRepository.Complete();
 
-            return Unit.Value;
+            return new AddAppointmentResponse { AppointmentId = appointment.Id.ToString() };
         }
     }
 }

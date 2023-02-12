@@ -11,28 +11,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Query.GetStaffList
+namespace Application.Query.GetUserList
 {
-    public class GetStaffListQuery : TokenCredentials, IRequest<PaginationResponse<IEnumerable<UserResponse>>>
+    public class GetUserListQuery : TokenCredentials, IRequest<PaginationResponse<IEnumerable<UserResponse>>>
     {
         [SanitizePagination]
         public PaginationCommand? Pagination { get; set; }
-        public GetStaffListFilter? Filter { get; set; }
+
+        public GetUserListFilter? Filter { get; set; }
     }
 
-    public class GetStaffListHandler : IRequestHandler<GetStaffListQuery, PaginationResponse<IEnumerable<UserResponse>>>
+    public class GetUserListHandler : IRequestHandler<GetUserListQuery, PaginationResponse<IEnumerable<UserResponse>>>
     {
-        private readonly IStaffRepository iStaffRepository;
+        private readonly IUserRepository iUserRepository;
 
-        public GetStaffListHandler(IStaffRepository IStaffRepository)
+        public GetUserListHandler(IUserRepository IUserRepository)
         {
-            iStaffRepository = IStaffRepository;
+            iUserRepository = IUserRepository;
         }
-
-        public async Task<PaginationResponse<IEnumerable<UserResponse>>> Handle(GetStaffListQuery request, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<IEnumerable<UserResponse>>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
         {
-            var usersFromDb = await iStaffRepository.GetStaffList(request.Filter, request.Pagination);
-
+            var usersFromDb = await iUserRepository.GetUserList(request.Filter, request.Pagination);
+            
             if (usersFromDb.Results.Count <= 0)
                 return new PaginationResponse<IEnumerable<UserResponse>>() { PageNumber = request.Pagination.PageNumber, PageSize = request.Pagination.PageSize, totalItems = usersFromDb.totalItems };
 

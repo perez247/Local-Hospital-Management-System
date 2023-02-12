@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace Models.Enums
 {
-    public class DomainEnums
-    {
-    }
-
     public enum ContractTypeEnum
     {
         staff,

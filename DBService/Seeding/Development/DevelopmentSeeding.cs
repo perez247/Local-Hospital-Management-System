@@ -14,10 +14,18 @@ namespace DBService.Seeding.Development
 
         public static async Task BeginSeeding(AppDBContext context, UserManager<AppUser> userManager)
         {
+            // Users
             await InsertFakeUsers.CreateStaff(context, userManager, initialDir);
             await InsertFakeUsers.CreateCompany(context, userManager, initialDir);
             await InsertFakeUsers.CreatePatient(context, userManager, initialDir);
             await InsertFakeUsers.CreatePatientInCompany(context, userManager, initialDir);
+
+            // Inventory
+            await InsertFakeInventories.CreateInventories(context, initialDir);
+            await InsertFakeInventories.CreateInventoryItems(context, initialDir);
+
+            // Appointments
+            await InsertFakeAppointments.CreateAppointments(context);
 
             // await context.SaveChangesAsync();
         }

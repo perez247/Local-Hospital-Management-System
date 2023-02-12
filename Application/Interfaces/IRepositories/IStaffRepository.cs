@@ -1,5 +1,4 @@
 ﻿using Application.Paginations;
-using Application.Query.GetStaffList;
 using Application.Query.StaffPaymentHistory;
 using Models;
 using System;
@@ -18,8 +17,6 @@ namespace Application.Interfaces.IRepositories
         IQueryable<FinancialRecord> FinancialRecords();
         IQueryable<FinancialRequest> FinancialRequests();
         Task<AppUser> CreateStaff(AppUser newUser, string password);
-        Task<AppUser?> GetStaffById(string staffId);
-        Task<PaginationDto<AppUser>> GetStaffList(GetStaffListFilter filter, PaginationCommand command);
         Task<PaginationDto<SalaryPaymentHistory>> GetStaffListWithPayment(StaffPaymentHistoryFilter filter, PaginationCommand command);
     }
 }

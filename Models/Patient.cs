@@ -14,6 +14,7 @@ namespace Models
         public Guid? CompanyId { get; set; }
         public string? Allergies { get; set; }
         public ICollection<PatientContract> PatientContracts { get; set; } = new List<PatientContract>();
-        public ICollection<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();        
+        public ICollection<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
+        public ICollection<AppAppointment> AppAppointments { get; set; } = new List<AppAppointment>();
     }
 }

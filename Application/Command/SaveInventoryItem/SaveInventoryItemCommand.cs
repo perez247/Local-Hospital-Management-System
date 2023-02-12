@@ -15,6 +15,9 @@ namespace Application.Command.SaveInventoryItem
 {
     public class SaveInventoryItemCommand : TokenCredentials, IRequest<IEnumerable<SaveInventoryItemResponse>>
     {
+        [VerifyGuidAnnotation]
+        public string? InventoryId { get; set; }
+        public bool? CreateIfNotFound { get; set; }
         public ICollection<SaveInventoryItemRequest>? InventoryItemRequests { get; set; }
     }
 
@@ -32,89 +35,69 @@ namespace Application.Command.SaveInventoryItem
         }
         public async Task<IEnumerable<SaveInventoryItemResponse>> Handle(SaveInventoryItemCommand request, CancellationToken cancellationToken)
         {
-            var requestToUpdate = request.InventoryItemRequests.DistinctBy(x => x.InventoryId).ToList();
+
+            var requestToUpdate = request.InventoryItemRequests.DistinctBy(x => x.CompanyId).ToList();
 
             if (requestToUpdate.Count == 0)
             {
-                throw new CustomMessageException("No Inventory item found to save");
+                throw new CustomMessageException("No Inventory items found to save");
             }
 
-            var companies = await iCompanyRepository.Companies()
-                                           .Where(a => requestToUpdate.Select(x => x.CompanyId).Contains(a.Id.ToString()))
-                                           .ToListAsync();
+            var appInventoryFromDb = await iInventoryRepository.AppInventories().FirstOrDefaultAsync(x => x.Id.ToString() == request.InventoryId);
 
-            var appInventories = await iInventoryRepository.AppInventories()
-                                           .Where(a => requestToUpdate.Select(x => x.InventoryId).Contains(a.Id.ToString()))
-                                           .ToListAsync();
+            if (appInventoryFromDb == null)
+            {
+                throw new CustomMessageException("Inventory not found");
+            }
+
+            var appInventoryItems = await iInventoryRepository.AppInventoryItems()
+                                          .Where(a => a.AppInventoryId.ToString() == request.InventoryId && requestToUpdate.Select(x => x.CompanyId).Contains(a.CompanyId.ToString()))
+                                          .ToListAsync();
+
+            var companies = await iCompanyRepository.Companies()
+                                    .Where(x => requestToUpdate.Select(x => x.CompanyId).Contains(x.Id.ToString()))
+                                    .ToListAsync();
+
+
+            if (companies.Count <= 0)
+            {
+                throw new CustomMessageException("No Companies found to save item, kindly add company first");
+            }
 
             var responseList = new List<SaveInventoryItemResponse>();
 
             foreach (var req in requestToUpdate)
             {
-                var appInv = await SaveInventoryItem(req, companies, appInventories);
+                var appInv = await SaveInventoryItem(request, req, appInventoryItems);
                 var appInvResponse = SaveInventoryItemResponse.Create(appInv);
                 appInvResponse.Index = req.Index;
                 responseList.Add(appInvResponse);
             }
 
+            await iDBRepository.Complete();
+
             return responseList;
         }
 
-        private async Task<AppInventoryItem> SaveInventoryItem(SaveInventoryItemRequest? req, List<Company>? companies, List<AppInventory>? appInventories)
+        private async Task<AppInventoryItem> SaveInventoryItem(SaveInventoryItemCommand request, SaveInventoryItemRequest? req, List<AppInventoryItem>? appInventoryItems)
         {
-            if (req.InventoryItemId == Guid.Empty.ToString())
+            var inventoryItemInDb = appInventoryItems.FirstOrDefault(x => req.CompanyId == x.CompanyId.ToString());
+            if (inventoryItemInDb == null)
             {
-                var companyId = GetCompanyid(req, companies);
-                var appInventory = GetInventory(req, appInventories);
-
                 var newInventoryItem = new AppInventoryItem();
                 newInventoryItem.Id = Guid.NewGuid();
-                newInventoryItem.PricePerItem = req.NewPrice.Value;
-                newInventoryItem.CompanyId = companyId;
-                newInventoryItem.AppInventoryId = appInventory;
+                newInventoryItem.PricePerItem = decimal.Round(req.CompanyAmount.Value, 2, MidpointRounding.AwayFromZero);
+                newInventoryItem.CompanyId = Guid.Parse(req.CompanyId);
+                newInventoryItem.AppInventoryId = Guid.Parse(request.InventoryId);
                 await iDBRepository.AddAsync<AppInventoryItem>(newInventoryItem);
                 return newInventoryItem;
             }
             else
             {
-                var inventorytemInDb = await iInventoryRepository.AppInventoryItems()
-                                                                 .FirstOrDefaultAsync(x => x.Id.ToString() == req.InventoryItemId);
-
-                if (inventorytemInDb == null)
-                {
-                    throw new CustomMessageException("Inventory Item not found");
-                }
-
-                inventorytemInDb.PricePerItem = req.NewPrice.Value;
-                iDBRepository.Update<AppInventoryItem>(inventorytemInDb);
-                return inventorytemInDb;
+                inventoryItemInDb.PricePerItem = decimal.Round(req.CompanyAmount.Value, 2, MidpointRounding.AwayFromZero);
+                iDBRepository.Update<AppInventoryItem>(inventoryItemInDb);
+                return inventoryItemInDb;
             }
-        }
-
-        private Guid? GetCompanyid(SaveInventoryItemRequest? req, List<Company>? companies)
-        {
-            if (req.CompanyId != Guid.Empty.ToString())
-            {
-                var company = companies.FirstOrDefault(x => x.Id.ToString() == req.CompanyId);
-
-                if (company == null)
-                {
-                    throw new CustomMessageException("Company not found");
-                }
-                return company.Id;
-            }
-            return null;
-        }
-
-        private Guid? GetInventory(SaveInventoryItemRequest? req, List<AppInventory>? appInventories)
-        {
-            var appInventory = appInventories.FirstOrDefault(x => x.Id.ToString() == req.InventoryId);
-
-            if (appInventory == null)
-            {
-                throw new CustomMessageException("Inventory not found");
-            }
-            return appInventory.Id;
         }
     }
 }

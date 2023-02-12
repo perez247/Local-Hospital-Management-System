@@ -9,15 +9,10 @@ namespace Application.Command.SaveInventoryItem
 {
     public class SaveInventoryItemRequest
     {
-        public string? InventoryId { get; set; }
 
         [VerifyGuidAnnotation]
         public string? CompanyId { get; set; }
-
-        [VerifyGuidAnnotation]
-        public string? InventoryItemId { get; set; }
-
-        public decimal? NewPrice { get; set; }
+        public decimal? CompanyAmount { get; set; }
         public int Index { get; set; }
     }
 }

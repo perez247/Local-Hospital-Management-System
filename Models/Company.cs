@@ -17,6 +17,5 @@ namespace Models
         public ICollection<CompanyContract> CompanyContracts { get; set; } = new List<CompanyContract>();
         public ICollection<AppInventoryItem>? AppInventoryItems { get; set; } = new List<AppInventoryItem>();
         public ICollection<AppAppointment> AppAppointments { get; set; } = new List<AppAppointment>();
-
     }
 }

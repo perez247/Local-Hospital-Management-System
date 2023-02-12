@@ -21,3 +21,5 @@ namespace Models
         public ICollection<TicketInventory> TicketInventories { get; set; } = new List<TicketInventory>();
     }
 }
+
+

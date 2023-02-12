@@ -1,4 +1,10 @@
 ﻿using Application.Interfaces.IRepositories;
+using Application.Paginations;
+using Application.Query.GetInventories;
+using Application.Query.GetInventoryItems;
+using Application.Query.GetUserList;
+using DBService.QueryHelpers;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -24,6 +30,31 @@ namespace DBService.Repositories
         public IQueryable<AppInventoryItem> AppInventoryItems()
         {
             return _context.AppInventoryItems.AsQueryable();
+        }
+
+        public async Task<PaginationDto<AppInventory>> GetInventoryList(GetInventoriesFilter filter, PaginationCommand command)
+        {
+            var query = _context.AppInventories
+                                .OrderByDescending(x => x.DateCreated)
+                                .AsQueryable();
+
+            query = InventoryQueryHelper.FilterInventory(query, filter);
+
+            return await query.GenerateEntity(command);
+        }
+
+        public async Task<PaginationDto<AppInventoryItem>> GetInventoryItemList(GetInventoryItemFilter filter, PaginationCommand command)
+        {
+            var query = _context.AppInventoryItems
+                                .Include(x => x.Company)
+                                    .ThenInclude(x => x.AppUser)
+                                .Include(x => x.AppInventory)
+                                .OrderByDescending(x => x.DateCreated)
+                                .AsQueryable();
+
+            query = InventoryQueryHelper.FilterInventoryItem(query, filter);
+
+            return await query.GenerateEntity(command);
         }
     }
 }

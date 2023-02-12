@@ -5,6 +5,7 @@ using Application.Utilities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,8 @@ namespace Application.Command.SaveInventory
         public string? Name { get; set; }
         public bool? NotifyWhenLow { get; set; }
         public int? HowLow { get; set; }
-        public decimal? DefaultPrice { get; set; }
+        public string? AppInventoryType { get; set; }
+        public string? Profile { get; set; }
     }
 
     public class SaveInventoryHandler : IRequestHandler<SaveInventoryCommand, SaveInventoryResponse>
@@ -44,16 +46,9 @@ namespace Application.Command.SaveInventory
                 newAppInventory.Name = request.Name;
                 newAppInventory.NotifyWhenLow = request.NotifyWhenLow.Value;
                 newAppInventory.HowLow = request.HowLow.Value;
+                newAppInventory.AppInventoryType = request.AppInventoryType.ParseEnum<AppInventoryType>();
                 await iDBRepository.AddAsync<AppInventory>(newAppInventory);
                 id = newAppInventory.Id.ToString();
-
-                var defaultItem = new AppInventoryItem
-                {
-                    AppInventoryId = newAppInventory.Id,
-                    PricePerItem = request.DefaultPrice.Value
-                };
-
-                await iDBRepository.AddAsync<AppInventoryItem>(defaultItem);
             } else
             {
                 var appInVentoryFromDB = await iInventoryRepository.AppInventories().FirstOrDefaultAsync(x => x.Id.ToString() == request.AppInventoryId);
@@ -64,8 +59,10 @@ namespace Application.Command.SaveInventory
                 }
 
                 appInVentoryFromDB.Name = request.Name;
+                appInVentoryFromDB.AppInventoryType = request.AppInventoryType.ParseEnum<AppInventoryType>();
                 appInVentoryFromDB.NotifyWhenLow = request.NotifyWhenLow.Value;
                 appInVentoryFromDB.HowLow = request.HowLow.Value;
+                appInVentoryFromDB.Profile = request.Profile;
 
                 iDBRepository.Update<AppInventory>(appInVentoryFromDB);
                 id = appInVentoryFromDB.Id.ToString();

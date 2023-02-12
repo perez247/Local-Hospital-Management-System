@@ -1,4 +1,7 @@
 ﻿using Application.Interfaces.IRepositories;
+using Application.Paginations;
+using Application.Query.GetUserList;
+using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -31,9 +34,26 @@ namespace DBService.Repositories
             return _context.Users.AsQueryable();
         }
 
+        public IQueryable<UserFile> UserFiles()
+        {
+            return _context.UserFiles.AsQueryable();
+        }
+
         public IQueryable<Company> Companies()
         {
             return _context.Companies.AsQueryable();
+        }
+
+        public async Task<PaginationDto<AppUser>> GetUserList(GetUserListFilter filter, PaginationCommand command)
+        {
+            var query = _context.Users
+                                .Include(x => x.NextOfKin)
+                                .OrderByDescending(x => x.DateCreated)
+                                .AsQueryable();
+
+            query = UserQueryHelper.FilterUserList(query, filter);
+
+            return await query.GenerateEntity(command);
         }
 
     }

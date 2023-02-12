@@ -1,4 +1,9 @@
 ﻿using Application.Interfaces.IRepositories;
+using Application.Paginations;
+using Application.Query.GetAppointments;
+using Application.Query.GetUserList;
+using DBService.QueryHelpers;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -18,6 +23,19 @@ namespace DBService.Repositories
         public IQueryable<AppAppointment> AppAppointments()
         {
             return _context.AppAppointments.AsQueryable();
+        }
+        public async Task<PaginationDto<AppAppointment>> GetAppointmentByDate(GetAppoinmentFilter filter, PaginationCommand command)
+        {
+            var query = _context.AppAppointments
+                                .Include(x => x.Company).ThenInclude(x => x.AppUser)
+                                .Include(x => x.Patient).ThenInclude(x => x.AppUser)
+                                .Include(x => x.Doctor).ThenInclude(x => x.AppUser)
+                                .OrderBy(x => x.AppointmentDate)
+                                .AsQueryable();
+
+            query = AppointmentQueryHandler.FilterAppointmentByDate(query, filter);
+
+            return await query.GenerateEntity(command);
         }
     }
 }

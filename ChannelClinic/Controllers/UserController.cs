@@ -1,9 +1,15 @@
-﻿using Application.Command.CreateStaff;
+﻿using Application.Command.AddUserFiles;
+using Application.Command.CreateStaff;
+using Application.Command.DeleteUserFiles;
 using Application.Command.UpdateSurgerySummary;
 using Application.Command.UpdateUserNextofKin;
 using Application.Command.UpdateUserPersonal;
 using Application.Interfaces.IRepositories;
+using Application.Paginations;
+using Application.Query.GetUserFiles;
+using Application.Query.GetUserList;
 using Application.RequestResponsePipeline;
+using Application.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -66,6 +72,71 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> GiveSummeryOnSurgery([FromBody] UpdateSurgerySummaryCommand command)
         {
             await UpdateToken(command, nameof(UpdateSurgerySummaryCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get a user or list of users
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<UserResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost]
+        public async Task<IActionResult> GetUserList([FromBody] GetUserListQuery command)
+        {
+            await UpdateToken(command, nameof(GetUserListQuery));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Add a user files
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("files")]
+        public async Task<IActionResult> AddUserFiles([FromBody] AddUserFilesCommand command)
+        {
+            await UpdateToken(command, nameof(AddUserFilesCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Delete user files
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpDelete("files")]
+        public async Task<IActionResult> DeleteUserFiles([FromBody] DeleteUserFIlesCommand command)
+        {
+            await UpdateToken(command, nameof(DeleteUserFIlesCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// Get user files
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(IEnumerable<UserFileResponse>), (int)HttpStatusCode.OK)]
+        [HttpGet("files")]
+        public async Task<IActionResult> GetUserFiles([FromQuery] GetUserFIlesQuery command)
+        {
+            await UpdateToken(command, nameof(GetUserFIlesQuery));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

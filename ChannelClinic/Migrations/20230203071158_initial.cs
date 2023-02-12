@@ -20,6 +20,7 @@ namespace ChannelClinic.Migrations
                     AppInventoryType = table.Column<int>(type: "integer", nullable: false),
                     NotifyWhenLow = table.Column<bool>(type: "boolean", nullable: false),
                     HowLow = table.Column<int>(type: "integer", nullable: false),
+                    Profile = table.Column<string>(type: "text", nullable: true),
                     DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -52,6 +53,7 @@ namespace ChannelClinic.Migrations
                     LastName = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
                     OtherName = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
                     Address = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
+                    Profile = table.Column<string>(type: "character varying(15000)", maxLength: 15000, nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -235,6 +237,7 @@ namespace ChannelClinic.Migrations
                     Phone2 = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Address = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
+                    Profile = table.Column<string>(type: "character varying(15000)", maxLength: 15000, nullable: true),
                     DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -273,6 +276,28 @@ namespace ChannelClinic.Migrations
                     table.PrimaryKey("PK_Staff", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Staff_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserFiles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Base64String = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserFiles_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -489,12 +514,14 @@ namespace ChannelClinic.Migrations
                         name: "FK_AppAppointments_Patients_PatientId",
                         column: x => x.PatientId,
                         principalTable: "Patients",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_AppAppointments_Staff_DoctorId",
                         column: x => x.DoctorId,
                         principalTable: "Staff",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -887,6 +914,11 @@ namespace ChannelClinic.Migrations
                 name: "IX_TicketInventories_StaffId",
                 table: "TicketInventories",
                 column: "StaffId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserFiles_AppUserId",
+                table: "UserFiles",
+                column: "AppUserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -935,6 +967,9 @@ namespace ChannelClinic.Migrations
 
             migrationBuilder.DropTable(
                 name: "SurgeryTicketPersonnel");
+
+            migrationBuilder.DropTable(
+                name: "UserFiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

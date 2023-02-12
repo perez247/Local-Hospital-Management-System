@@ -98,6 +98,39 @@ namespace Application.Utilities
         {
             return (T)Enum.Parse(typeof(T), value, true);
         }
+        public static string ToCamelCase(this string str)
+        {
+            if (!string.IsNullOrEmpty(str) && str.Length > 1)
+            {
+                return char.ToLowerInvariant(str[0]) + str.Substring(1);
+            }
+            return str.ToLowerInvariant();
+        }
+
+        public static string FirstLetterUpperCase(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return "";
+            }
+
+            if (str.Length == 0)
+            {
+                return "";
+            }
+
+            if (str.Length == 1)
+            {
+                return char.ToUpper(str[0]).ToString();
+            }
+
+            if (str.Length > 1)
+            {
+                return char.ToUpper(str[0]) + str.Substring(1);
+            }
+
+            return "";
+        }
 
         public static void MustNotHaveBeenSentToDepartment(this AppTicket? ticketFromDb)
         {

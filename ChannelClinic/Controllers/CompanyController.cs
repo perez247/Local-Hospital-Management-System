@@ -1,6 +1,7 @@
 ﻿using Application.Command.AddCompanyContract;
 using Application.Command.CreateCompany;
 using Application.Command.UpdateAppCost;
+using Application.Command.UpdateCompany;
 using Application.Interfaces.IRepositories;
 using Application.RequestResponsePipeline;
 using MediatR;
@@ -30,7 +31,7 @@ namespace ChannelClinic.Controllers
         [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(CreateCompanyResponse), (int)HttpStatusCode.OK)]
         [HttpPost]
-        public async Task<IActionResult> CreateCompant([FromBody] CreateCompanyCommand command)
+        public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyCommand command)
         {
             await UpdateToken(command, nameof(CreateCompanyCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
@@ -49,6 +50,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateCost([FromBody] AddCompanyContractCommand command)
         {
             await UpdateToken(command, nameof(AddCompanyContractCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Update Company details
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("details")]
+        public async Task<IActionResult> UpdateCompanyDetails([FromBody] UpdateCompanyCommand command)
+        {
+            await UpdateToken(command, nameof(UpdateCompanyCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

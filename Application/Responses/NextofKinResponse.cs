@@ -1,5 +1,4 @@
-﻿using Application.Query.ViewStaff;
-using Models;
+﻿using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +17,8 @@ namespace Application.Responses
         public string? Phone2 { get; set; }
         public string? Email { get; set; }
         public string? Address { get; set; }
+        public string? Profile { get; set; }
         public BaseResponse? Base { get; set; }
-
         public static NextofKinResponse? Create(NextOfKin nextOfKin)
         {
             if (nextOfKin == null)
@@ -36,6 +35,7 @@ namespace Application.Responses
             data.Phone2 = nextOfKin.Phone2;
             data.Email = nextOfKin.Email;
             data.Address = nextOfKin.Address;
+            data.Profile = nextOfKin.Profile;
             data.Base = BaseResponse.Create(nextOfKin);
 
             return data;

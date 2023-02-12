@@ -2,6 +2,9 @@
 using Application.Command.SaveInventoryItem;
 using Application.Command.UpdateAppCost;
 using Application.Interfaces.IRepositories;
+using Application.Paginations;
+using Application.Query.GetInventories;
+using Application.Query.GetInventoryItems;
 using Application.RequestResponsePipeline;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +52,38 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> SaveInventoryItem([FromBody] SaveInventoryItemCommand command)
         {
             await UpdateToken(command, nameof(SaveInventoryItemCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get list of inventories
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<InventoryResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("inventories")]
+        public async Task<IActionResult> GetInventories([FromBody] GetInventoriesQuery command)
+        {
+            await UpdateToken(command, nameof(GetInventoriesQuery));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get list of inventory items
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<AppInventoryItemResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("inventory-items")]
+        public async Task<IActionResult> GetInventoryItem([FromBody] GetInventoryItemsQuery command)
+        {
+            await UpdateToken(command, nameof(GetInventoryItemsQuery));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

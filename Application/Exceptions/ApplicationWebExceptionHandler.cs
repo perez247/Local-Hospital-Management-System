@@ -67,7 +67,7 @@ namespace Application.Exceptions
             errorresponse.StackTrace = true ? context.Exception.StackTrace : null;
 
             context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = 500;
+            context.HttpContext.Response.StatusCode = code;
             context.Result = new JsonResult(errorresponse);
         }
     }
@@ -93,7 +93,7 @@ namespace Application.Exceptions
                 {
                     appErrors.Add(new CustomValidationFailure
                     {
-                        FieldName = item.Key,
+                        FieldName = item.Key.ToCamelCase(),
                         FieldErrors = item.Value.Errors.Select(x => x.ErrorMessage).ToArray()
                     });
                 }

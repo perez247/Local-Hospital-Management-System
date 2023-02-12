@@ -10,17 +10,17 @@ namespace Application.Command.CreateStaff
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First Name is required")
                 .MaximumLength(200).WithMessage("Maximum of 200 chars")
-                .Matches("^[a-zA-Z0-9._]*$").WithMessage("Only letters, numbers, periods and underscore");
+                .Matches("^[a-zA-Z0-9._ ]*$").WithMessage("Only letters, numbers, periods and underscore");
 
             RuleFor(x => x.LastName)
                 .NotEmpty().WithMessage("Last Name is required")
                 .MaximumLength(200).WithMessage("Maximum of 200 chars")
-                .Matches("^[a-zA-Z0-9._]*$").WithMessage("Only letters, numbers, periods and underscore");
+                .Matches("^[a-zA-Z0-9._ ]*$").WithMessage("Only letters, numbers, periods and underscore");
 
             RuleFor(x => x.OtherName)
                 .NotEmpty().WithMessage("Other Name is required")
                 .MaximumLength(200).WithMessage("Maximum of 200 chars")
-                .Matches("^[a-zA-Z0-9._]*$").WithMessage("Only letters, numbers, periods and underscore")
+                .Matches("^[a-zA-Z0-9._ ]*$").WithMessage("Only letters, numbers, periods and underscore")
                 .When(x => !string.IsNullOrEmpty(x.OtherName));
 
             RuleFor(x => x.Email)

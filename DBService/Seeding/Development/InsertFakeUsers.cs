@@ -98,10 +98,14 @@ namespace DBService.Seeding.Development
 
         public async static Task CreatePatient(AppDBContext context, UserManager<AppUser> userManager, string initialDir)
         {
-            var oneUser = await context.Patients.FirstOrDefaultAsync();
+            var oneUser = await context.Patients.Where(x => x.CompanyId.HasValue).Take(1).ToListAsync();
 
-            if (oneUser != null)
+            if (oneUser.Count() > 0)
                 return;
+
+            var companyIds = await context.Companies.Select(x => x.Id).ToArrayAsync();
+
+            var random = new Random();
 
             var userDir = $"{initialDir}/individual_patients.json";
 
@@ -111,6 +115,7 @@ namespace DBService.Seeding.Development
 
                 foreach (var user in users)
                 {
+                    var index = random.Next(0, companyIds.Count());
                     var newUser = new AppUser
                     {
                         Id = user.Id,
@@ -124,6 +129,7 @@ namespace DBService.Seeding.Development
                         Patient = new Patient
                         {
                             Id = Guid.NewGuid(),
+                            CompanyId = companyIds[index],
                         }
                     };
 
@@ -138,7 +144,7 @@ namespace DBService.Seeding.Development
 
         public async static Task CreatePatientInCompany(AppDBContext context, UserManager<AppUser> userManager, string initialDir)
         {
-            var oneUser = await context.Patients.Where(x => !x.CompanyId.HasValue).Take(1).ToListAsync();
+            var oneUser = await context.Patients.Where(x => x.CompanyId.HasValue).Take(1).ToListAsync();
 
             if (oneUser.Count() > 0)
                 return;
@@ -148,6 +154,39 @@ namespace DBService.Seeding.Development
             var random = new Random();
 
             var userDir = $"{initialDir}/company_patients.json";
+
+            using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
+            {
+                var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+
+                foreach (var user in users)
+                {
+                    var index = random.Next(0, companyIds.Count());
+                    var newUser = new AppUser
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        UserName = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        OtherName = user.OtherName,
+                        Address = user.Address,
+                        EmailConfirmed = true,
+                        Patient = new Patient
+                        {
+                            Id = Guid.NewGuid(),
+                            CompanyId = companyIds[index],
+                        }
+                    };
+
+                    var result = await userManager.CreateAsync(newUser, "Abcde@12345");
+                    await userManager.AddToRolesAsync(newUser, new List<string>() {
+                        ApplicationRoles.Patients
+                    });
+                }
+            }
+
+            userDir = $"{initialDir}/individual_patients.json";
 
             using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
             {

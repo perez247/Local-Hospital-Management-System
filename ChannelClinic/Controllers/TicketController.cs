@@ -14,7 +14,10 @@ using Application.Command.UpdatePharmacyTicketInventory;
 using Application.Command.UpdateSurgeryTicketInventory;
 using Application.Command.UpdateTicket;
 using Application.Interfaces.IRepositories;
+using Application.Paginations;
+using Application.Query.GetTickets;
 using Application.RequestResponsePipeline;
+using Application.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -257,6 +260,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> CreateEmergencyAppointment([FromBody] CreateEmergencyAppointmentCommand command)
         {
             await UpdateToken(command, nameof(CreateEmergencyAppointmentCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get Tickets
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<AppTicketResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("get-tickets")]
+        public async Task<IActionResult> GetTickets([FromBody] GetTicketsQuery command)
+        {
+            await UpdateToken(command, nameof(GetTicketsQuery));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

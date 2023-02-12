@@ -11,10 +11,10 @@ namespace Application.Command.AddPatientContract
     {
         public AddPatientContractValidator()
         {
-            RuleFor(x => x.DurationInMonths)
+            RuleFor(x => x.DurationInDays)
                 .Must(x => x.HasValue).WithMessage("Duration is required")
-                .GreaterThan(0).WithMessage("Must be at least 1 month")
-                .LessThanOrEqualTo(12).WithMessage("Must be less than or equal to 12");
+                .GreaterThan(28).WithMessage("Must be at least 1 Month")
+                .LessThanOrEqualTo(366).WithMessage("Must be less than or equal to 12 months");
         }
     }
 }

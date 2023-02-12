@@ -1,5 +1,6 @@
 ﻿using Application.Command.SignIn;
 using Application.Interfaces.IRepositories;
+using Application.Query.GetLookUps;
 using Application.Query.GetUsersInDev;
 using Application.RequestResponsePipeline;
 using Application.Utilities;
@@ -58,6 +59,24 @@ namespace ChannelClinic.Controllers
         {
             //command.SetCurrentUserRequest(ApplicationUserRequest);
             await UpdateToken(command, nameof(SignInCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get app lookups
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(IEnumerable<LookUpResponse>), (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
+        [HttpGet("lookups")]
+        public async Task<IActionResult> GetLookups([FromQuery] GetLookUpsQuery command)
+        {
+            //command.SetCurrentUserRequest(ApplicationUserRequest);
+            await UpdateToken(command, nameof(GetLookUpsQuery));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

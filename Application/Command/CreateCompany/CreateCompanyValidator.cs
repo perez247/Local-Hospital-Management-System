@@ -15,7 +15,7 @@ namespace Application.Command.CreateCompany
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("First Name is required")
                 .MaximumLength(200).WithMessage("Maximum of 200 chars")
-                .Matches("^[a-zA-Z0-9._]*$").WithMessage("Only letters, numbers, periods and underscore");
+                .Matches("^[a-zA-Z0-9._ ]*$").WithMessage("Only letters, numbers, periods and underscore");
 
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required")

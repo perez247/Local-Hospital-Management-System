@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DBService.DBSchema
 {
-    internal class AppUserSchema : IEntityTypeConfiguration<AppUser>
+    public class AppUserSchema : IEntityTypeConfiguration<AppUser>
     {
         public void Configure(EntityTypeBuilder<AppUser> builder)
         {
@@ -28,6 +28,10 @@ namespace DBService.DBSchema
             builder.Property(entity => entity.Address)
                 .IsRequired()
                 .HasMaxLength(5000);
+
+            builder.Property(entity => entity.Profile)
+                .IsRequired(false)
+                .HasMaxLength(15000);
         }
     }
 }

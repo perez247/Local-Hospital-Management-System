@@ -17,7 +17,7 @@ namespace Application.Command.AddCompanyContract
     {
         [VerifyGuidAnnotation]
         public string? CompanyId { get; set; }
-        public int? DurationInMonths { get; set; }
+        public int? DurationInDays { get; set; }
     }
 
     public class AddCompanyContactHandler : IRequestHandler<AddCompanyContractCommand, Unit>
@@ -44,10 +44,17 @@ namespace Application.Command.AddCompanyContract
             }
 
             var hasContract = company.CompanyContracts.FirstOrDefault();
+            var timespan = new TimeSpan(0, 0, 0, 0);
 
-            if (hasContract != null && hasContract.StartDate.AddMonths(hasContract.Duration) > DateTime.Now && hasContract.AppCost.PaymentStatus != Models.Enums.PaymentStatus.canceled)
+            if (hasContract != null && hasContract.StartDate.AddDays(hasContract.Duration) > DateTime.Now && hasContract.AppCost.PaymentStatus != Models.Enums.PaymentStatus.canceled)
             {
-                throw new CustomMessageException("Company already has a contract");
+                timespan = hasContract.StartDate.AddDays(hasContract.Duration) - DateTime.Now;
+                var timspnInDays = timespan.Days;
+
+                if (timspnInDays > 14)
+                {
+                    throw new CustomMessageException("Company already has a contract");
+                }
             }
 
             var Description = "First Registration";
@@ -57,11 +64,13 @@ namespace Application.Command.AddCompanyContract
                 Description = "Renew Contract";
             }
 
+            var durationInDays = request.DurationInDays.Value + timespan.Days + 1;
+
             var newContract = new CompanyContract
             {
                 CompanyId = company.Id,
-                StartDate = DateTime.Today.AddDays(1),
-                Duration = request.DurationInMonths.Value,
+                StartDate = DateTime.Today.AddDays(1).ToUniversalTime(),
+                Duration = durationInDays,
             };
 
             var appCost = new AppCost

@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Query.GetStaffList
+namespace Application.Query.GetInventoryItems
 {
-    public class GetStaffListValidator : AbstractValidator<GetStaffListQuery>
+    public class GetInventoryItemValidator : AbstractValidator<GetInventoryItemsQuery>
     {
-        public GetStaffListValidator()
+        public GetInventoryItemValidator()
         {
             RuleFor(x => x.Filter)
-                .SetValidator(new GetStaffListFilterValidator())
+                .SetValidator(new GetInventoryItemFilterValidator())
                 .When(x => x.Filter != null);
         }
     }

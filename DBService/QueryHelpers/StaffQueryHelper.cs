@@ -1,5 +1,4 @@
-﻿using Application.Query.GetStaffList;
-using Application.Query.StaffPaymentHistory;
+﻿using Application.Query.StaffPaymentHistory;
 using Application.Responses;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -13,28 +12,6 @@ namespace DBService.QueryHelpers
 {
     public static class StaffQueryHelper
     {
-        public static IQueryable<AppUser> FilterStaffList(IQueryable<AppUser> query, GetStaffListFilter filter)
-        {
-            if (filter == null)
-            {
-                return query;
-            }
-
-            if (!string.IsNullOrEmpty(filter.Name))
-                query = query.Where(i => 
-                    (!string.IsNullOrEmpty(i.FirstName) && EF.Functions.Like(i.FirstName.ToLower(), $"%{filter.Name.ToLower()}%")) ||
-                    (!string.IsNullOrEmpty(i.LastName) && EF.Functions.Like(i.LastName.ToLower(), $"%{filter.Name.ToLower()}%")) ||
-                    (!string.IsNullOrEmpty(i.OtherName) && EF.Functions.Like(i.OtherName.ToLower(), $"%{filter.Name.ToLower()}%")) 
-                );
-
-            if (filter.Active.HasValue)
-            {
-                query = query.Where(i => i.Staff != null && i.Staff.Active == filter.Active.Value);
-            }
-
-            return query;
-        }
-
         public static IQueryable<SalaryPaymentHistory> FilterPaymentHistory(IQueryable<SalaryPaymentHistory> query, StaffPaymentHistoryFilter filter)
         {
             if (filter == null)

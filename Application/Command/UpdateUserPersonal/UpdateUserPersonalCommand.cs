@@ -21,6 +21,7 @@ namespace Application.Command.UpdateUserPersonal
         public string? OtherName { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public string? Profile { get; set; }
     }
 
     public class UpdateUserPersonalHandler : IRequestHandler<UpdateUserPersonalCommand, Unit>
@@ -48,6 +49,7 @@ namespace Application.Command.UpdateUserPersonal
             user.OtherName = string.IsNullOrEmpty(request.OtherName) ? null : request.OtherName.Trim();
             user.PhoneNumber = string.IsNullOrEmpty(request.Phone) ? null : request.Phone.Trim();
             user.Address = request.Address.Trim();
+            user.Profile = request.Profile;
 
             iDBRepository.Update<AppUser>(user);
             await iDBRepository.Complete();

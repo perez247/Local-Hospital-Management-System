@@ -1,7 +1,9 @@
 ﻿using Application.Annotations;
+using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Application.Utilities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Application.Command.AddPatientVital
@@ -26,8 +28,23 @@ namespace Application.Command.AddPatientVital
         }
         public async Task<Unit> Handle(AddPatientVitalCommand request, CancellationToken cancellationToken)
         {
+            if (request.getCurrentUserRequest().CurrentUser == null)
+            {
+               throw new CustomMessageException("Acting user not found", System.Net.HttpStatusCode.NotFound);
+
+            }
+
+            var patientFromDb = await iPatientRepository.Patients()
+                                                        .FirstOrDefaultAsync(x => x.Id.ToString() == request.PatientId);
+
+            if (patientFromDb == null)
+            {
+                throw new CustomMessageException("Patient not found", System.Net.HttpStatusCode.NotFound);
+            }
+
             var vital = new PatientVital
             {
+                PatientId = patientFromDb.Id,
                 NurseId = request.getCurrentUserRequest().CurrentUser.Staff.Id,
                 Data = request.Data
             };

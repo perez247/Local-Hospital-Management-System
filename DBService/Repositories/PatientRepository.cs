@@ -1,6 +1,10 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces.IRepositories;
+using Application.Paginations;
+using Application.Query.GetUserList;
+using DBService.QueryHelpers;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -39,6 +43,18 @@ namespace DBService.Repositories
             }
 
             return newUser;
+        }
+
+        public async Task<PaginationDto<PatientVital>> GetPatientVitals(string patientId, PaginationCommand command)
+        {
+            var query = _context.PatientVitals
+                                .Include(x => x.Nurse)
+                                    .ThenInclude(x => x.AppUser)
+                                .OrderByDescending(x => x.DateCreated)
+                                .Where(x => x.PatientId.ToString() == patientId)
+                                .AsQueryable();
+
+            return await query.GenerateEntity(command);
         }
     }
 }

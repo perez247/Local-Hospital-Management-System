@@ -24,6 +24,7 @@ namespace Application.Command.UpdateUserNextofKin
         public string? Phone2 { get; set; }
         public string? Email { get; set; }
         public string? Address { get; set; }
+        public string? Profile { get; set; }
     }
 
     public class UpdateUserNextOfKinHandler : IRequestHandler<UpdateUserNextofKinCommand, Unit>
@@ -65,6 +66,7 @@ namespace Application.Command.UpdateUserNextofKin
             nextofkin.Phone1= request.Phone1.Trim();
             nextofkin.Phone2= string.IsNullOrEmpty(request.Phone2) ? null : request.Phone2.Trim();
             nextofkin.Address= request.Address;
+            nextofkin.Profile= request.Profile;
 
             if (newNextofKin)
             {

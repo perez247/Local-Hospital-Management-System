@@ -1,4 +1,6 @@
-﻿using Models;
+﻿using Application.Paginations;
+using Application.Query.GetUserList;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,8 @@ namespace Application.Interfaces.IRepositories
         Task<AppUser?> GetUserByIdOrEmailAsync(string id, string email);
         Task<IEnumerable<AppUser>> GetUsers();
         IQueryable<AppUser> Users();
+        IQueryable<UserFile> UserFiles();
         IQueryable<Company> Companies();
+        Task<PaginationDto<AppUser>> GetUserList(GetUserListFilter filter, PaginationCommand command);
     }
 }

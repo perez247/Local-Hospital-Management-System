@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Application.Paginations;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace Application.Interfaces.IRepositories
     {
         IQueryable<Patient> Patients();
         Task<AppUser> CreatePatient(AppUser newUser, string password);
+        Task<PaginationDto<PatientVital>> GetPatientVitals(string patientId, PaginationCommand command);
     }
 }

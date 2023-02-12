@@ -14,7 +14,7 @@ namespace Models
         public Guid? PatientId { get; set; }
         public virtual Company? Company { get; set; }
         public Guid? CompanyId { get; set; }
-        public bool? IsEmergency { get; set; }
+        public bool? IsEmergency { get; set; } = false;
         public DateTime AppointmentDate { get; set; }
         public ICollection<AppTicket> Tickets { get; set; } = new List<AppTicket>();
     }

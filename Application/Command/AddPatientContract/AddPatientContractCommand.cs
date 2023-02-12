@@ -17,7 +17,7 @@ namespace Application.Command.AddPatientContract
     {
         [VerifyGuidAnnotation]
         public string? PatientId { get; set; }
-        public int? DurationInMonths { get; set; }
+        public int? DurationInDays { get; set; }
     }
 
     public class AddPatientContractHandler : IRequestHandler<AddPatientContractCommand, Unit>
@@ -32,6 +32,7 @@ namespace Application.Command.AddPatientContract
         }
         public async Task<Unit> Handle(AddPatientContractCommand request, CancellationToken cancellationToken)
         {
+            // TODO: - Create a setting table to store cost for registration for a patient
             var cost = 1500;
             var patient = await iPatientRepository.Patients()
                                                 .Include(x => x.Company)
@@ -49,10 +50,17 @@ namespace Application.Command.AddPatientContract
             }
 
             var hasContract = patient.PatientContracts.FirstOrDefault();
+            var timespan = new TimeSpan(0,0,0,0);
 
-            if (hasContract != null && hasContract.StartDate.AddMonths(hasContract.Duration) > DateTime.Now && hasContract.AppCost.PaymentStatus != Models.Enums.PaymentStatus.canceled)
+            if (hasContract != null && hasContract.StartDate.AddDays(hasContract.Duration) > DateTime.Now && hasContract.AppCost.PaymentStatus != Models.Enums.PaymentStatus.canceled)
             {
-                throw new CustomMessageException("Patient already has a contract");
+                timespan = hasContract.StartDate.AddDays(hasContract.Duration) - DateTime.Now;
+                var timspnInDays = timespan.Days;
+
+                if (timspnInDays > 14)
+                {
+                    throw new CustomMessageException("Patient already has a contract");
+                }
             }
 
             var Description = "First Registration";
@@ -62,11 +70,13 @@ namespace Application.Command.AddPatientContract
                 Description = "Renew Contract";
             }
 
+            var durationInDays = request.DurationInDays.Value + timespan.Days + 1;
+
             var newContract = new PatientContract
             {
                 PatientId = patient.Id,
-                StartDate = DateTime.Today.AddDays(1),
-                Duration = request.DurationInMonths.Value,
+                StartDate = DateTime.Today.AddDays(1).ToUniversalTime(),
+                Duration = durationInDays,
             };
 
             AppCost appCost = CreateCost(cost, Description);
@@ -76,7 +86,15 @@ namespace Application.Command.AddPatientContract
             await iDBRepository.AddAsync<AppCost>(appCost);
             await iDBRepository.AddAsync<PatientContract>(newContract);
 
-            await iDBRepository.Complete();
+            try
+            {
+                await iDBRepository.Complete();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
 
             return Unit.Value;
         }
@@ -89,7 +107,7 @@ namespace Application.Command.AddPatientContract
                 Amount = cost,
                 ApprovedPrice = cost,
                 CostType = Models.Enums.AppCostType.profit,
-                Description = Description
+                Description = Description,
             };
 
             var financialRecord = new FinancialRecord

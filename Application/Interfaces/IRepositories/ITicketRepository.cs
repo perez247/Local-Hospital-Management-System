@@ -1,4 +1,6 @@
-﻿using Models;
+﻿using Application.Paginations;
+using Application.Query.GetTickets;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +13,6 @@ namespace Application.Interfaces.IRepositories
     {
         IQueryable<AppTicket> AppTickets();
         IQueryable<TicketInventory> TicketInventory();
+        Task<PaginationDto<AppTicket>> GetTickets(GetTicketsQueryFilter filter, PaginationCommand command);
     }
 }

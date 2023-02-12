@@ -8,7 +8,7 @@ namespace Application.Command.CreateStaff
 {
     public class CreateStaffResponse
     {
-        public string? StaffId { get; set; }
+        public string? UserId { get; set; }
         public string? Password { get; set; }
     }
 }

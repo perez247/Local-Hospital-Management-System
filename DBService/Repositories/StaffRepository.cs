@@ -1,7 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetStaffList;
 using Application.Query.StaffPaymentHistory;
 using DBService.QueryHelpers;
 using Microsoft.AspNetCore.Identity;
@@ -57,24 +56,6 @@ namespace DBService.Repositories
             }
 
             return newUser;
-        }
-
-        public async Task<AppUser?> GetStaffById(string staffId)
-        {
-            return await _context.Users.Include(x => x.Staff)
-                                       .Include(x => x.UserRoles).ThenInclude(y => y.Role)
-                                       .FirstOrDefaultAsync(x => x.StaffId.ToString() == staffId);
-        }
-
-        public async Task<PaginationDto<AppUser>> GetStaffList(GetStaffListFilter filter, PaginationCommand command)
-        {
-            var query =  _context.Users.Include(x => x.Staff)
-                                       .Include(x => x.UserRoles).ThenInclude(y => y.Role)
-                                       .AsQueryable();
-
-            query = StaffQueryHelper.FilterStaffList(query, filter);
-
-            return await query.GenerateEntity(command);
         }
 
         public async Task<PaginationDto<SalaryPaymentHistory>> GetStaffListWithPayment(StaffPaymentHistoryFilter filter, PaginationCommand command)

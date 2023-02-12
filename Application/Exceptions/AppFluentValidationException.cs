@@ -1,4 +1,5 @@
-﻿using FluentValidation.Results;
+﻿using Application.Utilities;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Application.Exceptions
 
                 Failures.Add(new CustomValidationFailure
                 {
-                    FieldName = propertyName,
+                    FieldName = propertyName.ToCamelCase(),
                     FieldErrors = propertyFailures
                 });
             }

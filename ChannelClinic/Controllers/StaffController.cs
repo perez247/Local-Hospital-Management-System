@@ -10,9 +10,7 @@ using Application.Command.UpdateStaffDetails;
 using Application.Command.UpdateStaffShift;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetStaffList;
 using Application.Query.StaffPaymentHistory;
-using Application.Query.ViewStaff;
 using Application.RequestResponsePipeline;
 using Application.Responses;
 using MediatR;
@@ -52,39 +50,7 @@ namespace ChannelClinic.Controllers
         }
 
         /// <summary>
-        /// Get a staff
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(UserResponse), (int)HttpStatusCode.OK)]
-        [HttpGet]
-        public async Task<IActionResult> GetStaffById([FromQuery] ViewStaffQuery command)
-        {
-            await UpdateToken(command, nameof(ViewStaffQuery));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-
-        /// <summary>
-        /// Get a list of staff in a paginated format
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<UserResponse>>), (int)HttpStatusCode.NotFound)]
-        [HttpPost("list")]
-        public async Task<IActionResult> GetStaffList([FromBody] GetStaffListQuery command)
-        {
-            await UpdateToken(command, nameof(GetStaffListQuery));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Update a staff
+        /// Update a staff details
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>

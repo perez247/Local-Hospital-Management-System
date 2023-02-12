@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChannelClinic.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20230102163649_initial")]
+    [Migration("20230203071158_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -221,6 +221,9 @@ namespace ChannelClinic.Migrations
                     b.Property<bool>("NotifyWhenLow")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Profile")
+                        .HasColumnType("text");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
@@ -397,6 +400,10 @@ namespace ChannelClinic.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Profile")
+                        .HasMaxLength(15000)
+                        .HasColumnType("character varying(15000)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -620,6 +627,10 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("Phone2")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Profile")
+                        .HasMaxLength(15000)
+                        .HasColumnType("character varying(15000)");
 
                     b.HasKey("Id");
 
@@ -1031,6 +1042,35 @@ namespace ChannelClinic.Migrations
                     b.ToTable("TicketInventories");
                 });
 
+            modelBuilder.Entity("Models.UserFile", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AppUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Base64String")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("UserFiles");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Models.AppRole", null)
@@ -1075,12 +1115,14 @@ namespace ChannelClinic.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Models.Staff", "Doctor")
-                        .WithMany()
-                        .HasForeignKey("DoctorId");
+                        .WithMany("AppAppointments")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Models.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId");
+                        .WithMany("AppAppointments")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Company");
 
@@ -1337,6 +1379,16 @@ namespace ChannelClinic.Migrations
                     b.Navigation("Staff");
                 });
 
+            modelBuilder.Entity("Models.UserFile", b =>
+                {
+                    b.HasOne("Models.AppUser", "AppUser")
+                        .WithMany("UserFiles")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Models.AppAppointment", b =>
                 {
                     b.Navigation("Tickets");
@@ -1380,6 +1432,8 @@ namespace ChannelClinic.Migrations
 
                     b.Navigation("SurgeryTicketPersonnels");
 
+                    b.Navigation("UserFiles");
+
                     b.Navigation("UserRoles");
                 });
 
@@ -1403,6 +1457,8 @@ namespace ChannelClinic.Migrations
 
             modelBuilder.Entity("Models.Patient", b =>
                 {
+                    b.Navigation("AppAppointments");
+
                     b.Navigation("PatientContracts");
 
                     b.Navigation("PatientVitals");
@@ -1410,6 +1466,8 @@ namespace ChannelClinic.Migrations
 
             modelBuilder.Entity("Models.Staff", b =>
                 {
+                    b.Navigation("AppAppointments");
+
                     b.Navigation("AppCosts");
 
                     b.Navigation("PatientVitals");

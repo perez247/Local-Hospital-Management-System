@@ -1,0 +1,240 @@
+[
+  {
+    "id": "10c432ee-d900-4a64-a0ec-c5eb70a8cfcc",
+    "name": "LABORUM CULPA",
+    "quantity": 736,
+    "notifyWhenLow": false,
+    "howLow": 7
+  },
+  {
+    "id": "858d838e-c70a-4ae9-87e7-65f66fbc0fda",
+    "name": "DO PROIDENT",
+    "quantity": 230,
+    "notifyWhenLow": false,
+    "howLow": 7
+  },
+  {
+    "id": "7b24a4a7-cf89-4d39-8ff8-f08ac398f64f",
+    "name": "LABORIS AUTE",
+    "quantity": 983,
+    "notifyWhenLow": true,
+    "howLow": 4
+  },
+  {
+    "id": "acba899b-0682-4e11-81cc-0ce7654b697f",
+    "name": "ADIPISICING SINT",
+    "quantity": 918,
+    "notifyWhenLow": false,
+    "howLow": 20
+  },
+  {
+    "id": "5e514826-c087-4e15-9a46-c9dc30e775ee",
+    "name": "ULLAMCO ELIT",
+    "quantity": 513,
+    "notifyWhenLow": true,
+    "howLow": 1
+  },
+  {
+    "id": "a585a064-fd03-4b11-b042-1ea257a93bec",
+    "name": "REPREHENDERIT AUTE",
+    "quantity": 349,
+    "notifyWhenLow": false,
+    "howLow": 7
+  },
+  {
+    "id": "808fa51a-db15-41af-906b-069af1aa77ef",
+    "name": "ULLAMCO EIUSMOD",
+    "quantity": 787,
+    "notifyWhenLow": true,
+    "howLow": 14
+  },
+  {
+    "id": "9fa9873c-a057-4d34-9a76-366556201a9c",
+    "name": "LABORUM DOLOR",
+    "quantity": 994,
+    "notifyWhenLow": false,
+    "howLow": 20
+  },
+  {
+    "id": "f8e906d9-18bb-4634-b78e-d343a32a7934",
+    "name": "NON IPSUM",
+    "quantity": 860,
+    "notifyWhenLow": false,
+    "howLow": 13
+  },
+  {
+    "id": "d6bbe975-cc0c-4058-9e2e-1fe464e793c8",
+    "name": "LABORE QUI",
+    "quantity": 422,
+    "notifyWhenLow": true,
+    "howLow": 7
+  },
+  {
+    "id": "e900491c-9f78-4015-9278-d95b47bef420",
+    "name": "ADIPISICING MOLLIT",
+    "quantity": 177,
+    "notifyWhenLow": false,
+    "howLow": 20
+  },
+  {
+    "id": "70394ed1-08f8-4888-81fa-af5409f401e8",
+    "name": "EIUSMOD AMET",
+    "quantity": 105,
+    "notifyWhenLow": true,
+    "howLow": 6
+  },
+  {
+    "id": "6d85a65b-5a21-461d-93b6-4a383135b4a5",
+    "name": "EIUSMOD LABORUM",
+    "quantity": 771,
+    "notifyWhenLow": true,
+    "howLow": 2
+  },
+  {
+    "id": "01467954-79c2-42fa-bf95-af4931beabbb",
+    "name": "SUNT DOLOR",
+    "quantity": 433,
+    "notifyWhenLow": true,
+    "howLow": 3
+  },
+  {
+    "id": "dabab744-080d-4ef4-a2a7-d63da254dab0",
+    "name": "INCIDIDUNT SINT",
+    "quantity": 333,
+    "notifyWhenLow": true,
+    "howLow": 10
+  },
+  {
+    "id": "d00d220a-1b00-415c-a861-1a165b0ea888",
+    "name": "DUIS EXERCITATION",
+    "quantity": 150,
+    "notifyWhenLow": false,
+    "howLow": 18
+  },
+  {
+    "id": "7cf79de7-1c3e-4abc-8f5e-de0948f98115",
+    "name": "NULLA EXCEPTEUR",
+    "quantity": 211,
+    "notifyWhenLow": true,
+    "howLow": 7
+  },
+  {
+    "id": "f2671a1a-71f6-4fb9-a503-075d2fb21421",
+    "name": "EX REPREHENDERIT",
+    "quantity": 279,
+    "notifyWhenLow": false,
+    "howLow": 13
+  },
+  {
+    "id": "556445a4-6dfb-443c-958a-f2ef30a4c89c",
+    "name": "ALIQUA ET",
+    "quantity": 384,
+    "notifyWhenLow": true,
+    "howLow": 12
+  },
+  {
+    "id": "74331eb4-7dae-438e-9622-d74888de0dcc",
+    "name": "DESERUNT QUIS",
+    "quantity": 296,
+    "notifyWhenLow": false,
+    "howLow": 15
+  },
+  {
+    "id": "4b8ae7db-87b6-4037-8817-f744de8c06aa",
+    "name": "CONSECTETUR VOLUPTATE",
+    "quantity": 552,
+    "notifyWhenLow": false,
+    "howLow": 9
+  },
+  {
+    "id": "57abb9a8-ae89-4dbb-91de-36d9db5e3f5f",
+    "name": "VELIT ID",
+    "quantity": 894,
+    "notifyWhenLow": false,
+    "howLow": 20
+  },
+  {
+    "id": "75816502-c262-4265-8a43-b4375c5dfa61",
+    "name": "LABORUM IN",
+    "quantity": 300,
+    "notifyWhenLow": true,
+    "howLow": 3
+  },
+  {
+    "id": "a832d325-e44d-485a-a982-6a1b90a126e2",
+    "name": "MAGNA SUNT",
+    "quantity": 769,
+    "notifyWhenLow": false,
+    "howLow": 4
+  },
+  {
+    "id": "509efe6b-ef7c-4da9-ab6d-39aee5ebc795",
+    "name": "INCIDIDUNT EX",
+    "quantity": 606,
+    "notifyWhenLow": true,
+    "howLow": 17
+  },
+  {
+    "id": "3e0900c5-231e-4c1b-90df-38bade7f7714",
+    "name": "ADIPISICING NULLA",
+    "quantity": 28,
+    "notifyWhenLow": true,
+    "howLow": 13
+  },
+  {
+    "id": "052e33f6-6be1-4bd5-96ea-6337d4c4965f",
+    "name": "QUIS AD",
+    "quantity": 278,
+    "notifyWhenLow": false,
+    "howLow": 16
+  },
+  {
+    "id": "b703c055-5ad7-4d32-ba52-34eace6b8fe6",
+    "name": "EIUSMOD ESSE",
+    "quantity": 251,
+    "notifyWhenLow": false,
+    "howLow": 11
+  },
+  {
+    "id": "316e981d-fcc1-4479-a8ff-40e283cdba48",
+    "name": "PROIDENT DOLORE",
+    "quantity": 362,
+    "notifyWhenLow": true,
+    "howLow": 8
+  },
+  {
+    "id": "000d0102-a732-43c7-a507-00cfea169856",
+    "name": "MOLLIT INCIDIDUNT",
+    "quantity": 974,
+    "notifyWhenLow": true,
+    "howLow": 5
+  },
+  {
+    "id": "770c7f81-b367-4783-9b19-6467ba2d133c",
+    "name": "DOLORE ENIM",
+    "quantity": 672,
+    "notifyWhenLow": true,
+    "howLow": 17
+  },
+  {
+    "id": "acb9604b-37b1-4e7b-982d-57a4cf15a050",
+    "name": "ET CULPA",
+    "quantity": 490,
+    "notifyWhenLow": false,
+    "howLow": 5
+  },
+  {
+    "id": "0c47a206-e18b-4669-b183-cf074f644ded",
+    "name": "MAGNA DESERUNT",
+    "quantity": 441,
+    "notifyWhenLow": true,
+    "howLow": 16
+  },
+  {
+    "id": "2862a052-2ed1-4027-9137-2205201c96f0",
+    "name": "FUGIAT SUNT",
+    "quantity": 950,
+    "notifyWhenLow": false,
+    "howLow": 12
+  }
+]

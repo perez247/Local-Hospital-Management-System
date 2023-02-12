@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Application.Validations;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,13 +36,16 @@ namespace Application.Command.UpdateUserNextofKin
                 .When(x => !string.IsNullOrEmpty(x.Phone2));
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required")
                 .EmailAddress().WithMessage("Email is invalid")
                 .When(x => !string.IsNullOrEmpty(x.Email));
 
             RuleFor(x => x.Address)
                 .NotEmpty().WithMessage("Address is required")
                 .MaximumLength(2000).WithMessage("Maximum of 2000 chars");
+
+            RuleFor(x => x.Profile)
+                .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Image")
+                .When(x => !string.IsNullOrEmpty(x.Profile));
         }
     }
 }

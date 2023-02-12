@@ -45,6 +45,10 @@ namespace DBService.DBSchema
             builder.Property(entity => entity.Address)
                 .IsRequired(false)
                 .HasMaxLength(5000);
+
+            builder.Property(entity => entity.Profile)
+                .IsRequired(false)
+                .HasMaxLength(15000);
         }
     }
 }

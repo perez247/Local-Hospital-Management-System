@@ -26,5 +26,6 @@ namespace Models
         public ICollection<StaffTimeTable>? TimeTable { get; set; } = new List<StaffTimeTable>();
         public ICollection<AppCost>? AppCosts { get; set; } = new List<AppCost>();
         public ICollection<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
+        public ICollection<AppAppointment> AppAppointments { get; set; } = new List<AppAppointment>();
     }
 }

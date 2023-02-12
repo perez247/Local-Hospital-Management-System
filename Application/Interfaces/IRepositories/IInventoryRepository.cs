@@ -1,4 +1,7 @@
-﻿using Models;
+﻿using Application.Paginations;
+using Application.Query.GetInventories;
+using Application.Query.GetInventoryItems;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +14,7 @@ namespace Application.Interfaces.IRepositories
     {
         IQueryable<AppInventory> AppInventories();
         IQueryable<AppInventoryItem> AppInventoryItems();
+        Task<PaginationDto<AppInventory>> GetInventoryList(GetInventoriesFilter filter, PaginationCommand command);
+        Task<PaginationDto<AppInventoryItem>> GetInventoryItemList(GetInventoryItemFilter filter, PaginationCommand command);
     }
 }

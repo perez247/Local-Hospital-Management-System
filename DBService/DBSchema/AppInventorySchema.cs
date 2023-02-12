@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DBService.DBSchema
 {
-    internal class AppInventorySchema : IEntityTypeConfiguration<AppInventory>
+    public class AppInventorySchema : IEntityTypeConfiguration<AppInventory>
     {
         public void Configure(EntityTypeBuilder<AppInventory> builder)
         {

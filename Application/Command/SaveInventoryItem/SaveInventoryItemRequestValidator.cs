@@ -12,8 +12,8 @@ namespace Application.Command.SaveInventoryItem
     {
         public SaveInventoryItemRequestValidator()
         {
-            RuleFor(x => x.InventoryId)
-                .Must(CommonValidators.BeValidGuid).WithMessage("Invalid id");
+            //RuleFor(x => x.Amount)
+            //    .Must(CommonValidators.BeValidGuid).WithMessage("Invalid id");
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Application.Validations
@@ -21,10 +22,29 @@ namespace Application.Validations
             return data.Contains(el.ToLower());
         }
 
-        public static bool IsBase64String(string? base64)
+        public static bool IsBase64String(string? dataUri)
         {
-            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
-            return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
+            if (dataUri == null) {  return false; }
+
+            if (!dataUri.Contains(",")) { return false; }
+
+            var strGroup = dataUri.Split(",");
+
+            string base64Data = strGroup[1];
+
+            try
+            {
+                byte[] rawData = Convert.FromBase64String(base64Data);
+                return rawData.Length == 0 ? false : true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+
+            //base64 = base64.Replace("data:image/jpeg;", "");
+            //Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
+            //return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
         }
 
         public static bool BeValidGuid(string? input)
@@ -36,6 +56,12 @@ namespace Application.Validations
                 return false;
 
             return isValid;
+        }
+
+        public static bool BeInteger(string? input)
+        {
+            int newGuid;
+            return int.TryParse(input, out newGuid);
         }
 
     }

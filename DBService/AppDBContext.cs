@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Application.Exceptions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -37,6 +38,7 @@ namespace DBService
         public DbSet<AppAppointment> AppAppointments { get; set; }
         public DbSet<FinancialRecord> FinancialRecords { get; set; }
         public DbSet<FinancialRequest> FinancialRequests { get; set; }
+        public DbSet<UserFile> UserFiles { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -72,8 +74,17 @@ namespace DBService
                         break;
                 }
             }
+            int result = -1;
 
-            int result = await base.SaveChangesAsync(cancellationToken);
+            try
+            {
+                result = await base.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception e)
+            {
+
+                throw new CustomMessageException(e.Message);
+            }
 
             return result;
         }
