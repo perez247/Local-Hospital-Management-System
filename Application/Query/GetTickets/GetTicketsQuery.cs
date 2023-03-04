@@ -31,7 +31,7 @@ namespace Application.Query.GetTickets
         }
         public async Task<PaginationResponse<IEnumerable<AppTicketResponse>>> Handle(GetTicketsQuery request, CancellationToken cancellationToken)
         {
-            var ticketsFromDb = await iTicketRepository.GetTickets(request.Filter, request.Pagination);
+            var ticketsFromDb = await iTicketRepository.GetLinerTickets(request.Filter, request.Pagination);
 
             if (ticketsFromDb.Results.Count <= 0)
                 return new PaginationResponse<IEnumerable<AppTicketResponse>>() { PageNumber = request.Pagination.PageNumber, PageSize = request.Pagination.PageSize, totalItems = ticketsFromDb.totalItems };

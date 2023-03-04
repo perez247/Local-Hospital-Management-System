@@ -48,11 +48,27 @@ namespace Application.Command.UpdateAppointment
             if (appointment == null)
             {
                 throw new CustomMessageException("Patient to add to appointmet not found", System.Net.HttpStatusCode.NotFound);
-
             }
 
             appointment.DoctorId = doctorId;
-            appointment.AppointmentDate = request.AppointmentDate.Value;
+
+            if (request.AppointmentDate.HasValue)
+            {
+                var dateInDb = new DateTime(appointment.AppointmentDate.Year, appointment.AppointmentDate.Month, appointment.AppointmentDate.Day);
+
+                if (dateInDb <= DateTime.Today)
+                {
+                    throw new CustomMessageException("Appointment date is today or in the past", System.Net.HttpStatusCode.NotFound);
+                }
+
+                var dateFromRequest = new DateTime(request.AppointmentDate.Value.Year, request.AppointmentDate.Value.Month, request.AppointmentDate.Value.Day);
+                
+                if (dateFromRequest <= DateTime.Today)
+                {
+                    throw new CustomMessageException("Requested date must be in the future", System.Net.HttpStatusCode.NotFound);
+                }
+                appointment.AppointmentDate = request.AppointmentDate.Value;
+            }
 
             iDBRepository.Update<AppAppointment>(appointment);
             await iDBRepository.Complete();

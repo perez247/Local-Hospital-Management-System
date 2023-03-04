@@ -18,6 +18,10 @@ namespace Application.Command.AddPharmacyTicketInventory
     {
         [VerifyGuidAnnotation]
         public string? TicketId { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? AppointmentId { get; set; }
+        public string? OverallDescription { get; set; }
         public ICollection<AddPharmacyTicketRequest>? TicketInventories { get; set; }
     }
 

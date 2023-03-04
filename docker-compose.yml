@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   channelclinic:
-    image: ${DOCKER_REGISTRY-}channelclinic
+    #image: ${DOCKER_REGISTRY-}channelclinic
     build:
       context: .
       dockerfile: ChannelClinic/Dockerfile

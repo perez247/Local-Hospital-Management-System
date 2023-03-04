@@ -15,6 +15,8 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseKestrel(option => option.AddServerHeader = false);
+//builder.WebHost.UseUrls("http://*:5000");
 
 // Add services to the container.
 

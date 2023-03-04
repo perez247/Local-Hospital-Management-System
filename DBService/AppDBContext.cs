@@ -82,8 +82,13 @@ namespace DBService
             }
             catch (Exception e)
             {
+                var savingError = "An error occurred while saving the entity changes";
 
-                throw new CustomMessageException(e.Message);
+                var innerException = e.InnerException != null && !string.IsNullOrEmpty(e.InnerException.Message) ? e.InnerException.Message : null;
+
+                var messageToDisplay = e.Message.Contains(savingError) && innerException != null ? innerException : e.Message;
+
+                throw new CustomMessageException(messageToDisplay);
             }
 
             return result;

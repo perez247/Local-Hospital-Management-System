@@ -29,7 +29,7 @@ namespace Application.Utilities
                 throw new CustomMessageException("Pharmacy to add not found");
             }
 
-            var hasPharmacyInventory = ticketInventories.FirstOrDefault(x => x.AppTicketId == ticketFromDb.Id);
+            var hasPharmacyInventory = ticketInventories.FirstOrDefault(x => x.Id.ToString() == request.InventoryId);
 
             if (hasPharmacyInventory != null)
             {
@@ -61,6 +61,22 @@ namespace Application.Utilities
         {
             var ticketFromDb = await iTicketRepository.AppTickets()
                                                                   .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
+            
+            if (ticketFromDb == null)
+            {
+                ticketFromDb = new AppTicket
+                {
+                    Id = Guid.NewGuid(),
+                    AppointmentId = request.AppointmentId != Guid.Empty.ToString() ? Guid.Parse(request.AppointmentId) : null,
+                };
+                ticketFromDb.OverallDescription = request.OverallDescription.Trim();
+                await iDBRepository.AddAsync<AppTicket>(ticketFromDb);
+            } else
+            {
+                ticketFromDb.OverallDescription = request.OverallDescription.Trim();
+                iDBRepository.Update<AppTicket>(ticketFromDb);
+            }
+
             ticketFromDb.MustNotHaveBeenSentToDepartment();
 
             request.TicketInventories = request.TicketInventories.DistinctBy(x => x.InventoryId).ToList();

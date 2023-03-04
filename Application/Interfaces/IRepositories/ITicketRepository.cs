@@ -14,5 +14,6 @@ namespace Application.Interfaces.IRepositories
         IQueryable<AppTicket> AppTickets();
         IQueryable<TicketInventory> TicketInventory();
         Task<PaginationDto<AppTicket>> GetTickets(GetTicketsQueryFilter filter, PaginationCommand command);
+        Task<PaginationDto<AppTicket>> GetLinerTickets(GetTicketsQueryFilter filter, PaginationCommand command);
     }
 }

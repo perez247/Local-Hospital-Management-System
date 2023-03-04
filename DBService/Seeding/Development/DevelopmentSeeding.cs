@@ -25,7 +25,7 @@ namespace DBService.Seeding.Development
             await InsertFakeInventories.CreateInventoryItems(context, initialDir);
 
             // Appointments
-            await InsertFakeAppointments.CreateAppointments(context);
+            await InsertFakeAppointments.CreateAppointments(context, initialDir);
 
             // await context.SaveChangesAsync();
         }

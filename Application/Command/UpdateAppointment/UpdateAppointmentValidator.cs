@@ -12,8 +12,9 @@ namespace Application.Command.UpdateAppointment
         public UpdateAppointmentValidator()
         {
             RuleFor(x => x.AppointmentDate)
-                .Must(x => x.HasValue).WithMessage("Appointment date is required")
-                .GreaterThan(DateTime.Now).WithMessage("Appointment date must be greater than now");
+                //.Must(x => x.HasValue).WithMessage("Appointment date is required")
+                .GreaterThan(DateTime.Now).WithMessage("Appointment date must be greater than now")
+                .When(x => x.AppointmentDate.HasValue);
         }
     }
 }

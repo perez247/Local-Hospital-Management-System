@@ -1,0 +1,10 @@
+﻿[
+  '{{repeat(20, 50)}}',
+  {
+    id: '{{guid()}}',
+    name: '{{lorem(2, "words").toUpperCase()}}',
+    quantity: '{{integer(0, 999)}}',
+    notifyWhenLow: '{{bool()}}',
+    howLow: '{{integer(1, 20)}}'
+  }
+]

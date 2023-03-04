@@ -11,6 +11,8 @@ namespace Application.Validations
     {
         public static bool EnumsContains<T>(string el, ICollection<string> accept = null, ICollection<string> remove = null) where T : Enum
         {
+            if (string.IsNullOrEmpty(el)) return false;
+
             var data = Enum.GetNames(typeof(T)).Select(x => x.ToLower());
 
             if (accept != null)

@@ -9,11 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="InitialData\Dev\tickets.json" />
     <Content Remove="Utilities\staff.json" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="InitialData\Dev\staff.json" />
+    <None Include="InitialData\Dev\tickets.json" />
   </ItemGroup>
 
   <ItemGroup>

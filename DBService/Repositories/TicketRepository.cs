@@ -37,6 +37,34 @@ namespace DBService.Repositories
                                 .Include(x => x.TicketInventories)
                                     .ThenInclude(x => x.SurgeryTicketPersonnels)
                                         .ThenInclude(x => x.Personnel)
+                                .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Patient)
+                                        .ThenInclude(x => x.AppUser)
+                                .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Doctor)
+                                        .ThenInclude(x => x.AppUser)
+                                .OrderByDescending(x => x.DateCreated)
+                                .AsQueryable();
+
+            query = TicketQueryHelper.FilterTicket(query, filter);
+
+            return await query.GenerateEntity(command);
+        }
+
+        public async Task<PaginationDto<AppTicket>> GetLinerTickets(GetTicketsQueryFilter filter, PaginationCommand command)
+        {
+            var query = _context.AppTickets
+                                .Include(x => x.AppCost)
+                                .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Patient)
+                                        .ThenInclude(x => x.AppUser)
+                                .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Patient)
+                                        .ThenInclude(x => x.Company)
+                                            .ThenInclude(x => x.AppUser)
+                                .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Doctor)
+                                        .ThenInclude(x => x.AppUser)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();
 
