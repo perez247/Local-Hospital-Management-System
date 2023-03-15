@@ -17,6 +17,5 @@ namespace Models
         public ICollection<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
         public ICollection<AppAppointment> AppAppointments { get; set; } = new List<AppAppointment>();
         public ICollection<AppTicket> AppTickets { get; set; } = new List<AppTicket>();
-
     }
 }
