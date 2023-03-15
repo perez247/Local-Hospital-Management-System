@@ -13,7 +13,7 @@ namespace Application.Command.SaveSurgeryTicketInventory
     {
         [VerifyGuidAnnotation]
         public string? InventoryId { get; set; }
-        public string? PrescribedSurgeryDescription { get; set; }
+        public string? DoctorsPrescription { get; set; }
         public decimal? CurrentPrice { get; set; }
     }
 }

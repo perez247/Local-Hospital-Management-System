@@ -23,6 +23,7 @@ namespace Application.Command.UpdateCompany
         public string? UniqueId { get; set; }
         public string? OtherId { get; set; }
         public string? Profile { get; set; }
+        public bool ForIndividual { get; set; }
     }
 
     public class UpdateCompanyHandler : IRequestHandler<UpdateCompanyCommand, Unit>
@@ -46,6 +47,18 @@ namespace Application.Command.UpdateCompany
                 throw new CustomMessageException($"Company to update not found");
             }
 
+            if (request.ForIndividual && !company.ForIndividual)
+            {
+                var companyForIndividual = await iCompanyRepository.Companies()
+                                                 .Include(x => x.AppUser)
+                                                 .FirstOrDefaultAsync(x => x.ForIndividual);
+
+                if (companyForIndividual != null)
+                {
+                    throw new CustomMessageException($"Company '{companyForIndividual.AppUser.FirstName}' is already for individuals/self sponsors");
+                }
+            }
+
             var user = company.AppUser;
 
             user.FirstName = request.Name;
@@ -55,6 +68,7 @@ namespace Application.Command.UpdateCompany
             company.Description = request.Description;
             company.UniqueId = request.UniqueId;
             company.OtherId = request.OtherId;
+            company.ForIndividual = request.ForIndividual;
 
             iDBRepository.Update<AppUser>(user);
             iDBRepository.Update<Company>(company);

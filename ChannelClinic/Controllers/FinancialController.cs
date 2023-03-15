@@ -1,11 +1,15 @@
 ﻿using Application.Command.ConcludePharmacyTicket;
 using Application.Command.CreateFinancialRequest;
 using Application.Command.CreateMonthPayment;
+using Application.Command.InitialPayment;
+using Application.Command.PatientUpdatePayment;
 using Application.Command.RespondToFinancialRequest;
 using Application.Command.UpdateAppCost;
+using Application.Command.UpdateContract;
 using Application.Command.UpdatePaymentForMonth;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
+using Application.Query.GetPendingUserContracts;
 using Application.Query.StaffPaymentHistory;
 using Application.RequestResponsePipeline;
 using Application.Responses;
@@ -45,23 +49,6 @@ namespace ChannelClinic.Controllers
 
             return Ok(result);
         }
-
-        /// <summary>
-        /// update cost price used based on negiotiation
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("update-cost-price")]
-        public async Task<IActionResult> UpdateCostPrice([FromBody] ConcludePharmacyTicketCommand command)
-        {
-            await UpdateToken(command, nameof(ConcludePharmacyTicketCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
 
         /// <summary>
         /// Get staff payment history
@@ -144,5 +131,71 @@ namespace ChannelClinic.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Start initial payment
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("initial-payment")]
+        public async Task<IActionResult> InitialPayment([FromBody] InitialPaymentCommand command)
+        {
+            await UpdateToken(command, nameof(InitialPaymentCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Update payment
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("update-payment")]
+        public async Task<IActionResult> InitialPayment([FromBody] PatientUpdatePaymentCommand command)
+        {
+            await UpdateToken(command, nameof(PatientUpdatePaymentCommand));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get contracts
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<GetPendingUserContractsResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPut("get-contracts")]
+        public async Task<IActionResult> GetContracts([FromBody] GetPendingUserContractsQuery command)
+        {
+            await UpdateToken(command, nameof(GetPendingUserContractsQuery));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get contracts
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("update-contract")]
+        public async Task<IActionResult> UpdateContracts([FromBody] UpdateContractCommand command)
+        {
+            await UpdateToken(command, nameof(UpdateContractCommand));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
     }
 }

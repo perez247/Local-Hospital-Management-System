@@ -318,5 +318,13 @@
     "otherName": "Jeanne",
     "email": "jeannesolis@isopop.com",
     "address": "971 Union Avenue, Wadsworth, Wisconsin, 564"
+  },
+  {
+    "id": "0e10440f-e6ef-494e-8972-4f27949e9d47",
+    "firstName": "INDIVIDUAL",
+    "lastName": "self",
+    "otherName": "funding",
+    "email": "self@funding.com",
+    "address": "101 Bass Street, Ohio, Libera, 511"
   }
 ]

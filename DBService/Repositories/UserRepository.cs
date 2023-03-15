@@ -34,6 +34,11 @@ namespace DBService.Repositories
             return _context.Users.AsQueryable();
         }
 
+        public IQueryable<AppUserRole> UserRoles()
+        {
+            return _context.UserRoles.AsQueryable();
+        }
+
         public IQueryable<UserFile> UserFiles()
         {
             return _context.UserFiles.AsQueryable();

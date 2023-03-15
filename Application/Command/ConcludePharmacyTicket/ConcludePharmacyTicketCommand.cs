@@ -36,6 +36,8 @@ namespace Application.Command.ConcludePharmacyTicket
         public async Task<Unit> Handle(ConcludePharmacyTicketCommand request, CancellationToken cancellationToken)
         {
             var ticketFromDb = await iTicketRepository.AppTickets()
+                              .Include(x => x.TicketInventories)
+                                .ThenInclude(x => x.AppInventory)
                               .Include(x => x.AppCost)
                               .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
 
@@ -50,30 +52,21 @@ namespace Application.Command.ConcludePharmacyTicket
             request.ConcludePharmacyTicketRequest = request.ConcludePharmacyTicketRequest.DistinctBy(x => x.InventoryId).ToList();
 
 
-            var inventoryIds = request.ConcludePharmacyTicketRequest.Select(y => y.InventoryId);
-
-            var inventories = await iInventoryRepository.AppInventories()
-                                                        .Where(x => inventoryIds.Contains(x.Id.ToString()))
-                                                        .ToListAsync();
-
-            var ticketInventories = await iTicketRepository.TicketInventory()
-                                                           .Where(x => x.AppTicketId == ticketFromDb.Id)
-                                                           .ToListAsync();
+            var ticketInventories = ticketFromDb.TicketInventories;
 
             foreach (var genericTicketInventory in request.ConcludePharmacyTicketRequest)
             {
-                var inventory = inventories.FirstOrDefault(x => x.Id.ToString() == genericTicketInventory.InventoryId);
 
-                if (inventory == null)
-                {
-                    throw new CustomMessageException("Item not recorded in the inventory");
-                }
-
-                var ticketInventory = ticketInventories.FirstOrDefault(x => x.AppTicketId == ticketFromDb.Id);
+                var ticketInventory = ticketInventories.FirstOrDefault(x => x.Id.ToString() == genericTicketInventory.InventoryId);
 
                 if (ticketInventory == null)
                 {
                     throw new CustomMessageException("Item not found for this ticket");
+                }
+
+                if (ticketInventory.AppInventory == null)
+                {
+                    throw new CustomMessageException("Item not found in the inventory");
                 }
 
                 ticketInventory.ConcludedDate = genericTicketInventory.ConcludedDate;

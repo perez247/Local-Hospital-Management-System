@@ -21,6 +21,7 @@ namespace Application.Command.UpdateAppointment
         [VerifyGuidAnnotation]
         public string? AppointmentId { get; set; }
         public DateTime? AppointmentDate { get; set; }
+        public string? OverallDescription { get; set; }
     }
 
     public class UpdateAppointmnetHandler : IRequestHandler<UpdateAppointmentCommand, Unit>
@@ -70,6 +71,7 @@ namespace Application.Command.UpdateAppointment
                 appointment.AppointmentDate = request.AppointmentDate.Value;
             }
 
+            appointment.OverallDescription = request.OverallDescription;
             iDBRepository.Update<AppAppointment>(appointment);
             await iDBRepository.Complete();
 

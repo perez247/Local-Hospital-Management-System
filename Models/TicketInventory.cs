@@ -22,10 +22,12 @@ namespace Models
         public virtual Staff? Staff { get; set; }
         public Guid? StaffId { get; set; }
         public string? StaffObservation { get; set; }
+        public string? DoctorsPrescription { get; set; }
         public string? Description { get; set; }
+        public string? DepartmentDescription { get; set; }
+        public string? FinanceDescription { get; set; }
 
         #region Pharmacy section
-        public string? PrescribedPharmacyDosage { get; set; }
         public string? PrescribedQuantity { get; set; }
         #endregion
 
@@ -33,17 +35,14 @@ namespace Models
         public DateTime? SurgeryDate { get; set; }
         public SurgeryTicketStatus SurgeryTicketStatus { get; set; } = SurgeryTicketStatus.unknown;
         public ICollection<SurgeryTicketPersonnel> SurgeryTicketPersonnels { get; set; } = new List<SurgeryTicketPersonnel>();
-        public string? PrescribedSurgeryDescription { get; set; }
         #endregion
 
         #region Lab section
-        public string? PrescribedLabRadiologyFeature { get; set; }
         public DateTime? DateOfLabTest { get; set; }
         public string? LabRadiologyTestResult { get; set; }
         #endregion
 
         #region Admission section
-        public string? PrescribedAdmission { get; set; }
         public DateTime? AdmissionStartDate { get; set; }
         public DateTime? AdmissionEndDate { get; set; }
         #endregion

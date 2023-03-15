@@ -13,7 +13,7 @@ namespace Application.Command.AddAppointment
         {
             RuleFor(x => x.AppointmentDate)
                 .Must(x => x.HasValue).WithMessage("Appointment date is required")
-                .GreaterThan(DateTime.Now).WithMessage("Appointment date must be greater than now");
+                .GreaterThan(DateTime.Today).WithMessage("Appointment date must not be in the past");
         }
     }
 }

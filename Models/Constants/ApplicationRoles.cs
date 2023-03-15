@@ -34,6 +34,11 @@ namespace Models.Constants
         public const string Lab = "lab";
 
         /// <summary>
+        /// Doctor
+        /// </summary>
+        public const string Doctor = "doctor";
+
+        /// <summary>
         /// Radiology
         /// </summary>
         public const string Radiology = "radiology";
@@ -42,6 +47,16 @@ namespace Models.Constants
         /// Admission
         /// </summary>
         public const string Admission = "admission";
+
+        /// <summary>
+        /// HR
+        /// </summary>
+        public const string HR = "hr";
+
+        /// <summary>
+        /// HR
+        /// </summary>
+        public const string Finance = "finance";
 
         /// <summary>
         /// staff
@@ -66,7 +81,19 @@ namespace Models.Constants
         {
             return new List<string>
             {
-                Admin, Nurse, Pharmacy, Surgery, Lab, Radiology, Admission, Patients, Staff, Company
+                Admin, 
+                Nurse, 
+                Pharmacy, 
+                Surgery, 
+                Lab, 
+                Doctor, 
+                Radiology, 
+                Admission, 
+                Patients, 
+                Staff, 
+                Company,
+                HR,
+                Finance
             };
         }
     }

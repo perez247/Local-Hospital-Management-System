@@ -9,6 +9,8 @@ using Application.Command.ConcludeSurgeryTicketInventory;
 using Application.Command.CreateEmergencyAppoitment;
 using Application.Command.CreateTicket;
 using Application.Command.SaveSurgeryTicketInventory;
+using Application.Command.SendAllTicketsToDepartment;
+using Application.Command.SendPharmacyTicketToFinance;
 using Application.Command.UpdateLabTicketInventory;
 using Application.Command.UpdatePharmacyTicketInventory;
 using Application.Command.UpdateSurgeryTicketInventory;
@@ -112,7 +114,7 @@ namespace ChannelClinic.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("conclude-pharmacy-ticket-inventory")]
+        [HttpPut("conclude-ticket-inventory")]
         public async Task<IActionResult> ConcludePharmacyTicketInventory([FromBody] ConcludePharmacyTicketCommand command)
         {
             await UpdateToken(command, nameof(ConcludePharmacyTicketCommand));
@@ -276,6 +278,39 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> GetTickets([FromBody] GetTicketsQuery command)
         {
             await UpdateToken(command, nameof(GetTicketsQuery));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Send all tickets to the departments
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("send-to-departments")]
+        public async Task<IActionResult> SendAllTicketsToDepartment([FromBody] SendAllTicketsToDepartmentCommand command)
+        {
+            await UpdateToken(command, nameof(SendAllTicketsToDepartmentCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        // ----------------------------------------------------------
+        /// <summary>
+        /// Send pharmacy ticket to finance
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("send-pharmacy-to-finance")]
+        public async Task<IActionResult> SendPharmacyTicketToFinance([FromBody] SendPharmacyTicketToFinanceCommand command)
+        {
+            await UpdateToken(command, nameof(SendPharmacyTicketToFinanceCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

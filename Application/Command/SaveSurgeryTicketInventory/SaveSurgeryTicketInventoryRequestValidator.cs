@@ -13,7 +13,7 @@ namespace Application.Command.SaveSurgeryTicketInventory
     {
         public SaveSurgeryTicketInventoryRequestValidator()
         {
-            RuleFor(x => x.PrescribedSurgeryDescription)
+            RuleFor(x => x.DoctorsPrescription)
                 .MaximumLength(1000).WithMessage("Maximum of 1000 chars");
         }
     }

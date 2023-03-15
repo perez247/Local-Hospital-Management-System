@@ -17,6 +17,13 @@ namespace Application.Query.GetTickets
 
         [VerifyGuidAnnotation]
         public string? DoctorId { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? TicketId { get; set; }
         public string? AppInventoryType { get; set; }
+        public bool? Full { get; set; }
+        public bool? SentToDepartment { get; set; }
+        public bool? SentToFinance { get; set; }
+        public string? AppTicketStatus { get; set; }
     }
 }

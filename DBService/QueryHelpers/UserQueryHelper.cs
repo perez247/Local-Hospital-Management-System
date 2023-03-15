@@ -26,9 +26,11 @@ namespace DBService.QueryHelpers
                 {
                     query = query.Include(x => x.Patient)
                                     .ThenInclude(x => x.PatientContracts.OrderByDescending(y => y.DateCreated).Take(1))
+                                        .ThenInclude(x => x.AppCost)
                                 .Include(x => x.Patient)
                                     .ThenInclude(x => x.Company)
                                         .ThenInclude(x => x.CompanyContracts.OrderByDescending(y => y.DateCreated).Take(1))
+                                            .ThenInclude(x => x.AppCost)
                                 .Include(x => x.Patient)
                                     .ThenInclude(x => x.Company)
                                         .ThenInclude(x => x.AppUser)
@@ -50,6 +52,7 @@ namespace DBService.QueryHelpers
                 {
                     query = query.Include(x => x.Company)
                                     .ThenInclude(x => x.CompanyContracts.OrderByDescending(y => y.DateCreated).Take(1))
+                                        .ThenInclude(x => x.AppCost)
                                 .AsQueryable();
 
                     query = query.Where(x => x.Company != null);
@@ -104,6 +107,11 @@ namespace DBService.QueryHelpers
             if (filter.Active.HasValue)
             {
                 query = query.Where(i => i.Staff != null && i.Staff.Active == filter.Active.Value);
+            }
+
+            if (filter.ForIndividual.HasValue)
+            {
+                query = query.Where(x => x.Company.ForIndividual == filter.ForIndividual.Value);
             }
 
             return query;

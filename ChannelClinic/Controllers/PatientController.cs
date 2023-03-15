@@ -3,6 +3,7 @@ using Application.Command.AddPatientVital;
 using Application.Command.CreatePatient;
 using Application.Command.CreateStaff;
 using Application.Command.UpdatePatientAllergy;
+using Application.Command.UpdatePatientCompany;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.PatientVitals;
@@ -104,6 +105,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> AddPatientContract([FromBody] AddPatientContractCommand command)
         {
             await UpdateToken(command, nameof(AddPatientContractCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Update the patients company
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("patient-company")]
+        public async Task<IActionResult> UpdatePatientCompany([FromBody] UpdatePatientCompanyCommand command)
+        {
+            await UpdateToken(command, nameof(UpdatePatientCompanyCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

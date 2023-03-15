@@ -35,23 +35,21 @@ namespace DBService.DBSchema
             builder.Property(x => x.Description)
                 .HasMaxLength(5000);
 
-            builder.Property(x => x.PrescribedPharmacyDosage)
+            builder.Property(x => x.DepartmentDescription)
+                .HasMaxLength(5000);
+
+            builder.Property(x => x.FinanceDescription)
+                .HasMaxLength(5000);
+
+            builder.Property(x => x.DoctorsPrescription)
                 .HasMaxLength(5000);
 
             builder.Property(x => x.PrescribedQuantity)
                 .HasMaxLength(5000);
 
-            builder.Property(x => x.PrescribedSurgeryDescription)
-                .HasMaxLength(5000);
-
-            builder.Property(x => x.PrescribedLabRadiologyFeature)
-                .HasMaxLength(5000);
-
             builder.Property(x => x.LabRadiologyTestResult)
                 .HasMaxLength(5000);
 
-            builder.Property(x => x.PrescribedAdmission)
-                .HasMaxLength(5000);
         }
     }
 }

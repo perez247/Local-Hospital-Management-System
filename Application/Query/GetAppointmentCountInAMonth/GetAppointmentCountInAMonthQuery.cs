@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IRepositories;
+﻿using Application.Annotations;
+using Application.Interfaces.IRepositories;
 using Application.Utilities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,12 @@ namespace Application.Query.GetAppointmentCountInAMonth
     public class GetAppointmentCountInAMonthQuery : TokenCredentials, IRequest<IEnumerable<AppointmentDayCountResponse>>
     {
         public DateTime? Date { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? DoctorId { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? PatientId { get; set; }
     }
 
     public class GetAppointmentCountInAMonthHandler : IRequestHandler<GetAppointmentCountInAMonthQuery, IEnumerable<AppointmentDayCountResponse>>
@@ -24,8 +31,19 @@ namespace Application.Query.GetAppointmentCountInAMonth
         }
         public async Task<IEnumerable<AppointmentDayCountResponse>> Handle(GetAppointmentCountInAMonthQuery request, CancellationToken cancellationToken)
         {
-            var appointments = await iAppointmentRepository.AppAppointments()
-                                               .Where(x => x.AppointmentDate.Month == request.Date.Value.Month && x.AppointmentDate.Year == request.Date.Value.Year)
+            var query = iAppointmentRepository.AppAppointments().AsQueryable();
+
+            if (request.DoctorId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.DoctorId.ToString() == request.DoctorId);
+            }
+
+            if (request.PatientId != Guid.Empty.ToString()) 
+            {
+                query = query.Where(x => x.PatientId.ToString() == request.PatientId);
+            }
+
+            var appointments = await query.Where(x => x.AppointmentDate.Month == request.Date.Value.Month && x.AppointmentDate.Year == request.Date.Value.Year)
                                                .ToListAsync();
 
             var appointmentCount = appointments.GroupBy(x => x.AppointmentDate.Day)

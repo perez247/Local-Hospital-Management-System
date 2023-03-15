@@ -11,7 +11,7 @@ namespace Application.Command.AddLabTicketInventory
     {
         [VerifyGuidAnnotation]
         public string? InventoryId { get; set; }
-        public string? PrescribedLabRadiologyFeature { get; set; }
+        public string? DoctorsPrescription { get; set; }
         public decimal? CurrentPrice { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Application.Command.UpdateAppCost;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.GetInventories;
+using Application.Query.GetInventoryItemAmount;
 using Application.Query.GetInventoryItems;
 using Application.RequestResponsePipeline;
 using MediatR;
@@ -84,6 +85,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> GetInventoryItem([FromBody] GetInventoryItemsQuery command)
         {
             await UpdateToken(command, nameof(GetInventoryItemsQuery));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get list of inventory items and prices based on the company
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<AppInventoryItemResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("inventory-item-prices")]
+        public async Task<IActionResult> GetInventoryItemPrices([FromBody] GetInventoryItemAmountQuery command)
+        {
+            await UpdateToken(command, nameof(GetInventoryItemAmountQuery));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

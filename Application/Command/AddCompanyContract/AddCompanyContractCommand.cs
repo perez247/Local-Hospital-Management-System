@@ -24,16 +24,18 @@ namespace Application.Command.AddCompanyContract
     {
         private readonly IDBRepository iDBRepository;
         private readonly ICompanyRepository iCompanyRepository;
+        private readonly IFinancialRespository _iFinancialRespository;
 
-        public AddCompanyContactHandler(IDBRepository IDBRepository, ICompanyRepository ICompanyRepository)
+        public AddCompanyContactHandler(IDBRepository IDBRepository, ICompanyRepository ICompanyRepository, IFinancialRespository iFinancialRespository)
         {
             iDBRepository = IDBRepository;
             iCompanyRepository = ICompanyRepository;
+            _iFinancialRespository = iFinancialRespository;
         }
 
         public async Task<Unit> Handle(AddCompanyContractCommand request, CancellationToken cancellationToken)
         {
-            var cost = 5000;
+            var cost = await _iFinancialRespository.CompanyContractCost();
             var company = await iCompanyRepository.Companies()
                                                   .Include(x => x.CompanyContracts.OrderByDescending(z => z.StartDate).Take(2)).ThenInclude(z => z.AppCost)
                                                   .FirstOrDefaultAsync(x => x.Id.ToString() == request.CompanyId);
@@ -81,11 +83,22 @@ namespace Application.Command.AddCompanyContract
                 Description = Description
             };
 
+            var financialRecord = new FinancialRecord
+            {
+                Id = Guid.NewGuid(),
+                Amount = cost,
+                ApprovedAmount = cost,
+                CostType = Models.Enums.AppCostType.profit,
+                Description = Description,
+            };
+
 
             newContract.AppCostId = appCost.Id;
+            appCost.FinancialRecordId = financialRecord.Id;
 
             await iDBRepository.AddAsync<AppCost>(appCost);
             await iDBRepository.AddAsync<CompanyContract>(newContract);
+            await iDBRepository.AddAsync<FinancialRecord>(financialRecord);
 
             await iDBRepository.Complete();
 

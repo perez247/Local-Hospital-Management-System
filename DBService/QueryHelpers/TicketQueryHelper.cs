@@ -42,6 +42,27 @@ namespace DBService.QueryHelpers
                 query = query.Where(x => x.Appointment.Doctor.AppUserId.ToString() == filter.DoctorId);
             }
 
+            if (filter.TicketId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.Id.ToString() == filter.TicketId);
+            }
+
+            if (filter.SentToDepartment.HasValue)
+            {
+                query = query.Where(x => x.Sent.Value == filter.SentToDepartment.Value);
+            }
+
+            if (filter.SentToFinance.HasValue)
+            {
+                query = query.Where(x => x.SentToFinance.Value == filter.SentToFinance);
+            }
+
+            if (!string.IsNullOrEmpty(filter.AppTicketStatus))
+            {
+                var type = filter.AppTicketStatus.ParseEnum<AppTicketStatus>();
+                query = query.Where(x => x.AppTicketStatus == type);
+            }
+
             return query;
         }
 

@@ -15,9 +15,9 @@ namespace DBService.Seeding.Development
     {
         public async static Task CreateStaff(AppDBContext context, UserManager<AppUser> userManager, string initialDir)
         {
-            var oneUser = await context.Staff.FirstOrDefaultAsync();
+            var oneUser = await context.Staff.Take(2).ToListAsync();
 
-            if (oneUser != null)
+            if (oneUser != null && oneUser.Count > 1)
                 return;
 
             var userDir = $"{initialDir}/staff.json";
@@ -42,12 +42,13 @@ namespace DBService.Seeding.Development
                         {
                             Id = Guid.NewGuid(),
                             Active = true,
+                            Position = user.Profile,
                         }
                     };
 
                     var result = await userManager.CreateAsync(newUser, "Abcde@12345");
                     await userManager.AddToRolesAsync(newUser, new List<string>() {
-                        ApplicationRoles.Admin
+                        user.Profile
                     });
                 }
             }
@@ -84,6 +85,7 @@ namespace DBService.Seeding.Development
                             Id = Guid.NewGuid(),
                             UniqueId = user.Id.ToString(),
                             OtherId = user.Id.ToString(),
+                            ForIndividual = user.Id.ToString() == "0e10440f-e6ef-494e-8972-4f27949e9d47" ? true : false
                         }
                     };
 
@@ -92,6 +94,8 @@ namespace DBService.Seeding.Development
                         ApplicationRoles.Company
                     });
                 }
+
+
             }
 
         }

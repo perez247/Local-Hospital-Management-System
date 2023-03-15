@@ -14,5 +14,11 @@ namespace Application.Query.GetAppointments
 
         [VerifyGuidAnnotation]
         public string? AppointmentId { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? DoctorId { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? PatientId { get; set; }
     }
 }
