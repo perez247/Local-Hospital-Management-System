@@ -24,16 +24,18 @@ namespace Application.Command.AddPatientContract
     {
         private readonly IPatientRepository iPatientRepository;
         private readonly IDBRepository iDBRepository;
+        private readonly IFinancialRespository iFinancialRespository;
 
-        public AddPatientContractHandler(IPatientRepository IPatientRepository, IDBRepository IDBRepository)
+        public AddPatientContractHandler(IPatientRepository IPatientRepository, IDBRepository IDBRepository, IFinancialRespository IFinancialRespository)
         {
             iPatientRepository = IPatientRepository;
             iDBRepository = IDBRepository;
+            iFinancialRespository = IFinancialRespository;
         }
         public async Task<Unit> Handle(AddPatientContractCommand request, CancellationToken cancellationToken)
         {
             // TODO: - Create a setting table to store cost for registration for a patient
-            var cost = 1500;
+            var cost = await iFinancialRespository.GetPatientContractCost();
             var patient = await iPatientRepository.Patients()
                                                 .Include(x => x.Company)
                                                 .Include(y => y.PatientContracts.OrderByDescending(z => z.StartDate).Take(2)).ThenInclude(z => z.AppCost)
@@ -44,7 +46,7 @@ namespace Application.Command.AddPatientContract
                 throw new CustomMessageException("No patient found to add contract");
             }
 
-            if (patient.Company != null)
+            if (patient.Company != null && !patient.Company.ForIndividual)
             {
                 throw new CustomMessageException("Patient is part of a company");
             }
@@ -79,11 +81,14 @@ namespace Application.Command.AddPatientContract
                 Duration = durationInDays,
             };
 
-            AppCost appCost = CreateCost(cost, Description);
+            AppCost appCost = CreateAppCost(cost, Description);
+            FinancialRecord financialRecord = CreateFinancialCost(cost, Description);
 
             newContract.AppCostId = appCost.Id;
+            appCost.FinancialRecordId = financialRecord.Id;
 
             await iDBRepository.AddAsync<AppCost>(appCost);
+            await iDBRepository.AddAsync<FinancialRecord>(financialRecord);
             await iDBRepository.AddAsync<PatientContract>(newContract);
 
             try
@@ -99,7 +104,7 @@ namespace Application.Command.AddPatientContract
             return Unit.Value;
         }
 
-        private static AppCost CreateCost(int cost, string Description)
+        private static AppCost CreateAppCost(decimal cost, string Description)
         {
             var appCost = new AppCost
             {
@@ -109,10 +114,17 @@ namespace Application.Command.AddPatientContract
                 CostType = Models.Enums.AppCostType.profit,
                 Description = Description,
             };
-
-            var financialRecord = new FinancialRecord
+            return appCost;
+        }
+        private static FinancialRecord CreateFinancialCost(decimal cost, string Description)
+        {
+            var appCost = new FinancialRecord
             {
-
+                Id = Guid.NewGuid(),
+                Amount = cost,
+                ApprovedAmount = cost,
+                CostType = Models.Enums.AppCostType.profit,
+                Description = Description,
             };
 
             return appCost;

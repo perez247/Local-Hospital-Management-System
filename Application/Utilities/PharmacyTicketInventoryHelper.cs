@@ -33,7 +33,7 @@ namespace Application.Utilities
 
             if (hasPharmacyInventory != null)
             {
-                hasPharmacyInventory.PrescribedPharmacyDosage = string.IsNullOrEmpty(request.PrescribedPharmacyDosage) ? null : request.PrescribedPharmacyDosage;
+                hasPharmacyInventory.DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription;
                 hasPharmacyInventory.PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity;
                 iDBRepository.Update<TicketInventory>(hasPharmacyInventory);
             }
@@ -43,7 +43,7 @@ namespace Application.Utilities
                 {
                     AppInventoryId = inventory.Id,
                     AppTicketId = ticketFromDb.Id,
-                    PrescribedPharmacyDosage = string.IsNullOrEmpty(request.PrescribedPharmacyDosage) ? null : request.PrescribedPharmacyDosage,
+                    DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription,
                     PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity,
                 };
 

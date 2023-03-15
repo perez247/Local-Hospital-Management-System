@@ -37,6 +37,16 @@ namespace DBService.QueryHelpers
                 query = query.Where(x => x.Id.ToString() == filter.AppointmentId);
             }
 
+            if (filter.DoctorId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.DoctorId.ToString() == filter.DoctorId);
+            }
+
+            if (filter.PatientId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.PatientId.ToString() == filter.PatientId);
+            }
+
             return query;
         }
     }

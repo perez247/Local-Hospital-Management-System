@@ -11,9 +11,9 @@ namespace Application.Command.AddPharmacyTicketInventory
     {
         public AddPharmacyTicketRequestValidator()
         {
-            RuleFor(x => x.PrescribedPharmacyDosage)
+            RuleFor(x => x.DoctorsPrescription)
                 .MaximumLength(1000)
-                .When(x => !string.IsNullOrEmpty(x.PrescribedPharmacyDosage));
+                .When(x => !string.IsNullOrEmpty(x.DoctorsPrescription));
 
             RuleFor(x => x.PrescribedQuantity)
                 .MaximumLength(1000)

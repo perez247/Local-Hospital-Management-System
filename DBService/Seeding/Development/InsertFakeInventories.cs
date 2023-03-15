@@ -42,7 +42,8 @@ namespace DBService.Seeding.Development
                         Quantity = inventory.Quantity,
                         NotifyWhenLow = inventory.NotifyWhenLow,
                         HowLow = inventory.HowLow,
-                        AppInventoryType = inventoryTypes[index].ParseEnum<AppInventoryType>(),
+                        //AppInventoryType = inventoryTypes[index].ParseEnum<AppInventoryType>(),
+                        AppInventoryType = AppInventoryType.pharmacy,
                     };
 
                     await context.AddAsync<AppInventory>(newInventory);

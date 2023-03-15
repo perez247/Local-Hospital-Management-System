@@ -15,6 +15,7 @@ namespace Application.Query.GetAppointments
         public CompanyResponse? Company { get; set; }
         public PatientResponse? Patient { get; set; }
         public StaffResponse? Doctor { get; set; }
+        public string? OverallDescription { get; set; }
 
         public static AppointmentResponse Create(AppAppointment appAppointment)
         {
@@ -30,6 +31,7 @@ namespace Application.Query.GetAppointments
                 Company = CompanyResponse.Create(appAppointment.Company),
                 Patient = PatientResponse.Create(appAppointment.Patient),
                 Doctor = StaffResponse.Create(appAppointment.Doctor),
+                OverallDescription = appAppointment.OverallDescription,
             };
         }
     }

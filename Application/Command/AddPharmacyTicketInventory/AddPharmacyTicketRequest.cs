@@ -11,7 +11,7 @@ namespace Application.Command.AddPharmacyTicketInventory
     {
         [VerifyGuidAnnotation]
         public string? InventoryId { get; set; }
-        public string? PrescribedPharmacyDosage { get; set; }
+        public string? DoctorsPrescription { get; set; }
         public string? PrescribedQuantity { get; set; }
     }
 }

@@ -43,7 +43,7 @@ namespace Application.Utilities
                     Id = surgeryTicketInventoryId,
                     AppTicketId = ticketFromDb.Id,
                     AppInventoryId = inventory.Id,
-                    PrescribedSurgeryDescription = surgeryRequest.PrescribedSurgeryDescription,
+                    DoctorsPrescription = surgeryRequest.DoctorsPrescription,
                     CurrentPrice = surgeryRequest.CurrentPrice,
                     TotalPrice = surgeryRequest.CurrentPrice,
                 };
@@ -54,7 +54,7 @@ namespace Application.Utilities
             else
             {
                 surgeryTicketInventoryId = surgeryTicketInventory.Id.Value;
-                surgeryTicketInventory.PrescribedSurgeryDescription = surgeryRequest.PrescribedSurgeryDescription;
+                surgeryTicketInventory.DoctorsPrescription = surgeryRequest.DoctorsPrescription;
                 surgeryTicketInventory.CurrentPrice = surgeryRequest.CurrentPrice;
                 surgeryTicketInventory.TotalPrice = surgeryRequest?.CurrentPrice;
                 iDBRepository.Update<TicketInventory>(surgeryTicketInventory);

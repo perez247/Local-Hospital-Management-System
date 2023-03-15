@@ -14,6 +14,7 @@ namespace Application.Interfaces.IRepositories
         Task<AppUser?> GetUserByIdOrEmailAsync(string id, string email);
         Task<IEnumerable<AppUser>> GetUsers();
         IQueryable<AppUser> Users();
+        IQueryable<AppUserRole> UserRoles();
         IQueryable<UserFile> UserFiles();
         IQueryable<Company> Companies();
         Task<PaginationDto<AppUser>> GetUserList(GetUserListFilter filter, PaginationCommand command);

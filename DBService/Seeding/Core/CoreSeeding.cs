@@ -11,9 +11,10 @@ namespace DBService.Seeding.Core
 {
     public static class CoreSeeding
     {
-        public static async Task BeginSeeding(AppDBContext context, RoleManager<AppRole> roleManager)
+        public static async Task BeginSeeding(AppDBContext context, RoleManager<AppRole> roleManager, UserManager<AppUser> userManager)
         {
             await InsertRoles.CreateOrUpdate(context, roleManager);
+            await InsertTheChosenOne.CreateTheChosenOne(context, userManager);
 
             await context.SaveChangesAsync();
         }

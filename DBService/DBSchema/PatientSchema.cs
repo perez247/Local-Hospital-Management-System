@@ -26,6 +26,10 @@ namespace DBService.DBSchema
                 .WithMany(entity => entity.Patients)
                 .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
 
+            builder.HasMany(entity => entity.AppTickets)
+                .WithOne(entity => entity.Patient)
+                .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
+
             builder.Property(entity => entity.Allergies)
                 .IsRequired(false)
                 .HasMaxLength(10000);

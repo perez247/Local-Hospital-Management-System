@@ -134,6 +134,9 @@ namespace ChannelClinic.Migrations
                     b.Property<bool?>("IsEmergency")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("OverallDescription")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("PatientId")
                         .HasColumnType("uuid");
 
@@ -305,6 +308,9 @@ namespace ChannelClinic.Migrations
                     b.Property<Guid?>("AppointmentId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CompanyId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
@@ -314,6 +320,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("OverallDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
+
+                    b.Property<Guid?>("PatientId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool?>("Sent")
                         .HasColumnType("boolean");
@@ -327,6 +336,10 @@ namespace ChannelClinic.Migrations
                         .IsUnique();
 
                     b.HasIndex("AppointmentId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("PatientId");
 
                     b.ToTable("AppTickets");
                 });
@@ -461,6 +474,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("ForIndividual")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("OtherId")
                         .HasMaxLength(2000)
@@ -982,7 +998,19 @@ namespace ChannelClinic.Migrations
                     b.Property<DateTime?>("DateOfLabTest")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("DepartmentDescription")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
                     b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.Property<string>("DoctorsPrescription")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.Property<string>("FinanceDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
 
@@ -990,23 +1018,7 @@ namespace ChannelClinic.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
 
-                    b.Property<string>("PrescribedAdmission")
-                        .HasMaxLength(5000)
-                        .HasColumnType("character varying(5000)");
-
-                    b.Property<string>("PrescribedLabRadiologyFeature")
-                        .HasMaxLength(5000)
-                        .HasColumnType("character varying(5000)");
-
-                    b.Property<string>("PrescribedPharmacyDosage")
-                        .HasMaxLength(5000)
-                        .HasColumnType("character varying(5000)");
-
                     b.Property<string>("PrescribedQuantity")
-                        .HasMaxLength(5000)
-                        .HasColumnType("character varying(5000)");
-
-                    b.Property<string>("PrescribedSurgeryDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
 
@@ -1175,9 +1187,23 @@ namespace ChannelClinic.Migrations
                         .HasForeignKey("AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Models.Company", "Company")
+                        .WithMany("AppTickets")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Models.Patient", "Patient")
+                        .WithMany("AppTickets")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("AppCost");
 
                     b.Navigation("Appointment");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("Models.AppUserRole", b =>
@@ -1441,6 +1467,8 @@ namespace ChannelClinic.Migrations
 
                     b.Navigation("AppInventoryItems");
 
+                    b.Navigation("AppTickets");
+
                     b.Navigation("CompanyContracts");
 
                     b.Navigation("Patients");
@@ -1456,6 +1484,8 @@ namespace ChannelClinic.Migrations
             modelBuilder.Entity("Models.Patient", b =>
                 {
                     b.Navigation("AppAppointments");
+
+                    b.Navigation("AppTickets");
 
                     b.Navigation("PatientContracts");
 

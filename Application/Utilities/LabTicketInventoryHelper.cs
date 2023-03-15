@@ -34,7 +34,7 @@ namespace Application.Utilities
 
             if (hasLabInventory != null)
             {
-                hasLabInventory.PrescribedLabRadiologyFeature = string.IsNullOrEmpty(request.PrescribedLabRadiologyFeature) ? null : request.PrescribedLabRadiologyFeature;
+                hasLabInventory.DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription;
                 hasLabInventory.CurrentPrice = request.CurrentPrice;
                 iDBRepository.Update<TicketInventory>(hasLabInventory);
                 return hasLabInventory;
@@ -45,7 +45,7 @@ namespace Application.Utilities
                 {
                     AppInventoryId = inventory.Id,
                     AppTicketId = ticketFromDb.Id,
-                    PrescribedLabRadiologyFeature = string.IsNullOrEmpty(request.PrescribedLabRadiologyFeature) ? null : request.PrescribedLabRadiologyFeature,
+                    DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription,
                     CurrentPrice = request.CurrentPrice,
                     TotalPrice = request.CurrentPrice,
                 };

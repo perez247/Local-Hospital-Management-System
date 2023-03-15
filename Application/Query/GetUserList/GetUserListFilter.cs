@@ -25,6 +25,7 @@ namespace Application.Query.GetUserList
         public string? UserId { get; set; }
         public string? UserType { get; set; }
         public bool? IsCompany { get; set; }
+        public bool? ForIndividual { get; set; }
 
         [VerifyGuidAnnotation]
         public string? PatientCompanyId { get; set; }

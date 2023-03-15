@@ -32,6 +32,10 @@ namespace DBService.Repositories
         {
             var query = _context.AppTickets
                                 .Include(x => x.AppCost)
+                                .Include(x => x.Patient)
+                                    .ThenInclude(x => x.AppUser)
+                                .Include(x => x.Company)
+                                    .ThenInclude(x => x.AppUser)
                                 .Include(x => x.TicketInventories)
                                     .ThenInclude(x => x.AppInventory)
                                 .Include(x => x.TicketInventories)
@@ -41,8 +45,19 @@ namespace DBService.Repositories
                                     .ThenInclude(x => x.Patient)
                                         .ThenInclude(x => x.AppUser)
                                 .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Patient)
+                                        .ThenInclude(x => x.PatientContracts.OrderByDescending(a => a.DateCreated).Take(1))
+                                .Include(x => x.Appointment)
                                     .ThenInclude(x => x.Doctor)
                                         .ThenInclude(x => x.AppUser)
+                                .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Patient)
+                                        .ThenInclude(x => x.Company)
+                                            .ThenInclude(x => x.AppUser)
+                                .Include(x => x.Appointment)
+                                    .ThenInclude(x => x.Patient)
+                                        .ThenInclude(x => x.Company)
+                                            .ThenInclude(x => x.CompanyContracts.OrderByDescending(a => a.DateCreated).Take(1))
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();
 

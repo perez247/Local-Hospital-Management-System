@@ -7,6 +7,7 @@ using Application.Command.UpdateAppCost;
 using Application.Command.UpdateFinancialRecord;
 using Application.Command.UpdatePaymentForMonth;
 using Application.Command.UpdateStaffDetails;
+using Application.Command.UpdateStaffRoles;
 using Application.Command.UpdateStaffShift;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
@@ -93,6 +94,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateFinancialRecord([FromBody] UpdateFinancialRecordCommand command)
         {
             await UpdateToken(command, nameof(UpdateFinancialRecordCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Update staff Roles
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("update-roles")]
+        public async Task<IActionResult> UpdateStaffRoles([FromBody] UpdateStaffRolesCommand command)
+        {
+            await UpdateToken(command, nameof(UpdateStaffRolesCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

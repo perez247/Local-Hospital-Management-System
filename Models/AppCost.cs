@@ -32,5 +32,6 @@ namespace Models
         public string? Proof { get; set; }
         public string? PaymentDetails { get; set; }
         public string? AdditionalDetail { get; set; }
+        public DateTime DatePaid { get; set; }
     }
 }

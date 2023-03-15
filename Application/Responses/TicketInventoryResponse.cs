@@ -22,22 +22,23 @@ namespace Application.Responses
         //public virtual Staff? Staff { get; set; }
         //public Guid? StaffId { get; set; }
         //public string? StaffObservation { get; set; }
+        public string? DoctorsPrescription { get; set; }
         public string? Description { get; set; }
+        public string? DepartmentDescription { get; set; }
+        public string? FinanceDescription { get; set; }
+
 
         #region Pharmacy section
-        public string? PrescribedPharmacyDosage { get; set; }
         public string? PrescribedQuantity { get; set; }
         #endregion
 
         #region Surgery section
         public DateTime? SurgeryDate { get; set; }
-        public string SurgeryTicketStatus { get; set; }
-        public IEnumerable<SurgeryTicketPersonnelResponse> SurgeryTicketPersonnels { get; set; }
-        public string? PrescribedSurgeryDescription { get; set; }
+        public string? SurgeryTicketStatus { get; set; }
+        public IEnumerable<SurgeryTicketPersonnelResponse>? SurgeryTicketPersonnels { get; set; }
         #endregion
 
         #region Lab section
-        public string? PrescribedLabRadiologyFeature { get; set; }
         public DateTime? DateOfLabTest { get; set; }
         public string? LabRadiologyTestResult { get; set; }
         #endregion
@@ -48,6 +49,8 @@ namespace Application.Responses
         public DateTime? AdmissionEndDate { get; set; }
         #endregion
 
+        public BaseResponse? Base { get; set; }
+
         public static TicketInventoryResponse? Create(TicketInventory ticketInventory)
         {
             if (ticketInventory == null)
@@ -55,7 +58,7 @@ namespace Application.Responses
                 return null;
             }
 
-            return new TicketInventoryResponse
+            var data = new TicketInventoryResponse
             {
                 AppTicketId = ticketInventory.AppTicketId.ToString(),
                 Inventory = InventoryResponse.Create(ticketInventory.AppInventory),
@@ -67,11 +70,13 @@ namespace Application.Responses
                 Proof = ticketInventory.Proof,
 
 
+
                 Description = ticketInventory.Description,
+                DoctorsPrescription = ticketInventory.DoctorsPrescription,
+                DepartmentDescription = ticketInventory.DepartmentDescription,
+                FinanceDescription = ticketInventory.FinanceDescription,
 
                 #region Pharmacy section
-
-                PrescribedPharmacyDosage = ticketInventory.PrescribedPharmacyDosage,
                 PrescribedQuantity = ticketInventory.PrescribedQuantity,
 
                 #endregion
@@ -81,13 +86,11 @@ namespace Application.Responses
                 SurgeryDate = ticketInventory.SurgeryDate,
                 SurgeryTicketStatus = ticketInventory.SurgeryTicketStatus.ToString(),
                 SurgeryTicketPersonnels = ticketInventory.SurgeryTicketPersonnels != null && ticketInventory.SurgeryTicketPersonnels.Count() > 0 ? ticketInventory.SurgeryTicketPersonnels.Select(x => SurgeryTicketPersonnelResponse.Create(x)) : null,
-                PrescribedSurgeryDescription = ticketInventory.PrescribedSurgeryDescription,
 
                 #endregion
 
                 #region Lab section
 
-                PrescribedLabRadiologyFeature = ticketInventory.PrescribedLabRadiologyFeature,
                 DateOfLabTest = ticketInventory.DateOfLabTest,
                 LabRadiologyTestResult = ticketInventory.LabRadiologyTestResult,
 
@@ -95,13 +98,16 @@ namespace Application.Responses
 
                 #region Admission section
 
-                PrescribedAdmission = ticketInventory.PrescribedAdmission,
                 AdmissionEndDate = ticketInventory.AdmissionEndDate,
                 AdmissionStartDate = ticketInventory.AdmissionStartDate,
 
                 #endregion
 
+                Base = BaseResponse.Create(ticketInventory),
+
             };
+
+            return data;
         }
     }
 

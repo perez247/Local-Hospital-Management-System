@@ -21,7 +21,10 @@ namespace Models.Enums
         lab,
         surgery,
         radiology,
-        admission
+        admission,
+        hr,
+        finance,
+        staff
     }
 
     public enum AppCostType

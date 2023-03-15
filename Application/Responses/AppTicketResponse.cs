@@ -14,12 +14,15 @@ namespace Application.Responses
         public string? AppointmentId { get; set; }
         public AppCostResponse? Cost { get; set; }
         public string? OverallDescription { get; set; }
+        public string? OverallAppointmentDescription { get; set; }
         public bool? Sent { get; set; }
         public bool? SentToFinance { get; set; }
         public string? AppTicketStatus { get; set; }
         public string? AppInventoryType { get; set; }
         public StaffResponse? Doctor { get; set; }
         public PatientResponse? Patient { get; set; }
+        public PatientResponse? PatientPaying { get; set; }
+        public CompanyResponse? CompanyPaying { get; set; }
         public IEnumerable<TicketInventoryResponse> TicketInventories { get; set; }
 
         public static AppTicketResponse? Create(AppTicket appTicket)
@@ -42,6 +45,9 @@ namespace Application.Responses
                 TicketInventories = appTicket.TicketInventories != null && appTicket.TicketInventories.Count() > 0 ? appTicket.TicketInventories.Select(x => TicketInventoryResponse.Create(x)) : null,
                 Doctor = StaffResponse.Create(appTicket.Appointment.Doctor),
                 Patient = PatientResponse.Create(appTicket.Appointment.Patient),
+                OverallAppointmentDescription = appTicket.Appointment.OverallDescription,
+                PatientPaying = PatientResponse.Create(appTicket.Patient),
+                CompanyPaying = CompanyResponse.Create(appTicket.Company),
             };
         }
     }

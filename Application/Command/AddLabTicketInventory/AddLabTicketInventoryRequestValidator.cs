@@ -11,7 +11,7 @@ namespace Application.Command.AddLabTicketInventory
     {
         public AddLabTicketInventoryRequestValidator()
         {
-            RuleFor(x => x.PrescribedLabRadiologyFeature)
+            RuleFor(x => x.DoctorsPrescription)
                 .MaximumLength(1000).WithMessage("Maximum of 1000 chars");
         }
     }

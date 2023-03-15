@@ -15,6 +15,7 @@ namespace Application.Responses
         public IEnumerable<PaymentResponse>? Payment { get; set; }
         public string? CostType { get; set; }
         public string? PaymentStatus { get; set; }
+        public BaseResponse? Base { get; set; }
 
         public static AppCostResponse? Create(AppCost appCost)
         {
@@ -31,6 +32,7 @@ namespace Application.Responses
                 Payment = appCost.Payments.Select(x => PaymentResponse.Create(x)),
                 CostType = appCost.CostType.ToString(),
                 PaymentStatus = appCost.PaymentStatus.ToString(),
+                Base = BaseResponse.Create(appCost)
             };
         }
     }
@@ -42,6 +44,7 @@ namespace Application.Responses
         public string? Proof { get; set; }
         public string? PaymentDetails { get; set; }
         public string? AdditionalDetail { get; set; }
+        public DateTime? DatePaid { get; set; }
 
         public static PaymentResponse? Create(Payment payment)
         {
@@ -58,6 +61,7 @@ namespace Application.Responses
                 Proof = payment.Proof,
                 PaymentDetails = payment.PaymentDetails,
                 AdditionalDetail = payment.AdditionalDetail,
+                DatePaid = payment.DatePaid,
             };
         }
     }

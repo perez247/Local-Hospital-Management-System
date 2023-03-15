@@ -12,6 +12,7 @@ namespace Application.Responses
         public virtual AppCostResponse? AppCost { get; set; }
         public DateTime StartDate { get; set; }
         public int Duration { get; set; }
+        public CompanyResponse? Company { get; set; }
         public static CompanyContractResponse? Create(CompanyContract companyContract)
         {
             if (companyContract == null)

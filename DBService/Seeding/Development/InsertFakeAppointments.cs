@@ -97,7 +97,7 @@ namespace DBService.Seeding.Development
             {
                 AppTicketId = tickeTId,
                 AppInventoryId = x.Id,
-                PrescribedPharmacyDosage = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
+                DoctorsPrescription = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
                 PrescribedQuantity = random.Next(1, 10).ToString()
             }).ToList();
         }
@@ -117,7 +117,7 @@ namespace DBService.Seeding.Development
                         Id = Guid.NewGuid(),
                         AppTicketId = tickeTId,
                         AppInventoryId = x.Id,
-                        PrescribedSurgeryDescription = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
+                        DoctorsPrescription = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
                         SurgeryDate = DateTime.Today.AddDays(random.Next(1, 30)).AddHours(random.Next(1, 23)).ToUniversalTime(),
                     };
 
@@ -132,7 +132,7 @@ namespace DBService.Seeding.Development
         {
             Random random = new Random();
             var personals = new List<SurgeryTicketPersonnel>();
-            for (int i = 0; i < random.Next(2, 4); i++)
+            for (int i = 0; i < random.Next(2, 3); i++)
             {
                 personals.Add(new SurgeryTicketPersonnel
                 {
@@ -168,7 +168,7 @@ namespace DBService.Seeding.Development
             {
                 AppTicketId = tickeTId,
                 AppInventoryId = x.Id,
-                PrescribedLabRadiologyFeature = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
+                DoctorsPrescription = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
                 DateOfLabTest = DateTime.Today.AddDays(random.Next(1, 30)).AddHours(random.Next(1, 23)).ToUniversalTime(),
             }).ToList();
         }
@@ -185,7 +185,7 @@ namespace DBService.Seeding.Development
             {
                 AppTicketId = tickeTId,
                 AppInventoryId = x.Id,
-                PrescribedAdmission = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
+                DoctorsPrescription = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
                 AdmissionStartDate = DateTime.Today.AddDays(random.Next(0, 5)).AddHours(random.Next(1, 23)).ToUniversalTime(),
             }).ToList();
         }

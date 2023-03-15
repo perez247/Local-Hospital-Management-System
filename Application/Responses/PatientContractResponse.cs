@@ -13,6 +13,7 @@ namespace Application.Responses
         public virtual AppCostResponse? AppCost { get; set; }
         public DateTime StartDate { get; set; }
         public int Duration { get; set; }
+        public PatientResponse? Patient { get; set; }
 
         public static PatientContractResponse? Create(PatientContract patientContract)
         {

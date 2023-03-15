@@ -45,5 +45,16 @@ namespace DBService.Repositories
             return true;
         }
 
+        public async Task RemoveFromAllRoles(AppUser user)
+        {
+            var roles = user.UserRoles.Select(x => x.Role.Name);
+            await _userManager.RemoveFromRolesAsync(user, roles);
+        }
+
+        public async Task AddToRoles(AppUser user, IEnumerable<string> roles)
+        {
+            await _userManager.AddToRolesAsync(user, roles);
+        }
+
     }
 }

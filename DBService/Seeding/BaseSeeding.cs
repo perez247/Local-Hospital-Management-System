@@ -32,7 +32,7 @@ namespace DBService.Seeding
                     throw new Exception("Data access context not initiated");
 
                 // Seed Core data
-                await CoreSeeding.BeginSeeding(defaultDataContext, defaultDataContextRoleManager);
+                await CoreSeeding.BeginSeeding(defaultDataContext, defaultDataContextRoleManager, defaultDataContextUserManager);
 
                 // Seed Development Data
                 if (!EnvironmentFunctions.isEnv("Production"))
