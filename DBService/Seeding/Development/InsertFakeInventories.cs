@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Models.Enums;
 using Application.Utilities;
 using System.ComponentModel.Design;
+using DBService.Seeding.Development.DevData;
 
 namespace DBService.Seeding.Development
 {
@@ -28,9 +29,9 @@ namespace DBService.Seeding.Development
 
             var userDir = $"{initialDir}/inventory.json";
 
-            using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
-            {
-                var inventories = JsonConvert.DeserializeObject<List<AppInventory>>(jsonData.ReadToEnd());
+            //using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
+            //{
+                var inventories = JsonConvert.DeserializeObject<List<AppInventory>>(InventoryData.JsonData);
 
                 foreach (var inventory in inventories)
                 {
@@ -50,7 +51,9 @@ namespace DBService.Seeding.Development
                 }
 
                 await context.SaveChangesAsync();
-            }
+            //}
+
+            InventoryData.JsonData = "";
 
         }
         public async static Task CreateInventoryItems(AppDBContext context, string initialDir)

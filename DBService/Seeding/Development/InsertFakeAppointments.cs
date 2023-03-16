@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DBService.Seeding.Development.DevData;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Enums;
 using Newtonsoft.Json;
@@ -26,8 +27,8 @@ namespace DBService.Seeding.Development
 
             var userDir = $"{initialDir}/tickets.json";
 
-            StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir)));
-            var tickets = JsonConvert.DeserializeObject<List<AppTicket>>(jsonData.ReadToEnd());
+            //StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir)));
+            var tickets = JsonConvert.DeserializeObject<List<AppTicket>>(TicketData.JsonData);
 
             var inventories = await context.AppInventories.ToListAsync();
 
