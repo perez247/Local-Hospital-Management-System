@@ -20,7 +20,7 @@ namespace DBService.Seeding.Development
             await InsertFakeUsers.CreatePatient(context, userManager, initialDir);
             await InsertFakeUsers.CreatePatientInCompany(context, userManager, initialDir);
 
-            // Inventory
+            // Inventory..
             await InsertFakeInventories.CreateInventories(context, initialDir);
             await InsertFakeInventories.CreateInventoryItems(context, initialDir);
 
