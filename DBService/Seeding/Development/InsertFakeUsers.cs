@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DBService.Seeding.Development.DataAsClass;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Constants;
@@ -22,9 +23,9 @@ namespace DBService.Seeding.Development
 
             var userDir = $"{initialDir}/staff.json";
 
-            using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
-            {
-                var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+            //using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
+            //{
+                var users = JsonConvert.DeserializeObject<List<AppUser>>(StaffData.JsonData);
 
                 foreach (var user in users)
                 {
@@ -51,7 +52,9 @@ namespace DBService.Seeding.Development
                         user.Profile
                     });
                 }
-            }
+
+            StaffData.JsonData = "";
+            //}
 
         }
 
@@ -64,9 +67,10 @@ namespace DBService.Seeding.Development
 
             var userDir = $"{initialDir}/company.json";
 
-            using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
-            {
-                var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+            //using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
+            //{
+                //var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+                var users = JsonConvert.DeserializeObject<List<AppUser>>(CompanyData.JsonData);
 
                 foreach (var user in users)
                 {
@@ -95,8 +99,8 @@ namespace DBService.Seeding.Development
                     });
                 }
 
-
-            }
+            CompanyData.JsonData = "";
+            //}
 
         }
 
@@ -113,9 +117,9 @@ namespace DBService.Seeding.Development
 
             var userDir = $"{initialDir}/individual_patients.json";
 
-            using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
-            {
-                var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+            //using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
+            //{
+                var users = JsonConvert.DeserializeObject<List<AppUser>>(IndividualPatientData.JsonData);
 
                 foreach (var user in users)
                 {
@@ -142,7 +146,7 @@ namespace DBService.Seeding.Development
                         ApplicationRoles.Patients
                     });
                 }
-            }
+            //}
 
         }
 
@@ -159,9 +163,10 @@ namespace DBService.Seeding.Development
 
             var userDir = $"{initialDir}/company_patients.json";
 
-            using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
-            {
-                var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+            //using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
+            //{
+                //var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+                var users = JsonConvert.DeserializeObject<List<AppUser>>(CompanyPatientData.JsonData);
 
                 foreach (var user in users)
                 {
@@ -188,15 +193,15 @@ namespace DBService.Seeding.Development
                         ApplicationRoles.Patients
                     });
                 }
-            }
+            //}
 
             userDir = $"{initialDir}/individual_patients.json";
 
-            using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
-            {
-                var users = JsonConvert.DeserializeObject<List<AppUser>>(jsonData.ReadToEnd());
+            //using (StreamReader jsonData = new StreamReader(Path.Combine(Path.GetFullPath(userDir))))
+            //{
+                var usersPaitents = JsonConvert.DeserializeObject<List<AppUser>>(IndividualPatientData.JsonData);
 
-                foreach (var user in users)
+                foreach (var user in usersPaitents)
                 {
                     var index = random.Next(0, companyIds.Count());
                     var newUser = new AppUser
@@ -221,7 +226,9 @@ namespace DBService.Seeding.Development
                         ApplicationRoles.Patients
                     });
                 }
-            }
+            //}
+
+            IndividualPatientData.JsonData = "";
 
         }
 

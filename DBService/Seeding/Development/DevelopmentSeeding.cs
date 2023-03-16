@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace DBService.Seeding.Development
 
         public static async Task BeginSeeding(AppDBContext context, UserManager<AppUser> userManager)
         {
+            
+
             // Users
             await InsertFakeUsers.CreateStaff(context, userManager, initialDir);
             await InsertFakeUsers.CreateCompany(context, userManager, initialDir);
