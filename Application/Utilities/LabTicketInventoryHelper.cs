@@ -1,5 +1,4 @@
-﻿using Application.Command.AddAppointment;
-using Application.Command.AddLabTicketInventory;
+﻿using Application.Command.AddLabTicketInventory;
 using Application.Command.UpdateLabTicketInventory;
 using Application.Exceptions;
 using Application.Interfaces.IRepositories;

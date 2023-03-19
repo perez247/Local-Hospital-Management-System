@@ -16,6 +16,8 @@ namespace Models
         public ICollection<Payment>? Payments { get; set; } = new List<Payment>();
         public string? Description { get; set; }
         public ICollection<AppCost> AppCosts { get; set; } = new List<AppCost>();
+        public int TotalAppCosts { get; set; }
+        public ICollection<FinancialRecordPayerPayee> FinancialRecordPayerPayees { get; set; } = new List<FinancialRecordPayerPayee>();
         public ICollection<FinancialRequest> FinancialRequest { get; set; } = new List<FinancialRequest>();
     }
 }

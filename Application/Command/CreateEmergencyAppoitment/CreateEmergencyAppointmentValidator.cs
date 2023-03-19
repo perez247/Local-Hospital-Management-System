@@ -1,8 +1,8 @@
 ﻿using Application.Command.AddLabTicketInventory;
 using Application.Command.AddPharmacyTicketInventory;
 using Application.Command.SaveSurgeryTicketInventory;
+using Application.Command.TicketEntities.UpdatePharmacyTicketInventory;
 using Application.Command.UpdateLabTicketInventory;
-using Application.Command.UpdatePharmacyTicketInventory;
 using Application.Command.UpdateSurgeryTicketInventory;
 using Application.Validations;
 using FluentValidation;

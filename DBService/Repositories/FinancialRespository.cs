@@ -1,7 +1,8 @@
 ﻿using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetPendingUserContracts;
-using Application.Query.GetTickets;
+using Application.Query.FinancialRecordEntities.GetAppCosts;
+using Application.Query.FinancialRecordEntities.GetFinancialRecords;
+using Application.Query.FinancialRecordEntities.GetPendingUserContracts;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -49,10 +50,10 @@ namespace DBService.Repositories
             var query = _context.AppCosts
                                 .Include(x => x.PatientContract)
                                     .ThenInclude(x => x.Patient)
-                                        .ThenInclude(x => x.AppUser)
                                 .Include(x => x.CompanyContract)
                                     .ThenInclude(x => x.Company)
-                                        .ThenInclude(x => x.AppUser)
+                                .Include(x => x.FinancialRecordPayerPayees)
+                                    .ThenInclude(x => x.AppUser)
                                 .Where(x => x.PatientContract != null || x.CompanyContract != null)
                                 .AsQueryable();
 
@@ -64,6 +65,61 @@ namespace DBService.Repositories
         public IQueryable<AppCost> GetAppCosts()
         {
             return _context.AppCosts;
+        }
+
+        public async Task<PaginationDto<AppCost>> GetAppCostForDebts(GetAppCostFilter filter, PaginationCommand command)
+        {
+            var query = _context.AppCosts
+                                .Include(x => x.AppTicket)
+                                .Include(x => x.PatientContract)
+                                    .ThenInclude(x => x.Patient)
+                                .Include(x => x.CompanyContract)
+                                    .ThenInclude(x => x.Company)
+                                .Include(x => x.FinancialRecordPayerPayees)
+                                    .ThenInclude(x => x.AppUser)
+                                        .ThenInclude(x => x.Patient)
+                                .Include(x => x.FinancialRecordPayerPayees)
+                                    .ThenInclude(x => x.AppUser)
+                                        .ThenInclude(x => x.Company)
+                                .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing && x.PatientContract == null)
+                                .OrderByDescending(x => x.DateCreated)
+                                .AsQueryable();
+
+            query = FinancialQueryHelper.FilterAppCostDebt(query, filter);
+
+            return await query.GenerateEntity(command);
+        }
+
+        public async Task<PaginationDto<FinancialRecord>> GetFinancialRecords(GetFinancialRecordsFilter filter, PaginationCommand command)
+        {
+            var query = _context.FinancialRecords
+                                .Include(x => x.FinancialRecordPayerPayees)
+                                    .ThenInclude(x => x.AppUser)
+                                        .ThenInclude(x => x.Patient)
+                                .Include(x => x.FinancialRecordPayerPayees)
+                                    .ThenInclude(x => x.AppUser)
+                                        .ThenInclude(x => x.Company)
+                                .Include(x => x.AppCosts)
+                                .Select(x => new FinancialRecord
+                                        {
+                                            Id = x.Id,
+                                            DateCreated = x.DateCreated,
+                                            DateModified = x.DateModified,
+                                            Amount = x.Amount,
+                                            ApprovedAmount = x.ApprovedAmount,
+                                            CostType = x.CostType,
+                                            Payments = x.Payments,
+                                            PaymentStatus = x.PaymentStatus,
+                                            Description = x.Description,
+                                            TotalAppCosts = x.AppCosts.Count(),
+                                            FinancialRecordPayerPayees = x.FinancialRecordPayerPayees,
+                                            FinancialRequest = x.FinancialRequest,
+                                        })
+                                .AsQueryable();
+
+            query = FinancialQueryHelper.FilterAppCostPaid(query, filter);
+
+            return await query.GenerateEntity(command);
         }
 
     }

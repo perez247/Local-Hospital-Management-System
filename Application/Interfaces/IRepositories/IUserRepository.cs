@@ -1,5 +1,5 @@
 ﻿using Application.Paginations;
-using Application.Query.GetUserList;
+using Application.Query.UserEntities.GetUserList;
 using Models;
 using System;
 using System.Collections.Generic;

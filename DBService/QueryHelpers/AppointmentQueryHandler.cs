@@ -1,5 +1,4 @@
-﻿using Application.Query.GetInventories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Models.Enums;
 using Models;
 using System;
@@ -7,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Query.GetAppointments;
+using Application.Query.AppointmentEntities.GetAppointments;
 
 namespace DBService.QueryHelpers
 {

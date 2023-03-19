@@ -1,5 +1,4 @@
-﻿
-using Application.Query.GetUserList;
+﻿using Application.Query.UserEntities.GetUserList;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using System;

@@ -1,11 +1,11 @@
-﻿using Application.Command.SaveInventory;
-using Application.Command.SaveInventoryItem;
+﻿using Application.Command.InventoryEntities.SaveInventory;
+using Application.Command.InventoryEntities.SaveInventoryItem;
 using Application.Command.UpdateAppCost;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetInventories;
-using Application.Query.GetInventoryItemAmount;
-using Application.Query.GetInventoryItems;
+using Application.Query.InventoryEntities.GetInventories;
+using Application.Query.InventoryEntities.GetInventoryItemAmount;
+using Application.Query.InventoryEntities.GetInventoryItems;
 using Application.RequestResponsePipeline;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

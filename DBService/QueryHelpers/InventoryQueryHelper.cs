@@ -1,5 +1,5 @@
-﻿using Application.Query.GetInventories;
-using Application.Query.GetInventoryItems;
+﻿using Application.Query.InventoryEntities.GetInventories;
+using Application.Query.InventoryEntities.GetInventoryItems;
 using Application.Query.StaffPaymentHistory;
 using Application.Utilities;
 using Microsoft.EntityFrameworkCore;

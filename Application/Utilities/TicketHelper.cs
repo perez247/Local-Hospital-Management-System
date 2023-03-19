@@ -1,4 +1,4 @@
-﻿using Application.Command.AddAppointment;
+﻿using Application.Command.AppointmentEntities.AddAppointment;
 using Application.Command.CreateTicket;
 using Application.Exceptions;
 using Application.Interfaces.IRepositories;

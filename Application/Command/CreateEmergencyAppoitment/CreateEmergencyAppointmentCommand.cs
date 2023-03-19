@@ -1,12 +1,12 @@
 ﻿using Application.Annotations;
 using Application.Command.AddAdmissionTicketInventory;
-using Application.Command.AddAppointment;
 using Application.Command.AddLabTicketInventory;
 using Application.Command.AddPharmacyTicketInventory;
+using Application.Command.AppointmentEntities.AddAppointment;
 using Application.Command.CreateTicket;
 using Application.Command.SaveSurgeryTicketInventory;
+using Application.Command.TicketEntities.UpdatePharmacyTicketInventory;
 using Application.Command.UpdateLabTicketInventory;
-using Application.Command.UpdatePharmacyTicketInventory;
 using Application.Command.UpdateSurgeryTicketInventory;
 using Application.Interfaces.IRepositories;
 using Application.Utilities;

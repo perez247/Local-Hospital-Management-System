@@ -15,6 +15,10 @@ namespace Application.Responses
         public IEnumerable<PaymentResponse>? Payment { get; set; }
         public string? CostType { get; set; }
         public string? PaymentStatus { get; set; }
+        public AppTicketResponseOnly? Ticket { get; set; }
+        public bool PatientContract { get; set; }
+        public bool CompanyContract { get; set; }
+        public IEnumerable<FinancailRecordPayerPayeeResponse> PayerPayee { get; set; }
         public BaseResponse? Base { get; set; }
 
         public static AppCostResponse? Create(AppCost appCost)
@@ -32,7 +36,14 @@ namespace Application.Responses
                 Payment = appCost.Payments.Select(x => PaymentResponse.Create(x)),
                 CostType = appCost.CostType.ToString(),
                 PaymentStatus = appCost.PaymentStatus.ToString(),
-                Base = BaseResponse.Create(appCost)
+                Base = BaseResponse.Create(appCost),
+                PayerPayee =
+                            (appCost.FinancialRecordPayerPayees != null && appCost.FinancialRecordPayerPayees.Count > 0) ?
+                            appCost.FinancialRecordPayerPayees.Select(x => FinancailRecordPayerPayeeResponse.Create(x)) :
+                            null,
+                Ticket = appCost.AppTicket != null ? AppTicketResponseOnly.Create(appCost.AppTicket) : null,
+                PatientContract = appCost.PatientContract != null,
+                CompanyContract = appCost.CompanyContract != null,
             };
         }
     }

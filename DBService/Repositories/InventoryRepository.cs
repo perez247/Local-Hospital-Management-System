@@ -1,8 +1,7 @@
 ﻿using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetInventories;
-using Application.Query.GetInventoryItems;
-using Application.Query.GetUserList;
+using Application.Query.InventoryEntities.GetInventories;
+using Application.Query.InventoryEntities.GetInventoryItems;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;

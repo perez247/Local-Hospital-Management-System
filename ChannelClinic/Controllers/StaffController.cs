@@ -1,17 +1,10 @@
-﻿using Application.Command.AddAppointment;
-using Application.Command.AddStaffTimeTable;
-using Application.Command.CompanyPayBill;
-using Application.Command.CreateMonthPayment;
-using Application.Command.CreateStaff;
-using Application.Command.UpdateAppCost;
+﻿using Application.Command.CompanyPayBill;
+using Application.Command.StaffEntities.CreateStaff;
+using Application.Command.StaffEntities.UpdateStaffDetails;
+using Application.Command.StaffEntities.UpdateStaffRoles;
 using Application.Command.UpdateFinancialRecord;
-using Application.Command.UpdatePaymentForMonth;
-using Application.Command.UpdateStaffDetails;
-using Application.Command.UpdateStaffRoles;
-using Application.Command.UpdateStaffShift;
 using Application.Interfaces.IRepositories;
-using Application.Paginations;
-using Application.Query.StaffPaymentHistory;
+using Application.Query.StaffEntities.GetDashboardStats;
 using Application.RequestResponsePipeline;
 using Application.Responses;
 using MediatR;
@@ -110,6 +103,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateStaffRoles([FromBody] UpdateStaffRolesCommand command)
         {
             await UpdateToken(command, nameof(UpdateStaffRolesCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get dashboard stats
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(DashboardStatsResponse), (int)HttpStatusCode.OK)]
+        [HttpGet("dashboard-stats")]
+        public async Task<IActionResult> DashboardStats([FromQuery] GetDashboardStatsQuery command)
+        {
+            await UpdateToken(command, nameof(GetDashboardStatsQuery));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

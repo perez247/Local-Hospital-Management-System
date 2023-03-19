@@ -1,5 +1,5 @@
 ﻿using Application.Paginations;
-using Application.Query.GetAppointments;
+using Application.Query.AppointmentEntities.GetAppointments;
 using Models;
 using System;
 using System.Collections.Generic;

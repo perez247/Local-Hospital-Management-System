@@ -1,5 +1,5 @@
-using Application.Command.CreateStaff;
-using Application.Command.SignIn;
+using Application.Command.AuthEntities.SignIn;
+using Application.Command.StaffEntities.CreateStaff;
 using Application.Exceptions;
 using Application.RequestResponsePipeline;
 using Application.Utilities;

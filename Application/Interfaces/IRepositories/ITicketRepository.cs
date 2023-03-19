@@ -1,5 +1,5 @@
 ﻿using Application.Paginations;
-using Application.Query.GetTickets;
+using Application.Query.TicketEntities.GetTickets;
 using Models;
 using System;
 using System.Collections.Generic;

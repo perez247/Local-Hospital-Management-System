@@ -1,7 +1,7 @@
-﻿using Application.Command.SignIn;
+﻿using Application.Command.AuthEntities.SignIn;
 using Application.Interfaces.IRepositories;
-using Application.Query.GetLookUps;
-using Application.Query.GetUsersInDev;
+using Application.Query.AuthEntities.GetLookUps;
+using Application.Query.UserEntities.GetUsersInDev;
 using Application.RequestResponsePipeline;
 using Application.Utilities;
 using MediatR;

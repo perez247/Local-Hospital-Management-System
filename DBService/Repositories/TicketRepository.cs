@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetInventoryItems;
-using Application.Query.GetTickets;
+using Application.Query.TicketEntities.GetTickets;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -32,10 +31,17 @@ namespace DBService.Repositories
         {
             var query = _context.AppTickets
                                 .Include(x => x.AppCost)
-                                .Include(x => x.Patient)
-                                    .ThenInclude(x => x.AppUser)
-                                .Include(x => x.Company)
-                                    .ThenInclude(x => x.AppUser)
+                                    .ThenInclude(x => x.FinancialRecordPayerPayees)
+                                        .ThenInclude(x => x.AppUser)
+                                            .ThenInclude(x => x.Patient)
+                                .Include(x => x.AppCost)
+                                    .ThenInclude(x => x.FinancialRecordPayerPayees)
+                                        .ThenInclude(x => x.AppUser)
+                                            .ThenInclude(x => x.Company)
+                                //.Include(x => x.Patient)
+                                //    .ThenInclude(x => x.AppUser)
+                                //.Include(x => x.Company)
+                                //    .ThenInclude(x => x.AppUser)
                                 .Include(x => x.TicketInventories)
                                     .ThenInclude(x => x.AppInventory)
                                 .Include(x => x.TicketInventories)

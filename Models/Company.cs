@@ -14,6 +14,7 @@ namespace Models
         public string? UniqueId { get; set; }
         public string? OtherId { get; set; }
         public bool ForIndividual { get; set; } = false;
+        public bool HomeCompany { get; set; } = false;
         public ICollection<Patient> Patients { get; set; } = new List<Patient>();
         public ICollection<CompanyContract> CompanyContracts { get; set; } = new List<CompanyContract>();
         public ICollection<AppInventoryItem>? AppInventoryItems { get; set; } = new List<AppInventoryItem>();

@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetUserList;
+using Application.Query.UserEntities.GetUserList;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;

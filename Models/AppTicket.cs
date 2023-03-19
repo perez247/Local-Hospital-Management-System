@@ -16,10 +16,6 @@ namespace Models
         public string? OverallDescription { get; set; }
         public bool? Sent { get; set; } = false;
         public bool? SentToFinance { get; set; } = false;
-        public virtual Company? Company { get; set; }
-        public Guid? CompanyId { get; set; }
-        public virtual Patient? Patient { get; set; }
-        public Guid? PatientId { get; set; }
         public AppTicketStatus AppTicketStatus { get; set; } = AppTicketStatus.ongoing;
         public AppInventoryType AppInventoryType { get; set; }
         public ICollection<TicketInventory> TicketInventories { get; set; } = new List<TicketInventory>();

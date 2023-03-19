@@ -2,6 +2,7 @@
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.StaffPaymentHistory;
+using Application.Responses;
 using DBService.QueryHelpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -69,6 +70,24 @@ namespace DBService.Repositories
             query = StaffQueryHelper.FilterPaymentHistory(query, filter);
 
             return await query.GenerateEntity(command);
+        }
+
+        public async Task<DashboardStatsResponse> GetStats()
+        {
+            var date = DateTime.Today;
+
+            //var query = _context.Patients.AsQueryable()
+            //                    .Union(_context.Companies.AsQueryable())
+            //                    ;
+
+            return new DashboardStatsResponse
+            {
+                TotalPatients = await _context.Patients.CountAsync(),
+                TotalCompanies = await _context.Companies.CountAsync(),
+                AppointmentsToday = await _context.AppAppointments.CountAsync(x => x.AppointmentDate.Year == date.Year && x.AppointmentDate.Month == date.Month && x.AppointmentDate.Day == date.Day),
+                TicketsToday = await _context.AppTickets.CountAsync(x => x.DateCreated.Year == date.Year && x.DateCreated.Month == date.Month && x.DateCreated.Day == date.Day),
+
+            };
         }
     }
 }

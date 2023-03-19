@@ -1,9 +1,9 @@
-﻿using Application.Command.AddAppointment;
-using Application.Command.UpdateAppointment;
+﻿using Application.Command.AppointmentEntities.AddAppointment;
+using Application.Command.AppointmentEntities.UpdateAppointment;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetAppointmentCountInAMonth;
-using Application.Query.GetAppointments;
+using Application.Query.AppointmentEntities.GetAppointmentCountInAMonth;
+using Application.Query.AppointmentEntities.GetAppointments;
 using Application.RequestResponsePipeline;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

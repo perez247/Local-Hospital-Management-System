@@ -16,6 +16,8 @@ namespace Application.Responses
         public string? Email { get; set; }
         public string? Address { get; set; }
         public string? Profile { get; set; }
+        public bool IsPatient { get; set; }
+        public bool IsCompany { get; set; }
         public BaseResponse? Base { get; set; }
 
         public static UserOnlyResponse? Create(AppUser user)
@@ -33,6 +35,8 @@ namespace Application.Responses
             data.Email = user.Email;
             data.Address = user.Address;
             data.Profile = user.Profile;
+            data.IsPatient = user.Patient != null;
+            data.IsCompany = user.Company != null;
             data.Base = BaseResponse.Create(user);
 
             return data;

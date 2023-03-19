@@ -39,7 +39,7 @@ namespace DBService.Seeding.Development
                     Id = Guid.NewGuid(),
                     PatientId = patient.Id,
                     DoctorId = staff[random.Next(0, staff.Count())].Id,
-                    CompanyId = companyIds[random.Next(0, companyIds.Count())],
+                    CompanyId = patient.CompanyId,
                     AppointmentDate = DateTime.Today.AddDays(random.Next(1, 31)).AddHours(random.Next(1, 23)).ToUniversalTime(),
                 };
 

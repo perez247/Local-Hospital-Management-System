@@ -1,7 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetUserList;
 using DBService.QueryHelpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

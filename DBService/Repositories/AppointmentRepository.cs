@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetAppointments;
-using Application.Query.GetUserList;
+using Application.Query.AppointmentEntities.GetAppointments;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -30,7 +29,7 @@ namespace DBService.Repositories
                                 .Include(x => x.Company).ThenInclude(x => x.AppUser)
                                 .Include(x => x.Patient).ThenInclude(x => x.AppUser)
                                 .Include(x => x.Doctor).ThenInclude(x => x.AppUser)
-                                .OrderBy(x => x.AppointmentDate)
+                                .OrderByDescending(x => x.AppointmentDate)
                                 .AsQueryable();
 
             query = AppointmentQueryHandler.FilterAppointmentByDate(query, filter);

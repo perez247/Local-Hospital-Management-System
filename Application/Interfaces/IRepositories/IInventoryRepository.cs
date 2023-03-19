@@ -1,6 +1,6 @@
 ﻿using Application.Paginations;
-using Application.Query.GetInventories;
-using Application.Query.GetInventoryItems;
+using Application.Query.InventoryEntities.GetInventories;
+using Application.Query.InventoryEntities.GetInventoryItems;
 using Models;
 using System;
 using System.Collections.Generic;

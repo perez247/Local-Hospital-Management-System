@@ -1,5 +1,4 @@
-﻿using Application.Query.GetInventories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Models.Enums;
 using Models;
 using System;
@@ -7,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Query.GetTickets;
 using Application.Utilities;
+using Application.Query.TicketEntities.GetTickets;
 
 namespace DBService.QueryHelpers
 {

@@ -38,17 +38,17 @@ namespace Application.Responses
             // throw new Exception((obj.GetType().GetProperty("CurrentStaffApprovalStatus") != null).ToString());
             if (obj.GetType().GetProperty("Id") != null)
             {
-                data.Id = obj.GetType().GetProperty("Id").GetValue(obj, null).ToString();
+                data.Id = obj?.GetType()?.GetProperty("Id")?.GetValue(obj, null)?.ToString();
             }
 
             if (obj.GetType().GetProperty("DateCreated") != null)
             {
-                data.DateCreated = obj.GetType().GetProperty("DateCreated").GetValue(obj, null) as DateTime?;
+                data.DateCreated = obj?.GetType()?.GetProperty("DateCreated")?.GetValue(obj, null) as DateTime?;
             }
 
             if (obj.GetType().GetProperty("DateModified") != null)
             {
-                data.DateModified = obj.GetType().GetProperty("DateModified").GetValue(obj, null) as DateTime?;
+                data.DateModified = obj?.GetType()?.GetProperty("DateModified")?.GetValue(obj, null) as DateTime?;
             }
 
             return data;

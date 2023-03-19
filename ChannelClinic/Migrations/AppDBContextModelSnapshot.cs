@@ -478,6 +478,9 @@ namespace ChannelClinic.Migrations
                     b.Property<bool>("ForIndividual")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("HomeCompany")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("OtherId")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
@@ -559,9 +562,47 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("Payments")
                         .HasColumnType("text");
 
+                    b.Property<int>("TotalAppCosts")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("FinancialRecords");
+                });
+
+            modelBuilder.Entity("Models.FinancialRecordPayerPayee", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AppCostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AppUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("FinancialRecordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Payer")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppCostId");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("FinancialRecordId");
+
+                    b.ToTable("FinancialRecordPayerPayee");
                 });
 
             modelBuilder.Entity("Models.FinancialRequest", b =>
@@ -1132,7 +1173,7 @@ namespace ChannelClinic.Migrations
                     b.HasOne("Models.Patient", "Patient")
                         .WithMany("AppAppointments")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Company");
 
@@ -1187,23 +1228,17 @@ namespace ChannelClinic.Migrations
                         .HasForeignKey("AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Models.Company", "Company")
+                    b.HasOne("Models.Company", null)
                         .WithMany("AppTickets")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CompanyId");
 
-                    b.HasOne("Models.Patient", "Patient")
+                    b.HasOne("Models.Patient", null)
                         .WithMany("AppTickets")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PatientId");
 
                     b.Navigation("AppCost");
 
                     b.Navigation("Appointment");
-
-                    b.Navigation("Company");
-
-                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("Models.AppUserRole", b =>
@@ -1250,6 +1285,30 @@ namespace ChannelClinic.Migrations
                     b.Navigation("AppCost");
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Models.FinancialRecordPayerPayee", b =>
+                {
+                    b.HasOne("Models.AppCost", "AppCost")
+                        .WithMany("FinancialRecordPayerPayees")
+                        .HasForeignKey("AppCostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Models.AppUser", "AppUser")
+                        .WithMany("FinancialRecordPayerPayees")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Models.FinancialRecord", "FinancialRecord")
+                        .WithMany("FinancialRecordPayerPayees")
+                        .HasForeignKey("FinancialRecordId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("AppCost");
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("FinancialRecord");
                 });
 
             modelBuilder.Entity("Models.FinancialRequest", b =>
@@ -1424,6 +1483,8 @@ namespace ChannelClinic.Migrations
 
                     b.Navigation("CompanyContract");
 
+                    b.Navigation("FinancialRecordPayerPayees");
+
                     b.Navigation("PatientContract");
                 });
 
@@ -1447,6 +1508,8 @@ namespace ChannelClinic.Migrations
             modelBuilder.Entity("Models.AppUser", b =>
                 {
                     b.Navigation("Company");
+
+                    b.Navigation("FinancialRecordPayerPayees");
 
                     b.Navigation("NextOfKin");
 
@@ -1477,6 +1540,8 @@ namespace ChannelClinic.Migrations
             modelBuilder.Entity("Models.FinancialRecord", b =>
                 {
                     b.Navigation("AppCosts");
+
+                    b.Navigation("FinancialRecordPayerPayees");
 
                     b.Navigation("FinancialRequest");
                 });

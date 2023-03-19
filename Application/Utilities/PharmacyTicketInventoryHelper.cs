@@ -1,5 +1,5 @@
 ﻿using Application.Command.AddPharmacyTicketInventory;
-using Application.Command.UpdatePharmacyTicketInventory;
+using Application.Command.TicketEntities.UpdatePharmacyTicketInventory;
 using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Microsoft.EntityFrameworkCore;

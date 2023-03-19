@@ -1,5 +1,6 @@
 ﻿using Application.Paginations;
 using Application.Query.StaffPaymentHistory;
+using Application.Responses;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -18,5 +19,9 @@ namespace Application.Interfaces.IRepositories
         IQueryable<FinancialRequest> FinancialRequests();
         Task<AppUser> CreateStaff(AppUser newUser, string password);
         Task<PaginationDto<SalaryPaymentHistory>> GetStaffListWithPayment(StaffPaymentHistoryFilter filter, PaginationCommand command);
+        Task<DashboardStatsResponse> GetStats();
     }
 }
+
+
+// Select count id, from 

@@ -1,23 +1,22 @@
 ﻿using Application.Command.AddAdmissionTicketInventory;
-using Application.Command.AddAppointment;
 using Application.Command.AddLabTicketInventory;
 using Application.Command.AddPharmacyTicketInventory;
 using Application.Command.ConcludeAdmissionTicketInventory;
 using Application.Command.ConcludeLabTicketInventory;
-using Application.Command.ConcludePharmacyTicket;
 using Application.Command.ConcludeSurgeryTicketInventory;
 using Application.Command.CreateEmergencyAppoitment;
 using Application.Command.CreateTicket;
 using Application.Command.SaveSurgeryTicketInventory;
-using Application.Command.SendAllTicketsToDepartment;
-using Application.Command.SendPharmacyTicketToFinance;
+using Application.Command.TicketEntities.ConcludePharmacyTicket;
+using Application.Command.TicketEntities.SendAllTicketsToDepartment;
+using Application.Command.TicketEntities.SendPharmacyTicketToFinance;
+using Application.Command.TicketEntities.UpdatePharmacyTicketInventory;
+using Application.Command.TicketEntities.UpdateTicket;
 using Application.Command.UpdateLabTicketInventory;
-using Application.Command.UpdatePharmacyTicketInventory;
 using Application.Command.UpdateSurgeryTicketInventory;
-using Application.Command.UpdateTicket;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetTickets;
+using Application.Query.TicketEntities.GetTickets;
 using Application.RequestResponsePipeline;
 using Application.Responses;
 using MediatR;
@@ -114,7 +113,7 @@ namespace ChannelClinic.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("conclude-ticket-inventory")]
+        [HttpPut("conclude-pharmacy-ticket-inventory")]
         public async Task<IActionResult> ConcludePharmacyTicketInventory([FromBody] ConcludePharmacyTicketCommand command)
         {
             await UpdateToken(command, nameof(ConcludePharmacyTicketCommand));

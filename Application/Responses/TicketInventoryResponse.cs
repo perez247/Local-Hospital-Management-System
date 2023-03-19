@@ -1,11 +1,11 @@
-﻿using Application.Query.GetInventories;
-using Models.Enums;
+﻿using Models.Enums;
 using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Query.InventoryEntities.GetInventories;
 
 namespace Application.Responses
 {

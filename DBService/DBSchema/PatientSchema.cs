@@ -26,7 +26,7 @@ namespace DBService.DBSchema
                 .WithMany(entity => entity.Patients)
                 .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
 
-            builder.HasMany(entity => entity.AppTickets)
+            builder.HasMany(entity => entity.AppAppointments)
                 .WithOne(entity => entity.Patient)
                 .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
 

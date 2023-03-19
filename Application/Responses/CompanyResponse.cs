@@ -14,6 +14,7 @@ namespace Application.Responses
         public string? OtherId { get; set; }
         public string? UserId { get; set; }
         public bool? ForIndividual { get; set; }
+        public bool? HomeCompany { get; set; }
         public CompanyContractResponse? CompanyContract { get; set; }
         public BaseResponse? Base { get; set; }
         public string? Name { get; set; }
@@ -29,6 +30,7 @@ namespace Application.Responses
             companyResponse.OtherId = Company.OtherId;
             companyResponse.UniqueId = Company.UniqueId;
             companyResponse.ForIndividual = Company.ForIndividual;
+            companyResponse.HomeCompany = Company.HomeCompany;
             companyResponse.CompanyContract = Company.CompanyContracts != null ? CompanyContractResponse.Create(Company.CompanyContracts.FirstOrDefault()) : null;
             companyResponse.Name = Company?.AppUser?.FirstName;
             companyResponse.UserId = Company?.AppUser?.Id.ToString();

@@ -21,10 +21,6 @@ namespace DBService.DBSchema
                 .WithOne(entity => entity.Company)
                 .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
 
-            builder.HasMany(entity => entity.AppTickets)
-                .WithOne(entity => entity.Company)
-                .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
-
             builder.HasOne(entity => entity.AppUser)
                 .WithOne(entity => entity.Company)
                 .HasForeignKey<Company>(entity => entity.AppUserId)

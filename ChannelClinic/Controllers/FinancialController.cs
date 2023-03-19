@@ -1,15 +1,16 @@
-﻿using Application.Command.ConcludePharmacyTicket;
-using Application.Command.CreateFinancialRequest;
+﻿using Application.Command.CreateFinancialRequest;
 using Application.Command.CreateMonthPayment;
-using Application.Command.InitialPayment;
-using Application.Command.PatientUpdatePayment;
+using Application.Command.FinancialRecordEntities.InitialPayment;
+using Application.Command.FinancialRecordEntities.PatientUpdatePayment;
+using Application.Command.FinancialRecordEntities.UpdateContract;
 using Application.Command.RespondToFinancialRequest;
 using Application.Command.UpdateAppCost;
-using Application.Command.UpdateContract;
 using Application.Command.UpdatePaymentForMonth;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
-using Application.Query.GetPendingUserContracts;
+using Application.Query.FinancialRecordEntities.GetAppCosts;
+using Application.Query.FinancialRecordEntities.GetFinancialRecords;
+using Application.Query.FinancialRecordEntities.GetPendingUserContracts;
 using Application.Query.StaffPaymentHistory;
 using Application.RequestResponsePipeline;
 using Application.Responses;
@@ -154,8 +155,8 @@ namespace ChannelClinic.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("update-payment")]
-        public async Task<IActionResult> InitialPayment([FromBody] PatientUpdatePaymentCommand command)
+        [HttpPut("update-patient-payment")]
+        public async Task<IActionResult> UpdatePatientPayment([FromBody] PatientUpdatePaymentCommand command)
         {
             await UpdateToken(command, nameof(PatientUpdatePaymentCommand));
 
@@ -192,6 +193,41 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateContracts([FromBody] UpdateContractCommand command)
         {
             await UpdateToken(command, nameof(UpdateContractCommand));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get financial debts
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<AppCostResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("debts")]
+        public async Task<IActionResult> FinancialDebts([FromBody] GetAppCostsQuery command)
+        {
+            await UpdateToken(command, nameof(GetAppCostsQuery));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// Get financial payments completed
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<FinancialRecordResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("paid")]
+        public async Task<IActionResult> FinancialPaid([FromBody] GetFinancialRecordsQuery command)
+        {
+            await UpdateToken(command, nameof(GetFinancialRecordsQuery));
 
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
