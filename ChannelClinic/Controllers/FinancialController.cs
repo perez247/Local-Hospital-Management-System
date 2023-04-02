@@ -1,11 +1,9 @@
-﻿using Application.Command.CreateFinancialRequest;
-using Application.Command.CreateMonthPayment;
+﻿
 using Application.Command.FinancialRecordEntities.InitialPayment;
 using Application.Command.FinancialRecordEntities.PatientUpdatePayment;
+using Application.Command.FinancialRecordEntities.PayDebt;
 using Application.Command.FinancialRecordEntities.UpdateContract;
-using Application.Command.RespondToFinancialRequest;
-using Application.Command.UpdateAppCost;
-using Application.Command.UpdatePaymentForMonth;
+using Application.DTOs;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.FinancialRecordEntities.GetAppCosts;
@@ -36,22 +34,6 @@ namespace ChannelClinic.Controllers
 
 
         /// <summary>
-        /// update cost used
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("update-cost")]
-        public async Task<IActionResult> UpdateCost([FromBody] UpdateAppCostCommand command)
-        {
-            await UpdateToken(command, nameof(UpdateAppCostCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
         /// Get staff payment history
         /// </summary>
         /// <param name="command"></param>
@@ -66,72 +48,6 @@ namespace ChannelClinic.Controllers
 
             return Ok(result);
         }
-
-        /// <summary>
-        /// Get staff payment history
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("create-payment-history")]
-        public async Task<IActionResult> AddMonthForSalary([FromBody] CreateMonthPaymentCommand command)
-        {
-            await UpdateToken(command, nameof(CreateMonthPaymentCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Update staff salary for the month if paid or not
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("update-salary-payments")]
-        public async Task<IActionResult> UpdateSalaryForMonth([FromBody] UpdatePaymentForMonthCommand command)
-        {
-            await UpdateToken(command, nameof(UpdatePaymentForMonthCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-
-        /// <summary>
-        /// Create a financial request for approval for either profit or expense
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("financial-request")]
-        public async Task<IActionResult> CreateFinancialRequest([FromBody] CreateFinancialRequestCommand command)
-        {
-            await UpdateToken(command, nameof(CreateFinancialRequestCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Respond to financial request for either approval or denial
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("financial-request")]
-        public async Task<IActionResult> RespondFinancialRequest([FromBody] RespondToFinancialRequestCommand command)
-        {
-            await UpdateToken(command, nameof(RespondToFinancialRequestCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
         /// <summary>
         /// Start initial payment
         /// </summary>
@@ -205,7 +121,7 @@ namespace ChannelClinic.Controllers
         /// <param name="command"></param>
         /// <returns></returns>
         [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<AppCostResponse>>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(PaginationResponse<FinancialDebtDTO>), (int)HttpStatusCode.OK)]
         [HttpPost("debts")]
         public async Task<IActionResult> FinancialDebts([FromBody] GetAppCostsQuery command)
         {
@@ -228,6 +144,23 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> FinancialPaid([FromBody] GetFinancialRecordsQuery command)
         {
             await UpdateToken(command, nameof(GetFinancialRecordsQuery));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Make payment for debt
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("debt-payment")]
+        public async Task<IActionResult> DebtPayment([FromBody] PayDebtCommand command)
+        {
+            await UpdateToken(command, nameof(PayDebtCommand));
 
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 

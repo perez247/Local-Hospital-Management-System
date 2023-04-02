@@ -18,7 +18,7 @@ namespace Application.Command.TicketEntities.SendPharmacyTicketToFinance
 
             RuleFor(x => x.PrescribedQuantity)
                 .Must(x => x.HasValue).WithMessage("Quantity is required")
-                .GreaterThan(0).WithMessage("Must be greater than 0");
+                .GreaterThanOrEqualTo(0).WithMessage("Must be greater than or equals 0");
 
             RuleFor(x => x.DepartmentDescription)
                 .MaximumLength(1000).WithMessage("Maximum of 1000 chars")

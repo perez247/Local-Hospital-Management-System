@@ -17,5 +17,56 @@ namespace Models
         public ICollection<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
         public ICollection<AppAppointment> AppAppointments { get; set; } = new List<AppAppointment>();
         public ICollection<AppTicket> AppTickets { get; set; } = new List<AppTicket>();
+
+        public bool HasContract()
+        {
+            var companyContract = Company?.CompanyContracts.FirstOrDefault();
+            BaseContract? contract;
+            bool IsPatient = false;
+
+            if (companyContract != null && !Company.ForIndividual)
+            {
+                contract = companyContract;
+            } else
+            {
+                IsPatient = true;
+                var patientContract = PatientContracts.FirstOrDefault();
+
+                if (patientContract != null)
+                {
+                    contract = patientContract;
+                } else
+                {
+                    contract = null;
+                }
+            }
+
+            if (contract == null)
+            {
+                return false;
+            }
+
+            if (contract.AppCost == null)
+            {
+                return false;
+            }
+
+            if (contract.AppCost.PaymentStatus == Enums.PaymentStatus.canceled)
+            {
+                return false;
+            }
+
+            if (IsPatient && contract.AppCost.PaymentStatus == Enums.PaymentStatus.owing)
+            {
+                return false;
+            }
+
+            if (contract.AppCost.PaymentStatus == Enums.PaymentStatus.owing || contract.AppCost.PaymentStatus == Enums.PaymentStatus.approved)
+            {
+                return contract.StartDate.AddDays(contract.Duration) > DateTime.Now;
+            }
+
+            return false;
+        }
     }
 }

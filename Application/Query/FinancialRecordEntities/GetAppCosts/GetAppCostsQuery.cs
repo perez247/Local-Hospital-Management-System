@@ -1,4 +1,5 @@
 ﻿using Application.Annotations;
+using Application.DTOs;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.FinancialRecordEntities.GetPendingUserContracts;
@@ -14,14 +15,14 @@ using System.Threading.Tasks;
 
 namespace Application.Query.FinancialRecordEntities.GetAppCosts
 {
-    public class GetAppCostsQuery : TokenCredentials, IRequest<PaginationResponse<IEnumerable<AppCostResponse>>>
+    public class GetAppCostsQuery : TokenCredentials, IRequest<PaginationResponse<FinancialDebtDTO>>
     {
         [SanitizePagination]
         public PaginationCommand? Pagination { get; set; }
         public GetAppCostFilter? Filter { get; set; }
     }
 
-    public class GetAppCostsHandler : IRequestHandler<GetAppCostsQuery, PaginationResponse<IEnumerable<AppCostResponse>>>
+    public class GetAppCostsHandler : IRequestHandler<GetAppCostsQuery, PaginationResponse<FinancialDebtDTO>>
     {
         private IFinancialRespository _financialRespository { get; set; }
 
@@ -30,16 +31,26 @@ namespace Application.Query.FinancialRecordEntities.GetAppCosts
             _financialRespository = financialRespository;
         }
 
-        public async Task<PaginationResponse<IEnumerable<AppCostResponse>>> Handle(GetAppCostsQuery request, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<FinancialDebtDTO>> Handle(GetAppCostsQuery request, CancellationToken cancellationToken)
         {
             var result = await _financialRespository.GetAppCostForDebts(request.Filter, request.Pagination);
 
             if (result.Results.Count <= 0)
-                return new PaginationResponse<IEnumerable<AppCostResponse>>() { PageNumber = request.Pagination.PageNumber, PageSize = request.Pagination.PageSize, totalItems = result.totalItems };
+                return new PaginationResponse<FinancialDebtDTO>() { PageNumber = request.Pagination.PageNumber, PageSize = request.Pagination.PageSize, totalItems = result.totalItems };
 
-            var responses = result.Results.Select(x => AppCostResponse.Create(x));
+            var data = result.Results.First();
 
-            return request.Pagination.GenerateResponse<IEnumerable<AppCostResponse>, AppCost>(responses, result);
+            data.Result = data.AppCosts.Select(x => AppCostResponse.Create(x));
+
+            data.AppCosts = null;
+
+            return new PaginationResponse<FinancialDebtDTO>
+            {
+                PageNumber = request.Pagination.PageNumber,
+                PageSize = request.Pagination.PageSize,
+                Result = data,
+                totalItems = result.totalItems
+            };
         }
     }
 }

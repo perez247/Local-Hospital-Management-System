@@ -1,4 +1,5 @@
-﻿using Application.Paginations;
+﻿using Application.DTOs;
+using Application.Paginations;
 using Application.Query.FinancialRecordEntities.GetAppCosts;
 using Application.Query.FinancialRecordEntities.GetFinancialRecords;
 using Application.Query.FinancialRecordEntities.GetPendingUserContracts;
@@ -19,7 +20,7 @@ namespace Application.Interfaces.IRepositories
         Task<decimal> GetPatientContractCost();
         Task<PaginationDto<AppCost>> GetContracts(GetPendingUserContractsFilter filter, PaginationCommand command);
         IQueryable<AppCost> GetAppCosts();
-        Task<PaginationDto<AppCost>> GetAppCostForDebts(GetAppCostFilter filter, PaginationCommand command);
+        Task<PaginationDto<FinancialDebtDTO>> GetAppCostForDebts(GetAppCostFilter filter, PaginationCommand command);
         Task<PaginationDto<FinancialRecord>> GetFinancialRecords(GetFinancialRecordsFilter filter, PaginationCommand command);
     }
 }

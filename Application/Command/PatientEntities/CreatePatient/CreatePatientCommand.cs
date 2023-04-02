@@ -33,13 +33,15 @@ namespace Application.Command.PatientEntities.CreatePatient
         private readonly IStaffRepository iStaffRepository;
         private readonly IDBRepository iDBRepository;
         private readonly IAuthRepository iAuthRepository;
+        private readonly ICompanyRepository iCompanyRepository;
 
-        public CreatePaitentHandler(IPatientRepository IPatientRepository, IAuthRepository IAuthRepository, IStaffRepository IStaffRepository, IDBRepository IDBRepository)
+        public CreatePaitentHandler(IPatientRepository IPatientRepository, IAuthRepository IAuthRepository, IStaffRepository IStaffRepository, IDBRepository IDBRepository, ICompanyRepository ICompanyRepository)
         {
             iPatientRepository = IPatientRepository;
             iAuthRepository = IAuthRepository;
             iDBRepository = IDBRepository;
             iStaffRepository = IStaffRepository;
+            iCompanyRepository = ICompanyRepository;
         }
         public async Task<CreatePatientResponse> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
@@ -56,6 +58,14 @@ namespace Application.Command.PatientEntities.CreatePatient
                     throw new CustomMessageException("Staff to add as patient not found");
                 }
 
+                var homeCompany = await iCompanyRepository.Companies()
+                                .FirstOrDefaultAsync(x => x.HomeCompany);
+
+                if (homeCompany == null)
+                {
+                    throw new CustomMessageException("Home company is required for adding staff as a patient");
+                }
+
                 var patient = staff.AppUser.Patient;
 
                 if (patient != null)
@@ -66,7 +76,8 @@ namespace Application.Command.PatientEntities.CreatePatient
                 var newPatient = new Patient
                 {
                     Id = Guid.NewGuid(),
-                    AppUserId = staff.AppUserId
+                    AppUserId = staff.AppUserId,
+                    CompanyId = homeCompany.Id
                 };
 
                 await iDBRepository.AddAsync(newPatient);
@@ -83,6 +94,14 @@ namespace Application.Command.PatientEntities.CreatePatient
                     throw new CustomMessageException($"{request.Email} has been taken");
                 }
 
+                var individualCompany = await iCompanyRepository.Companies()
+                                .FirstOrDefaultAsync(x => x.ForIndividual);
+
+                if (individualCompany == null)
+                {
+                    throw new CustomMessageException("A Company for individual must be created first");
+                }
+
                 //var staff = await iStaffRepository.Staff()
                 //                                  .Include(x => x.)
 
@@ -97,6 +116,7 @@ namespace Application.Command.PatientEntities.CreatePatient
                     Patient = new Patient
                     {
                         Id = Guid.NewGuid(),
+                        CompanyId = individualCompany.Id,
                         //CompanyId = request.CompanyId == Guid.Empty.ToString() ? null : Guid.Parse(request.CompanyId),
                     },
                 };
@@ -107,7 +127,12 @@ namespace Application.Command.PatientEntities.CreatePatient
 
                 // You can send patient the username and password
 
-                return new CreatePatientResponse { UserId = newUser?.Id.ToString() ?? string.Empty };
+                return new CreatePatientResponse { 
+                    UserId = newUser?.Id.ToString() ?? string.Empty,
+                    Password = password,
+                    Email = request.Email,
+                    FullName = $"{request.LastName} {request.FirstName}"
+                };
             }
 
         }

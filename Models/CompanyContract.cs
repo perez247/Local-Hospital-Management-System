@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-    public class CompanyContract : BaseEntity
+    public class CompanyContract : BaseContract
     {
         public virtual Company? Company { get; set; }
         public Guid? CompanyId { get; set; }
-        public virtual AppCost? AppCost { get; set; }
-        public Guid? AppCostId { get; set; }
-        public DateTime StartDate { get; set; }
-        public int Duration { get; set; }
     }
 }

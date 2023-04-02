@@ -14,8 +14,8 @@ namespace Models
         public string? Level { get; set; } = "L1";
         public ContractTypeEnum ContractStaff { get; set; } = ContractTypeEnum.contract;
         public decimal? Salary { get; set; } = 15000;
-        public string? Position { get; set; } = "Cleaner";
-        public bool Active { get; set; } = false;
+        public string? Position { get; set; } = "Staff";
+        public bool Active { get; set; } = true;
         public string? AccountNumber { get; set; } = "0000000000";
         public string? BankName { get; set; } = "unknown";
         public string? BankId { get; set; } = "unknwon";

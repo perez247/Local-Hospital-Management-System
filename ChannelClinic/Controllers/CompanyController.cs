@@ -1,7 +1,6 @@
 ﻿using Application.Command.CompanyEntities.AddCompanyContract;
 using Application.Command.CompanyEntities.CreateCompany;
 using Application.Command.CompanyEntities.UpdateCompany;
-using Application.Command.UpdateAppCost;
 using Application.Interfaces.IRepositories;
 using Application.RequestResponsePipeline;
 using MediatR;

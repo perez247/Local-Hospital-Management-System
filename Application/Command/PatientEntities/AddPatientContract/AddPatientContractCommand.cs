@@ -92,6 +92,11 @@ namespace Application.Command.PatientEntities.AddPatientContract
 
             newContract.AppCostId = appCost.Id;
 
+            foreach (var item in appCost.FinancialRecordPayerPayees)
+            {
+                await iDBRepository.AddAsync<FinancialRecordPayerPayee>(item);
+            }
+
             await iDBRepository.AddAsync(appCost);
             await iDBRepository.AddAsync(newContract);
 
@@ -101,7 +106,6 @@ namespace Application.Command.PatientEntities.AddPatientContract
             }
             catch (Exception ex)
             {
-
                 throw new Exception(ex.Message);
             }
 

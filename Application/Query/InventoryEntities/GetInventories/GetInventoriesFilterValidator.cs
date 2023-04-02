@@ -18,9 +18,9 @@ namespace Application.Query.InventoryEntities.GetInventories
                 .Matches("^[a-zA-Z0-9._ ]*$").WithMessage("Only letters, numbers, periods and underscore")
                 .When(x => !string.IsNullOrEmpty(x.Name));
 
-            RuleFor(x => x.AppInventoryType)
+            RuleForEach(x => x.AppInventoryType)
                 .Must(x => CommonValidators.EnumsContains<AppInventoryType>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppInventoryType)))}")
-                .When(x => !string.IsNullOrEmpty(x.AppInventoryType));
+                .When(x => x.AppInventoryType != null && x.AppInventoryType.Count > 0);
 
             RuleFor(x => x.Quantity)
                 .Must(CommonValidators.BeInteger).WithMessage("Value is not a whole number")

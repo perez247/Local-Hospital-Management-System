@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IRepositories;
+﻿using Application.DTOs;
+using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.FinancialRecordEntities.GetAppCosts;
 using Application.Query.FinancialRecordEntities.GetFinancialRecords;
@@ -67,10 +68,12 @@ namespace DBService.Repositories
             return _context.AppCosts;
         }
 
-        public async Task<PaginationDto<AppCost>> GetAppCostForDebts(GetAppCostFilter filter, PaginationCommand command)
+        public async Task<PaginationDto<FinancialDebtDTO>> GetAppCostForDebts(GetAppCostFilter filter, PaginationCommand command)
         {
             var query = _context.AppCosts
                                 .Include(x => x.AppTicket)
+                                    .ThenInclude(x => x.TicketInventories)
+                                        .ThenInclude(x => x.AppInventory)
                                 .Include(x => x.PatientContract)
                                     .ThenInclude(x => x.Patient)
                                 .Include(x => x.CompanyContract)
@@ -87,7 +90,26 @@ namespace DBService.Repositories
 
             query = FinancialQueryHelper.FilterAppCostDebt(query, filter);
 
-            return await query.GenerateEntity(command);
+            var data = await query.GenerateEntity(command);
+
+            //var debt = query.SumAsync(x => x.ApprovedPrice);
+            var paid =  await query.Select(x => x.Payments).ToListAsync();
+            var totalPaid = paid.Sum(x => x.Sum(y => y.Amount));
+
+            var newData = new FinancialDebtDTO
+            {
+                AppCosts = data.Results,
+                Debt = await query.SumAsync(x => x.ApprovedPrice) ?? 0,
+                Paid = totalPaid
+            };
+
+            return new PaginationDto<FinancialDebtDTO>
+            {
+                Results = new List<FinancialDebtDTO>() { newData },
+                PageNumber = data.PageNumber,
+                PageSize = data.PageSize,
+                totalItems = data.totalItems
+            };
         }
 
         public async Task<PaginationDto<FinancialRecord>> GetFinancialRecords(GetFinancialRecordsFilter filter, PaginationCommand command)
@@ -115,6 +137,8 @@ namespace DBService.Repositories
                                             FinancialRecordPayerPayees = x.FinancialRecordPayerPayees,
                                             FinancialRequest = x.FinancialRequest,
                                         })
+                                .OrderByDescending(x => x.DateCreated)
+                                //.Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.approved)
                                 .AsQueryable();
 
             query = FinancialQueryHelper.FilterAppCostPaid(query, filter);

@@ -20,6 +20,10 @@ namespace Application.Query.TicketEntities.GetTickets
             RuleFor(x => x.AppTicketStatus)
                 .Must(x => CommonValidators.EnumsContains<AppTicketStatus>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppTicketStatus)))}")
                 .When(x => !string.IsNullOrEmpty(x.AppInventoryType));
+
+            RuleForEach(x => x.PaymentStatus)
+                .Must(x => CommonValidators.EnumsContains<PaymentStatus>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(PaymentStatus)))}")
+                .When(x => x.PaymentStatus != null && x.PaymentStatus.Count > 0);
         }
     }
 }

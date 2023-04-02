@@ -39,6 +39,7 @@ namespace Application.Command.FinancialRecordEntities.PatientUpdatePayment
             decimal vat = await _financialRespository.GetTax();
             var ticket = await _ticketRepository.AppTickets()
                                                 .Include(x => x.AppCost)
+                                                    .ThenInclude(x => x.FinancialRecordPayerPayees)
                                                 .FirstOrDefaultAsync(x => x.Id.ToString() == request.AppTicketId);
 
             if (ticket == null)
@@ -76,6 +77,11 @@ namespace Application.Command.FinancialRecordEntities.PatientUpdatePayment
 
                 var financialRecord = FinancialHelper.AppCostToFinancialRecord(ticket.AppCost);
                 financialRecord.Payments = ticket.AppCost.Payments;
+
+                foreach (var item in financialRecord.FinancialRecordPayerPayees)
+                {
+                    await _dBRepository.AddAsync<FinancialRecordPayerPayee>(item);
+                }
 
                 ticket.AppCost.FinancialRecordId = financialRecord.Id;
                 await _dBRepository.AddAsync<FinancialRecord>(financialRecord);

@@ -94,7 +94,13 @@ namespace Application.Command.StaffEntities.CreateStaff
                 string password = UtilityHelper.GenerateRandomPassword();
 
                 newUser = await iStaffRepository.CreateStaff(newUser, password);
-                return new CreateStaffResponse { UserId = newUser?.Id.ToString() ?? string.Empty, Password = password };
+
+                return new CreateStaffResponse { 
+                    UserId = newUser?.Id.ToString() ?? string.Empty, 
+                    Password = password,
+                    Email = request.Email,
+                    FullName = $"{request.LastName} {request.FirstName}"
+                };
 
             }
 

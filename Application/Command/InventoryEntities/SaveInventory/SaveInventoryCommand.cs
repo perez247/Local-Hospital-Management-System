@@ -23,6 +23,7 @@ namespace Application.Command.InventoryEntities.SaveInventory
         public int? HowLow { get; set; }
         public string? AppInventoryType { get; set; }
         public string? Profile { get; set; }
+        public int? Quantity { get; set; }
     }
 
     public class SaveInventoryHandler : IRequestHandler<SaveInventoryCommand, SaveInventoryResponse>
@@ -46,6 +47,7 @@ namespace Application.Command.InventoryEntities.SaveInventory
                 newAppInventory.Name = request.Name;
                 newAppInventory.NotifyWhenLow = request.NotifyWhenLow.Value;
                 newAppInventory.HowLow = request.HowLow.Value;
+                newAppInventory.Quantity = request.Quantity.Value;
                 newAppInventory.AppInventoryType = request.AppInventoryType.ParseEnum<AppInventoryType>();
                 await iDBRepository.AddAsync(newAppInventory);
                 id = newAppInventory.Id.ToString();
@@ -63,6 +65,7 @@ namespace Application.Command.InventoryEntities.SaveInventory
                 appInVentoryFromDB.AppInventoryType = request.AppInventoryType.ParseEnum<AppInventoryType>();
                 appInVentoryFromDB.NotifyWhenLow = request.NotifyWhenLow.Value;
                 appInVentoryFromDB.HowLow = request.HowLow.Value;
+                appInVentoryFromDB.Quantity = request.Quantity.Value;
                 appInVentoryFromDB.Profile = request.Profile;
 
                 iDBRepository.Update(appInVentoryFromDB);

@@ -17,6 +17,7 @@ namespace Application.Query.UserEntities.GetUserList
 
         [VerifyGuidAnnotation]
         public string? PatientId { get; set; }
+        public string? UserSearchId { get; set; }
 
         [VerifyGuidAnnotation]
         public string? CompanyId { get; set; }
@@ -29,5 +30,6 @@ namespace Application.Query.UserEntities.GetUserList
 
         [VerifyGuidAnnotation]
         public string? PatientCompanyId { get; set; }
+        public ICollection<string>? Roles { get; set; }
     }
 }

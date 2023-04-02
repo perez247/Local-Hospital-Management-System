@@ -29,26 +29,28 @@ namespace Application.Utilities.QueryHelpers
 
         public static AppCost AppCostFactory(Guid? payerId, Guid? payeeId, decimal cost, string Description, AppCostType costType)
         {
+            var Id = Guid.NewGuid();
             return new AppCost
             {
-                Id = Guid.NewGuid(),
+                Id = Id,
                 Amount = cost,
                 ApprovedPrice = cost,
                 CostType = costType,
                 Description = Description,
                 FinancialRecordPayerPayees = new List<FinancialRecordPayerPayee>()
                 {
-                    new FinancialRecordPayerPayee{ AppUserId = payeeId },
-                    new FinancialRecordPayerPayee{ AppUserId = payerId, Payer = true },
+                    new FinancialRecordPayerPayee{ AppUserId = payeeId, AppCostId = Id },
+                    new FinancialRecordPayerPayee{ AppUserId = payerId, Payer = true, AppCostId = Id },
                 }
             };
         }
 
         public static FinancialRecord AppCostToFinancialRecord(AppCost? appCost)
         {
+            var Id = Guid.NewGuid();
             return new FinancialRecord
             {
-                Id = Guid.NewGuid(),
+                Id = Id,
                 Amount = appCost.Amount,
                 ApprovedAmount = appCost.ApprovedPrice,
                 CostType = appCost.CostType,
@@ -57,6 +59,7 @@ namespace Application.Utilities.QueryHelpers
                 {
                     AppUserId = x.AppUserId,
                     Payer = x.Payer,
+                    FinancialRecordId = Id
                 }).ToList(),
             };
         }

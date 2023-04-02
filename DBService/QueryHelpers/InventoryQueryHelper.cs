@@ -27,10 +27,10 @@ namespace DBService.QueryHelpers
                 query = query.Where(i => EF.Functions.Like(i.Name.ToLower(), $"%{filter.Name.ToLower()}%"));
             }
 
-            if (!string.IsNullOrEmpty(filter.AppInventoryType))
+            if (filter.AppInventoryType != null && filter.AppInventoryType.Count > 0)
             {
-                var type = filter.AppInventoryType.ParseEnum<AppInventoryType>();
-                query = query.Where(x => x.AppInventoryType == type);
+                var type = filter.AppInventoryType.Select(x => x.ParseEnum<AppInventoryType>());
+                query = query.Where(x => type.Contains(x.AppInventoryType));
             }
 
             if (!string.IsNullOrEmpty(filter.Quantity))

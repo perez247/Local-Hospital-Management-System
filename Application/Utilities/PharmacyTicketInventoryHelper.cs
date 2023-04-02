@@ -1,5 +1,4 @@
-﻿using Application.Command.AddPharmacyTicketInventory;
-using Application.Command.TicketEntities.UpdatePharmacyTicketInventory;
+﻿using Application.Command.TicketEntities.AddPharmacyTicketInventory;
 using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +18,8 @@ namespace Application.Utilities
             AppTicket? ticketFromDb,
             List<AppInventory> appInventories,
             List<TicketInventory> ticketInventories,
-            IDBRepository iDBRepository
+            IDBRepository iDBRepository,
+            ICollection<Guid> ticketsInventoriesUpdated
             )
         {
             var inventory = appInventories.FirstOrDefault(x => x.Id.ToString() == request.InventoryId);
@@ -39,16 +39,19 @@ namespace Application.Utilities
             }
             else
             {
-                var pharmacyInventory = new TicketInventory
+                hasPharmacyInventory = new TicketInventory
                 {
+                    Id = Guid.NewGuid(),
                     AppInventoryId = inventory.Id,
                     AppTicketId = ticketFromDb.Id,
                     DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription,
                     PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity,
                 };
 
-                await iDBRepository.AddAsync<TicketInventory>(pharmacyInventory);
+                await iDBRepository.AddAsync<TicketInventory>(hasPharmacyInventory);
             }
+
+            ticketsInventoriesUpdated.Add(hasPharmacyInventory.Id.Value);
         }
 
         public static async Task AddOrUpdateExistingPharmacyTickets(
@@ -60,7 +63,7 @@ namespace Application.Utilities
             )
         {
             var ticketFromDb = await iTicketRepository.AppTickets()
-                                                                  .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
+                                                      .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
             
             if (ticketFromDb == null)
             {
@@ -91,65 +94,24 @@ namespace Application.Utilities
                                                .Where(x => x.AppTicketId == ticketFromDb.Id)
                                                .ToListAsync();
 
+            var ticketsInventoriesUpdated = new List<Guid>();
+
             foreach (var ticketInventory in request.TicketInventories)
             {
-                await PharmacyTicketInventoryHelper.SavePharmacyTicketInventory(ticketInventory, ticketFromDb, inventories, ticketInventories, iDBRepository);
+                await PharmacyTicketInventoryHelper.SavePharmacyTicketInventory(ticketInventory, ticketFromDb, inventories, ticketInventories, iDBRepository, ticketsInventoriesUpdated);
             }
-        }
 
-        public static async Task UpdatePharmacyTickets(
-            UpdatePharmacyTicketInventoryCommand request,
-            ITicketRepository iTicketRepository,
-            IInventoryRepository iInventoryRepository,
-            IDBRepository iDBRepository
-            )
-        {
-            var ticketFromDb = await iTicketRepository.AppTickets()
-                                                      .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
+            // Delete any ticket that was not found
+            var ticketsInventoriesToBeDeleted = ticketInventories.Where(x => !ticketsInventoriesUpdated.Contains(x.Id.Value));
 
-            ticketFromDb.MustHvaeBeenSentToDepartment();
-
-            request.UpdatePharmacyTicketInventoryRequest = request.UpdatePharmacyTicketInventoryRequest.DistinctBy(x => x.InventoryId).ToList();
-
-
-            var inventoryIds = request.UpdatePharmacyTicketInventoryRequest.Select(y => y.InventoryId);
-
-            var inventories = await iInventoryRepository.AppInventories()
-                                                        .Where(x => inventoryIds.Contains(x.Id.ToString()))
-                                                        .ToListAsync();
-
-            var ticketInventories = await iTicketRepository.TicketInventory()
-                                                           .Where(x => x.AppTicketId == ticketFromDb.Id)
-                                                           .ToListAsync();
-
-            foreach (var pharmacyTicket in request.UpdatePharmacyTicketInventoryRequest)
+            if (ticketsInventoriesToBeDeleted.Count() > 0)
             {
-                var inventory = inventories.FirstOrDefault(x => x.Id.ToString() == pharmacyTicket.InventoryId);
-
-                if (inventory == null)
+                foreach(var inventory in ticketsInventoriesToBeDeleted)
                 {
-                    throw new CustomMessageException("Drug not recorded in the inventory");
+                    iDBRepository.Remove<TicketInventory>(inventory);
                 }
-
-                var pharmacyTicketInventory = ticketInventories.FirstOrDefault(x => x.AppTicketId == ticketFromDb.Id);
-
-                if (pharmacyTicketInventory == null)
-                {
-                    throw new CustomMessageException("Drug not found for this ticket");
-                }
-
-                pharmacyTicketInventory.AppInventoryQuantity = pharmacyTicket.AppInventoryQuantity;
-                pharmacyTicketInventory.CurrentPrice = pharmacyTicketInventory.CurrentPrice;
-                pharmacyTicketInventory.TotalPrice = pharmacyTicket.AppInventoryQuantity * pharmacyTicketInventory.CurrentPrice;
-                pharmacyTicketInventory.StaffObservation = pharmacyTicket.StaffObservation;
-                pharmacyTicketInventory.Description = pharmacyTicket.Description;
-
-                //pharmacyTicketInventory.ConcludedDate = pharmacyTicket.ConcludedDate;
-                //pharmacyTicketInventory.Proof = pharmacyTicket.Proof;
-
-                iDBRepository.Update<TicketInventory>(pharmacyTicketInventory);
-
             }
         }
+
     }
 }

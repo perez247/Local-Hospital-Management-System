@@ -1,5 +1,4 @@
-﻿using Application.Command.UpdateSurgerySummary;
-using Application.Command.UserEntities.AddUserFiles;
+﻿using Application.Command.UserEntities.AddUserFiles;
 using Application.Command.UserEntities.DeleteUserFiles;
 using Application.Command.UserEntities.UpdateUserNextofKin;
 using Application.Command.UserEntities.UpdateUserPersonal;
@@ -55,22 +54,6 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateNextOfKin([FromBody] UpdateUserNextofKinCommand command)
         {
             await UpdateToken(command, nameof(UpdateUserNextofKinCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Personnel involved in a surgery to give summary
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("surgery-summary")]
-        public async Task<IActionResult> GiveSummeryOnSurgery([FromBody] UpdateSurgerySummaryCommand command)
-        {
-            await UpdateToken(command, nameof(UpdateSurgerySummaryCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

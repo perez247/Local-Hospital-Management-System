@@ -11,8 +11,8 @@ namespace Application.Query.FinancialRecordEntities.GetPendingUserContracts
 {
     public class GetPendingUserContractsResponse : AppCostResponse
     {
-        public PatientContractResponse? PatientContract { get; set; }
-        public CompanyContractResponse? CompanyContract { get; set; }
+        public PatientContractResponse? PatientContractObj { get; set; }
+        public CompanyContractResponse? CompanyContractObj { get; set; }
 
         public static GetPendingUserContractsResponse? Create(AppCost appCost)
         {
@@ -32,17 +32,17 @@ namespace Application.Query.FinancialRecordEntities.GetPendingUserContracts
                 return null;
             }
 
-            data.PatientContract = PatientContractResponse.Create(appCost?.PatientContract);
-            data.CompanyContract = CompanyContractResponse.Create(appCost?.CompanyContract);
+            data.PatientContractObj = PatientContractResponse.Create(appCost?.PatientContract);
+            data.CompanyContractObj = CompanyContractResponse.Create(appCost?.CompanyContract);
 
-            if (data.CompanyContract != null)
+            if (data.CompanyContractObj != null)
             {
-                data.CompanyContract.Company = CompanyResponse.Create(appCost?.CompanyContract.Company);
+                data.CompanyContractObj.Company = CompanyResponse.Create(appCost?.CompanyContract.Company);
             }
 
-            if (data.PatientContract != null)
+            if (data.PatientContractObj != null)
             {
-                data.PatientContract.Patient = PatientResponse.Create(appCost?.PatientContract.Patient);
+                data.PatientContractObj.Patient = PatientResponse.Create(appCost?.PatientContract.Patient);
             }
 
             return data;

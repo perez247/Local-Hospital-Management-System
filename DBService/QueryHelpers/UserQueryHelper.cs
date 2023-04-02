@@ -59,11 +59,13 @@ namespace DBService.QueryHelpers
             }
 
             if (!string.IsNullOrEmpty(filter.Name))
+            {
                 query = query.Where(i =>
                     (!string.IsNullOrEmpty(i.FirstName) && EF.Functions.Like(i.FirstName.ToLower(), $"%{filter.Name.ToLower()}%")) ||
                     (!string.IsNullOrEmpty(i.LastName) && EF.Functions.Like(i.LastName.ToLower(), $"%{filter.Name.ToLower()}%")) ||
                     (!string.IsNullOrEmpty(i.OtherName) && EF.Functions.Like(i.OtherName.ToLower(), $"%{filter.Name.ToLower()}%"))
                 );
+            }
 
             if (filter.IsCompany.HasValue)
             {
@@ -111,6 +113,16 @@ namespace DBService.QueryHelpers
             if (filter.ForIndividual.HasValue)
             {
                 query = query.Where(x => x.Company.ForIndividual == filter.ForIndividual.Value);
+            }
+
+            if (!string.IsNullOrEmpty(filter.UserSearchId))
+            {
+                query = query.Where(i => EF.Functions.Like(i.Id.ToString().ToLower(), $"%{filter.UserSearchId.ToLower()}%"));
+            }
+
+            if (filter.Roles != null && filter.Roles.Count > 0)
+            {
+                query = query.Where(x => x.UserRoles.Any(y => filter.Roles.Contains(y.Role.Name)));
             }
 
             return query;

@@ -63,6 +63,7 @@ namespace Application.Responses
         public bool? SentToFinance { get; set; }
         public string? AppTicketStatus { get; set; }
         public string? AppInventoryType { get; set; }
+        public IEnumerable<TicketInventoryResponse> TicketInventories { get; set; }
         public static AppTicketResponseOnly? Create(AppTicket appTicket)
         {
             if (appTicket == null)
@@ -79,6 +80,8 @@ namespace Application.Responses
                 SentToFinance = appTicket.SentToFinance,
                 AppInventoryType = appTicket.AppInventoryType.ToString(),
                 AppTicketStatus = appTicket.AppTicketStatus.ToString(),
+                TicketInventories = appTicket.TicketInventories != null && appTicket.TicketInventories.Count() > 0 ? appTicket.TicketInventories.Select(x => TicketInventoryResponse.Create(x)) : null,
+
             };
         }
     }

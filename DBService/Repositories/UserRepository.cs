@@ -52,6 +52,8 @@ namespace DBService.Repositories
         public async Task<PaginationDto<AppUser>> GetUserList(GetUserListFilter filter, PaginationCommand command)
         {
             var query = _context.Users
+                                .Include(x => x.UserRoles)
+                                .ThenInclude(x => x.Role)
                                 .Include(x => x.NextOfKin)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();

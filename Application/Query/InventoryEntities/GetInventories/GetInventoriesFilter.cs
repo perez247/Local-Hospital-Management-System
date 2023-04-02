@@ -10,7 +10,7 @@ namespace Application.Query.InventoryEntities.GetInventories
     public class GetInventoriesFilter
     {
         public string? Name { get; set; }
-        public string? AppInventoryType { get; set; }
+        public ICollection<string>? AppInventoryType { get; set; }
         public string? Quantity { get; set; }
 
         [VerifyGuidAnnotation]

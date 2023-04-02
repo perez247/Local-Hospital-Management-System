@@ -21,6 +21,7 @@ namespace Application.Command.CompanyEntities.CreateCompany
         public string? UniqueId { get; set; }
         public string? OtherId { get; set; }
         public bool HomeCompany { get; set; }
+        public bool ForIndividual { get; set; }
     }
 
     public class CreateCompanyHandler : IRequestHandler<CreateCompanyCommand, CreateCompanyResponse>
@@ -44,6 +45,12 @@ namespace Application.Command.CompanyEntities.CreateCompany
 
             if (request.HomeCompany)
             {
+
+                if (request.ForIndividual)
+                {
+                    throw new CustomMessageException("Home company cannot be for individuals");
+                }
+
                 var anyHomeCompany = await iCompanyRepository.Companies()
                                                  .Include(x => x.AppUser)
                                                  .FirstOrDefaultAsync(x => x.HomeCompany);
@@ -67,7 +74,8 @@ namespace Application.Command.CompanyEntities.CreateCompany
                     Description = request.Description,
                     UniqueId = request.UniqueId,
                     OtherId = request.OtherId,
-                    HomeCompany = request.HomeCompany
+                    HomeCompany = request.HomeCompany,
+                    ForIndividual = request.ForIndividual,
                 }
             };
 

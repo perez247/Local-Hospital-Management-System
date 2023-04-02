@@ -62,6 +62,12 @@ namespace DBService.QueryHelpers
                 query = query.Where(x => x.AppTicketStatus == type);
             }
 
+            if (filter.PaymentStatus != null && filter.PaymentStatus.Count > 0)
+            {
+                var type = filter.PaymentStatus.Select(x => x.ParseEnum<PaymentStatus>());
+                query = query.Where(x => x.AppCost == null || type.Contains(x.AppCost.PaymentStatus));
+            }
+
             return query;
         }
 

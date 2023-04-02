@@ -30,18 +30,29 @@ namespace Application.Command.FinancialRecordEntities.UpdateContract
     {
         private readonly IFinancialRespository _financialRespository;
         private readonly IDBRepository _dBRepository;
+        private ICompanyRepository _companyRepository { get; set; }
 
-        public UpdateContractHandler(IFinancialRespository financialRespository, IDBRepository dBRepository)
+        public UpdateContractHandler(IFinancialRespository financialRespository, IDBRepository dBRepository, ICompanyRepository companyRepository)
         {
             _financialRespository = financialRespository;
             _dBRepository = dBRepository;
+            _companyRepository = companyRepository;
         }
 
         public async Task<Unit> Handle(UpdateContractCommand request, CancellationToken cancellationToken)
         {
+            var homeCompany = await _companyRepository.Companies()
+                                    .FirstOrDefaultAsync(x => x.HomeCompany);
+
+            if (homeCompany == null)
+            {
+                throw new CustomMessageException("Home Company is required");
+            }
+
             var tax = await _financialRespository.GetTax();
 
             var appCost = await _financialRespository.GetAppCosts()
+                                .Include(x => x.FinancialRecordPayerPayees)
                                 .Include(x => x.FinancialRecord)
                                 .Include(x => x.PatientContract)
                                 .Include(x => x.CompanyContract)
@@ -70,6 +81,12 @@ namespace Application.Command.FinancialRecordEntities.UpdateContract
 
             appCost.PaymentStatus = PaymentStatus.approved;
             var financialRecord = FinancialHelper.AppCostToFinancialRecord(appCost);
+
+            foreach (var item in financialRecord.FinancialRecordPayerPayees)
+            {
+                await _dBRepository.AddAsync<FinancialRecordPayerPayee>(item);
+            }
+
             appCost.FinancialRecordId = financialRecord.Id;
 
 

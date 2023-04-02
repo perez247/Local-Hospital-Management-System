@@ -1,8 +1,6 @@
-﻿using Application.Command.CompanyPayBill;
-using Application.Command.StaffEntities.CreateStaff;
+﻿using Application.Command.StaffEntities.CreateStaff;
 using Application.Command.StaffEntities.UpdateStaffDetails;
 using Application.Command.StaffEntities.UpdateStaffRoles;
-using Application.Command.UpdateFinancialRecord;
 using Application.Interfaces.IRepositories;
 using Application.Query.StaffEntities.GetDashboardStats;
 using Application.RequestResponsePipeline;
@@ -54,39 +52,6 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateStaff([FromBody] UpdateStaffDetailCommand command)
         {
             await UpdateToken(command, nameof(UpdateStaffDetailCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Add payment for a company
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("company-payment")]
-        public async Task<IActionResult> CompanyMakesPayment([FromBody] CompanyPayBillCommand command)
-        {
-            await UpdateToken(command, nameof(CompanyPayBillCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-
-        /// <summary>
-        /// Update a financial record
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("financial-record")]
-        public async Task<IActionResult> UpdateFinancialRecord([FromBody] UpdateFinancialRecordCommand command)
-        {
-            await UpdateToken(command, nameof(UpdateFinancialRecordCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

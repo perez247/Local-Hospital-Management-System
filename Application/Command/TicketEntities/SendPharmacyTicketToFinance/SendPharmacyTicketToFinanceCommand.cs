@@ -36,12 +36,13 @@ namespace Application.Command.TicketEntities.SendPharmacyTicketToFinance
         public async Task<Unit> Handle(SendPharmacyTicketToFinanceCommand request, CancellationToken cancellationToken)
         {
             var ticketFromDb = await iTicketRepository.AppTickets()
-                                          .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
+                                                      .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
 
             ticketFromDb.MustHvaeBeenSentToDepartment();
             ticketFromDb.CancelIfSentToDepartmentAndFinance();
 
-            request.TicketInventories = request.TicketInventories.DistinctBy(x => x.InventoryId).ToList();
+            request.TicketInventories = request.TicketInventories
+                                               .DistinctBy(x => x.InventoryId).ToList();
 
             var inventoryIds = request.TicketInventories.Select(y => y.InventoryId);
 
@@ -74,13 +75,11 @@ namespace Application.Command.TicketEntities.SendPharmacyTicketToFinance
                     throw new CustomMessageException($"{inventory.Name} does not have enough available quantity");
                 }
 
-
                 pharmacyTicketInventory.PrescribedQuantity = pharmacyTicket.PrescribedQuantity.ToString();
                 pharmacyTicketInventory.DepartmentDescription = pharmacyTicket.DepartmentDescription;
                 pharmacyTicketInventory.AppTicketStatus = pharmacyTicket.AppTicketStatus.ParseEnum<AppTicketStatus>();
 
                 iDBRepository.Update(pharmacyTicketInventory);
-
             }
 
             ticketFromDb.SentToFinance = true;
