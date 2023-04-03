@@ -20,7 +20,6 @@ namespace DBService
     >
     {
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
-
         public DbSet<Staff> Staff { get; set; }
         public DbSet<SalaryPaymentHistory> SalaryPaymentHistories { get; set; }
         public DbSet<StaffContract> StaffContracts { get; set; }
@@ -39,6 +38,7 @@ namespace DBService
         public DbSet<FinancialRecord> FinancialRecords { get; set; }
         public DbSet<FinancialRequest> FinancialRequests { get; set; }
         public DbSet<UserFile> UserFiles { get; set; }
+        public DbSet<AppSetting> AppSettings { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

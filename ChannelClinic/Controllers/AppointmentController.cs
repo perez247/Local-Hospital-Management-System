@@ -41,7 +41,6 @@ namespace ChannelClinic.Controllers
             return Ok(result);
         }
 
-
         /// <summary>
         /// update an appointment
         /// </summary>

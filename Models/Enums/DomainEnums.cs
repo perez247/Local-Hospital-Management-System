@@ -70,4 +70,9 @@ namespace Models.Enums
         failed,
         unknown
     }
+
+    public enum AppSettingType
+    {
+        billings
+    }
 }

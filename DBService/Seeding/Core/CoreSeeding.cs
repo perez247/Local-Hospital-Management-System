@@ -15,6 +15,8 @@ namespace DBService.Seeding.Core
         {
             await InsertRoles.CreateOrUpdate(context, roleManager);
             await InsertTheChosenOne.CreateTheChosenOne(context, userManager);
+            await InsertDefaultCompanies.CreateCompanies(context, userManager);
+            await InsertDefaultAppSettings.CreateAppSettings(context);
 
             await context.SaveChangesAsync();
         }

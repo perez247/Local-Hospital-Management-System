@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.FinancialRecordEntities.GetAppCosts;
@@ -7,6 +8,7 @@ using Application.Query.FinancialRecordEntities.GetPendingUserContracts;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,20 +32,32 @@ namespace DBService.Repositories
 
         public async Task<decimal> GetTax()
         {
-            await Task.Delay(500);
-            return (decimal)0.01;
+            var data = await GetBilling();
+            return data.Tax;
         }
 
         public async Task<decimal> CompanyContractCost()
         {
-            await Task.Delay(500);
-            return (decimal)10000;
+            var data = await GetBilling();
+            return data.CompanyRegistrationFee;
         }
 
         public async Task<decimal> GetPatientContractCost()
         {
-            await Task.Delay(500);
-            return (decimal)5000;
+            var data = await GetBilling();
+            return data.PatientRegistrationFee;
+        }
+
+        private async Task<AppSettingBilling> GetBilling()
+        {
+            var billing = await _context.AppSettings.FirstOrDefaultAsync(x => x.Type == Models.Enums.AppSettingType.billings);
+
+            if (billing == null)
+            {
+                throw new CustomMessageException("Settings not found");
+            }
+
+            return JsonConvert.DeserializeObject<AppSettingBilling>(billing.Data);
         }
 
         public async Task<PaginationDto<AppCost>> GetContracts(GetPendingUserContractsFilter filter, PaginationCommand command)

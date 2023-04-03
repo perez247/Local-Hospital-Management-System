@@ -23,7 +23,7 @@ namespace DBService
             services.AddScoped<IFinancialRespository, FinancialRespository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
-            
+            services.AddScoped<IAppSettingRepository, AppSettingRepository>();
         }
     }
 }
