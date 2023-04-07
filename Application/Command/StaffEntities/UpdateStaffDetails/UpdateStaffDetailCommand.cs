@@ -5,6 +5,7 @@ using Application.Utilities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,8 @@ namespace Application.Command.StaffEntities.UpdateStaffDetails
         public async Task<Unit> Handle(UpdateStaffDetailCommand request, CancellationToken cancellationToken)
         {
             var user = await iUserRepository.Users()
+                                            .Include(x => x.UserRoles)
+                                                .ThenInclude(x => x.Role)
                                             .Include(x => x.Staff)
                                             .FirstOrDefaultAsync(x => x.Staff != null && x.Staff.Id.ToString() == request.StaffId);
 
@@ -57,6 +60,17 @@ namespace Application.Command.StaffEntities.UpdateStaffDetails
             staff.AccountNumber = string.IsNullOrEmpty(request.AccountNumber) ? null : request.AccountNumber.Trim();
             staff.BankName = string.IsNullOrEmpty(request.BankName) ? null : request.BankName.Trim();
             staff.BankId = string.IsNullOrEmpty(request.BankId) ? null : request.BankId.Trim();
+
+            if (!staff.Active)
+            {
+                var roles = user.UserRoles.Select(x => x.Role);
+                var hasAdmin = roles.FirstOrDefault(x => x.Name == StaffRoleEnum.admin.ToString());
+
+                if (hasAdmin != null)
+                {
+                    throw new CustomMessageException("User is admin, kindly remove admin privilege before making user inactive");
+                }
+            }
 
 
             iDBRepository.Update(staff);

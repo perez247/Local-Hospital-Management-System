@@ -30,6 +30,15 @@ namespace Application.Command.AuthEntities.SignIn
             if (userFromDB == null)
                 throw new CustomMessageException("Hmmmm that didn't work, Try again...");
 
+            if (userFromDB.Company != null)
+                throw new CustomMessageException("Companies are not allowed to sign at the moment");
+
+            if (userFromDB.Patient != null && userFromDB.Staff == null)
+                throw new CustomMessageException("Patients are not allowed to sign at the moment");
+
+            if (!userFromDB.Staff.Active)
+                throw new CustomMessageException("This account is inactive, kindly contact any admin");
+
             if (userFromDB.LockoutEnd.HasValue && userFromDB.LockoutEnd.Value.UtcDateTime.ToUniversalTime() > DateTime.Now.ToUniversalTime())
                 throw new CustomMessageException($"This account has been locked for now");
 

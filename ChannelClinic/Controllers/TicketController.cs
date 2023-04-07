@@ -2,6 +2,8 @@
 using Application.Command.TicketEntities.ConcludePharmacyTicket;
 using Application.Command.TicketEntities.DeleteTicket;
 using Application.Command.TicketEntities.SendAllTicketsToDepartment;
+using Application.Command.TicketEntities.SendPharmacyTicketToFinance;
+using Application.Command.TicketEntities.UpdateTicket;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.TicketEntities.GetTickets;
@@ -26,6 +28,22 @@ namespace ChannelClinic.Controllers
         public TicketController(IMediator mediator, IUserRepository userRepository)
             : base(mediator, userRepository) { }
 
+
+        /// <summary>
+        /// Update single ticket
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut]
+        public async Task<IActionResult> UpdateSingleTicket([FromBody] UpdateTicketCommand command)
+        {
+            await UpdateToken(command, nameof(UpdateTicketCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
 
         /// <summary>
         /// Add pharmacy ticket inventory to the paharmacy ticket by a doctor
@@ -103,6 +121,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> DeleteTicket([FromBody] DeleteTicketCommand command)
         {
             await UpdateToken(command, nameof(DeleteTicketCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Send pharmacy to finance
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("send-pharmacy-to-finance")]
+        public async Task<IActionResult> SendPharmacyToFinance([FromBody] SendPharmacyTicketToFinanceCommand command)
+        {
+            await UpdateToken(command, nameof(SendPharmacyTicketToFinanceCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

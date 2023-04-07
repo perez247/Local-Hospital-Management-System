@@ -20,6 +20,7 @@ namespace DBService.Repositories
             return await _context.Users
                                 .Include(x => x.Staff)
                                 .Include(x => x.Patient)
+                                .Include(x => x.Company)
                                 .Include(x => x.UserRoles).ThenInclude(y => y.Role)
                                         .FirstOrDefaultAsync(x => x.Id.ToString() == id || x.Email.ToLower().Equals(email.ToLower()));
         }
