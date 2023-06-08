@@ -1,5 +1,4 @@
-﻿using Application.Query.InventoryEntities.GetInventories;
-using Application.Responses;
+﻿using Application.Responses;
 using Models;
 using System;
 using System.Collections.Generic;

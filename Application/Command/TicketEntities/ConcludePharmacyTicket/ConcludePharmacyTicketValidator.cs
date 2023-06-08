@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Application.Requests;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace Application.Command.TicketEntities.ConcludePharmacyTicket
     {
         public ConcludePharmacyTicketValidator()
         {
-            RuleFor(x => x.ConcludePharmacyTicketRequest)
+            RuleFor(x => x.ConcludeTicketRequest)
                 .Must(x => x != null && x.Count() > 0).WithMessage("At least one ticket inventory is required");
 
-            RuleForEach(x => x.ConcludePharmacyTicketRequest)
-                .SetValidator(new ConcludePharmacyTicketRequestValidator());
+            RuleForEach(x => x.ConcludeTicketRequest)
+                .SetValidator(new ConcludeTicketRequestValidator());
         }
     }
 }

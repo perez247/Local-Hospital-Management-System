@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Command.TicketEntities.SendPharmacyTicketToFinance
+namespace Application.Command.TicketEntities.SendLabTicketsToFinance
 {
-    public class SendPharmacyTicketToFinanceValidator : AbstractValidator<SendPharmacyTicketToFinanceCommand>
+    public class SendLabTicketsToFinanceValidator : AbstractValidator<SendLabTicketsToFinanceCommand>
     {
-        public SendPharmacyTicketToFinanceValidator()
+        public SendLabTicketsToFinanceValidator()
         {
             RuleFor(x => x.TicketInventories)
                 .Must(x => x != null && x.Count() > 0).WithMessage("At least one ticket inventory is required");

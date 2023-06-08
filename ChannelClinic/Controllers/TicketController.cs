@@ -1,7 +1,10 @@
 ﻿using Application.Command.TicketEntities.AddPharmacyTicketInventory;
+using Application.Command.TicketEntities.ConcludeLabRadTicket;
 using Application.Command.TicketEntities.ConcludePharmacyTicket;
 using Application.Command.TicketEntities.DeleteTicket;
+using Application.Command.TicketEntities.SaveTicketAndInventory;
 using Application.Command.TicketEntities.SendAllTicketsToDepartment;
+using Application.Command.TicketEntities.SendLabTicketsToFinance;
 using Application.Command.TicketEntities.SendPharmacyTicketToFinance;
 using Application.Command.TicketEntities.UpdateTicket;
 using Application.Interfaces.IRepositories;
@@ -53,9 +56,9 @@ namespace ChannelClinic.Controllers
         [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
         [HttpPost("pharmacy-ticket-inventory")]
-        public async Task<IActionResult> SavePharmacyTicketInventory([FromBody] AddPharmacyTicketInventoryCommand command)
+        public async Task<IActionResult> SavePharmacyTicketInventory([FromBody] SaveTicketAndInventoryCommand command)
         {
-            await UpdateToken(command, nameof(AddPharmacyTicketInventoryCommand));
+            await UpdateToken(command, nameof(SaveTicketAndInventoryCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);
@@ -72,6 +75,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> ConcludePharmacyTicketInventory([FromBody] ConcludePharmacyTicketCommand command)
         {
             await UpdateToken(command, nameof(ConcludePharmacyTicketCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// conclude a list of Lab or Radiology ticket inventory of an appointment
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("conclude-lab-ticket-inventory")]
+        public async Task<IActionResult> ConcludeLabRadTicketInventory([FromBody] ConcludeLabRadTicketCommand command)
+        {
+            await UpdateToken(command, nameof(ConcludeLabRadTicketCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);
@@ -127,7 +146,7 @@ namespace ChannelClinic.Controllers
         }
 
         /// <summary>
-        /// Send pharmacy to finance
+        /// Send pharmacy tickets to finance
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
@@ -137,6 +156,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> SendPharmacyToFinance([FromBody] SendPharmacyTicketToFinanceCommand command)
         {
             await UpdateToken(command, nameof(SendPharmacyTicketToFinanceCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Send lab tickets to finance
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("send-lab-to-finance")]
+        public async Task<IActionResult> SendLabToFinance([FromBody] SendLabTicketsToFinanceCommand command)
+        {
+            await UpdateToken(command, nameof(SendLabTicketsToFinanceCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

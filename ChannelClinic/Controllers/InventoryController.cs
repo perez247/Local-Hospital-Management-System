@@ -1,4 +1,5 @@
-﻿using Application.Command.InventoryEntities.SaveInventory;
+﻿using Application.Command.InventoryEntities.AddInventoryDependencies;
+using Application.Command.InventoryEntities.SaveInventory;
 using Application.Command.InventoryEntities.SaveInventoryItem;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
@@ -6,6 +7,7 @@ using Application.Query.InventoryEntities.GetInventories;
 using Application.Query.InventoryEntities.GetInventoryItemAmount;
 using Application.Query.InventoryEntities.GetInventoryItems;
 using Application.RequestResponsePipeline;
+using Application.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -100,6 +102,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> GetInventoryItemPrices([FromBody] GetInventoryItemAmountQuery command)
         {
             await UpdateToken(command, nameof(GetInventoryItemAmountQuery));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Update dependencies of an inventory
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<AppInventoryItemResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPut("dependencies")]
+        public async Task<IActionResult> UpdateDependencies([FromBody] AddInventoryDependenciesCommand command)
+        {
+            await UpdateToken(command, nameof(AddInventoryDependenciesCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

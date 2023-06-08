@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Query.InventoryEntities.GetInventories;
 
 namespace Application.Responses
 {
@@ -26,6 +25,8 @@ namespace Application.Responses
         public string? Description { get; set; }
         public string? DepartmentDescription { get; set; }
         public string? FinanceDescription { get; set; }
+        public IEnumerable<TicketInventoryItemUsedResponse>? ItemsUsed { get; set; } = new List<TicketInventoryItemUsedResponse>();
+
 
 
         #region Pharmacy section
@@ -75,6 +76,8 @@ namespace Application.Responses
                 DoctorsPrescription = ticketInventory.DoctorsPrescription,
                 DepartmentDescription = ticketInventory.DepartmentDescription,
                 FinanceDescription = ticketInventory.FinanceDescription,
+
+                ItemsUsed = ticketInventory.ItemsUsed != null && ticketInventory.ItemsUsed.Count > 0 ? ticketInventory.ItemsUsed.Select(x => TicketInventoryItemUsedResponse.Create(x)) : null,
 
                 #region Pharmacy section
                 PrescribedQuantity = ticketInventory.PrescribedQuantity,
@@ -137,6 +140,28 @@ namespace Application.Responses
                 SummaryOfSurgery = surgeryTicketPersonnel.SummaryOfSurgery,
                 IsHeadPersonnel = surgeryTicketPersonnel.IsHeadPersonnel,
                 IsPatient = surgeryTicketPersonnel.IsPatient,
+            };
+        }
+    }
+
+    public class TicketInventoryItemUsedResponse
+    {
+        public string? Id { get; set; }
+        public string? Name { get; set; }
+        public int? Quantity { get; set; }
+
+        public static TicketInventoryItemUsedResponse? Create(TicketInventoryItemUsed ticketInventoryItemUsed)
+        {
+            if (ticketInventoryItemUsed == null)
+            {
+                return null;
+            }
+
+            return new TicketInventoryItemUsedResponse
+            {
+                Id = ticketInventoryItemUsed.Id,
+                Name = ticketInventoryItemUsed.Name,
+                Quantity = ticketInventoryItemUsed.Quantity,
             };
         }
     }

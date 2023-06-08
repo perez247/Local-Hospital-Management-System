@@ -15,6 +15,7 @@ namespace Models
         public bool NotifyWhenLow { get; set; }
         public int HowLow { get; set; } = 10;
         public string? Profile { get; set; }
+        public ICollection<AppInventoryDependencies> Dependencies { get; set; } = new List<AppInventoryDependencies>();
         public ICollection<AppInventoryItem>? AppInventoryItems { get; set; } = new List<AppInventoryItem>();
         public ICollection<TicketInventory>? TicketInventories { get; set; } = new List<TicketInventory>();
     }

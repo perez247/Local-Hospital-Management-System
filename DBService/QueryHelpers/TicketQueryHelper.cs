@@ -33,7 +33,7 @@ namespace DBService.QueryHelpers
 
             if (filter.PatientId != Guid.Empty.ToString())
             {
-                query = query.Where(x => x.Appointment.Patient.AppUserId.ToString() == filter.PatientId);
+                query = query.Where(x => x.Appointment.PatientId.ToString() == filter.PatientId);
             }
 
             if (filter.DoctorId != Guid.Empty.ToString())
@@ -56,6 +56,11 @@ namespace DBService.QueryHelpers
                 query = query.Where(x => x.SentToFinance.Value == filter.SentToFinance);
             }
 
+            if (filter.BeforeDateTime.HasValue)
+            {
+                query = query.Where(x => filter.BeforeDateTime.Value >= x.DateCreated);
+            }
+
             if (!string.IsNullOrEmpty(filter.AppTicketStatus))
             {
                 var type = filter.AppTicketStatus.ParseEnum<AppTicketStatus>();
@@ -69,6 +74,7 @@ namespace DBService.QueryHelpers
             }
 
             return query;
+
         }
 
     }

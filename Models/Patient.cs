@@ -24,10 +24,14 @@ namespace Models
             BaseContract? contract;
             bool IsPatient = false;
 
+            if (Company.HomeCompany)
+            {
+                return true;
+            }
             if (companyContract != null && !Company.ForIndividual)
             {
                 contract = companyContract;
-            } else
+            }  else
             {
                 IsPatient = true;
                 var patientContract = PatientContracts.FirstOrDefault();

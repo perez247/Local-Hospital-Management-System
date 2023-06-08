@@ -29,6 +29,13 @@ namespace DBService.DBSchema
                     v => JsonConvert.DeserializeObject<List<string>>(v)
                 );
 
+            builder.Property(entity => entity.ItemsUsed)
+                .IsRequired(false)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<TicketInventoryItemUsed>>(v)
+                );
+
             builder.Property(x => x.StaffObservation)
                 .HasMaxLength(5000);
 

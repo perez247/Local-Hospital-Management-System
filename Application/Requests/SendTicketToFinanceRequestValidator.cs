@@ -1,4 +1,5 @@
-﻿using Application.Validations;
+﻿using Application.Annotations;
+using Application.Validations;
 using FluentValidation;
 using Models.Enums;
 using System;
@@ -7,11 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Command.TicketEntities.SendPharmacyTicketToFinance
+namespace Application.Requests
 {
-    public class SendPharmacyTicketToFinanceInventoryValidator : AbstractValidator<SendPharmacyTicketToFinanceInventory>
+    public class SendTicketToFinanceRequestValidator : AbstractValidator<SendTicketToFinanceRequest>
     {
-        public SendPharmacyTicketToFinanceInventoryValidator()
+        public SendTicketToFinanceRequestValidator()
         {
             RuleFor(x => x.AppTicketStatus)
                 .Must(x => CommonValidators.EnumsContains<AppTicketStatus>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppTicketStatus)))}");

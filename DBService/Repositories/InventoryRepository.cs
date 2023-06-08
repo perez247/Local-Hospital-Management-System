@@ -34,6 +34,8 @@ namespace DBService.Repositories
         public async Task<PaginationDto<AppInventory>> GetInventoryList(GetInventoriesFilter filter, PaginationCommand command)
         {
             var query = _context.AppInventories
+                                .Include(x => x.Dependencies)
+                                    .ThenInclude(x => x.AppInventory)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();
 

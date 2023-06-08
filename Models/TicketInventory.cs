@@ -26,6 +26,7 @@ namespace Models
         public string? Description { get; set; }
         public string? DepartmentDescription { get; set; }
         public string? FinanceDescription { get; set; }
+        public ICollection<TicketInventoryItemUsed> ItemsUsed { get; set; } = new List<TicketInventoryItemUsed>();
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }
@@ -46,5 +47,12 @@ namespace Models
         public DateTime? AdmissionStartDate { get; set; }
         public DateTime? AdmissionEndDate { get; set; }
         #endregion
+    }
+
+    public class TicketInventoryItemUsed
+    {
+        public string? Id { get; set; }
+        public string? Name { get; set; }
+        public int? Quantity { get; set; }
     }
 }

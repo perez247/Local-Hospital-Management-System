@@ -1,5 +1,4 @@
-﻿using Application.Responses;
-using Models;
+﻿using Models;
 using Models.Enums;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Query.InventoryEntities.GetInventories
+namespace Application.Responses
 {
     public class InventoryResponse
     {
@@ -18,6 +17,7 @@ namespace Application.Query.InventoryEntities.GetInventories
         public bool NotifyWhenLow { get; set; }
         public int HowLow { get; set; }
         public string? Profile { get; set; }
+        public IEnumerable<InventoryOnlyResponse>? Dependencies { get; set; }
 
         public static InventoryResponse? Create(AppInventory appInventory)
         {
@@ -35,6 +35,7 @@ namespace Application.Query.InventoryEntities.GetInventories
                 NotifyWhenLow = appInventory.NotifyWhenLow,
                 HowLow = appInventory.HowLow,
                 Profile = appInventory.Profile,
+                Dependencies = appInventory.Dependencies.Select(x => InventoryOnlyResponse.Create(x.AppInventory))
             };
         }
     }

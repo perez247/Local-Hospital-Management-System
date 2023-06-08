@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Command.TicketEntities.ConcludePharmacyTicket
+namespace Application.Requests
 {
-    public class ConcludePharmacyTicketRequestValidator : AbstractValidator<ConcludePharmacyTicketRequest>
+    public class ConcludeTicketRequestValidator : AbstractValidator<ConcludeTicketRequest>
     {
-        public ConcludePharmacyTicketRequestValidator()
+        public ConcludeTicketRequestValidator()
         {
             RuleFor(x => x.AppTicketStatus)
                 .Must(x => CommonValidators.EnumsContains<AppTicketStatus>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppTicketStatus)))}");
