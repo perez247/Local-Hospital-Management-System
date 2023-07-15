@@ -21,6 +21,7 @@ namespace Application.Command.AppointmentEntities.AddAppointment
         [VerifyGuidAnnotation]
         public string? PatientId { get; set; }
         public DateTime? AppointmentDate { get; set; }
+        public string? OverallDescription { get; set; }
     }
 
     public class AppAppointmentHandler : IRequestHandler<AppAppointmentCommand, AddAppointmentResponse>

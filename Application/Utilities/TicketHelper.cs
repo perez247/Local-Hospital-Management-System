@@ -55,23 +55,28 @@ namespace Application.Utilities
                 DoctorId = doctorId,
                 PatientId = patient?.Id,
                 CompanyId = patient?.CompanyId,
-                AppointmentDate = request.AppointmentDate.Value.ToUniversalTime()
+                AppointmentDate = request.AppointmentDate.Value.ToUniversalTime(),
+                OverallDescription = string.IsNullOrEmpty(request.OverallDescription) ? null : request.OverallDescription.Trim(),  
             };
 
 
             return appointment;
         }
 
-        public static async Task AddOrUpdateExistingTickets(
+        public static async Task<AppTicket> AddOrUpdateExistingTickets(
             SaveTicketAndInventoryCommand request,
             ITicketRepository iTicketRepository,
             IInventoryRepository iInventoryRepository,
-            IDBRepository iDBRepository
-
+            IDBRepository iDBRepository,
+            IAppointmentRepository iAppointmentRepository
             )
         {
-            var ticketFromDb = await iTicketRepository.AppTickets()
-                                                      .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
+
+            var appointment = await iAppointmentRepository.AppAppointments()
+                                                          .Include(x => x.Tickets.Where(x => x.Id.ToString() == request.TicketId))
+                                                          .FirstOrDefaultAsync(x => x.Id.ToString() == request.AppointmentId);
+
+            var ticketFromDb = appointment.Tickets.FirstOrDefault();
 
             if (ticketFromDb == null)
             {
@@ -89,6 +94,12 @@ namespace Application.Utilities
                     AppInventoryType = request.AppInventoryType.ParseEnum<AppInventoryType>(),
                     AppointmentId = request.AppointmentId != Guid.Empty.ToString() ? Guid.Parse(request.AppointmentId) : null,
                 };
+
+                if (appointment != null)
+                {
+                    ticketFromDb.DateCreated = appointment.AppointmentDate >= DateTime.Now ? appointment.AppointmentDate.AddMinutes(5).ToUniversalTime() : DateTime.Now;
+                }
+
                 ticketFromDb.OverallDescription = request.OverallDescription.Trim();
                 await iDBRepository.AddAsync<AppTicket>(ticketFromDb);
             }
@@ -134,6 +145,8 @@ namespace Application.Utilities
                     iDBRepository.Remove<TicketInventory>(inventory);
                 }
             }
+
+            return ticketFromDb;
         }
 
         private static async Task SaveTicketInventory(
@@ -185,7 +198,7 @@ namespace Application.Utilities
             ITicketRepository iTicketRepository,
             IInventoryRepository iInventoryRepository,
             IDBRepository iDBRepository,
-            Func<SendTicketToFinanceRequest?, AppInventory?, object>? moreValidation
+            Func<SendTicketToFinanceRequest?, TicketInventory?, AppInventory?, object>? moreValidation
             )
         {
             var inventories = await iInventoryRepository.AppInventories()
@@ -214,7 +227,7 @@ namespace Application.Utilities
 
                 if (moreValidation != null)
                 {
-                    moreValidation(itemTicket, inventory);
+                    moreValidation(itemTicket, pharmacyTicketInventory, inventory);
                 }
 
                 pharmacyTicketInventory.PrescribedQuantity = itemTicket.PrescribedQuantity.ToString();
@@ -236,10 +249,17 @@ namespace Application.Utilities
             var ticketFromDb = await iTicketRepository.AppTickets()
                                           .Include(x => x.TicketInventories)
                                             .ThenInclude(x => x.AppInventory)
+                                          .Include(x => x.TicketInventories)
+                                            .ThenInclude(x => x.SurgeryTicketPersonnels)
                                           .Include(x => x.AppCost)
                                           .FirstOrDefaultAsync(x => x.Id.ToString() == ticketId);
 
             ticketFromDb.MustHaveBeenSentToFinance();
+
+            if (ticketFromDb.AppTicketStatus == AppTicketStatus.concluded)
+            {
+                throw new CustomMessageException("Ticket has already been concluded");
+            }
 
             var appCost = ticketFromDb.AppCost;
             if (appCost.PaymentStatus == PaymentStatus.pending)
@@ -277,6 +297,8 @@ namespace Application.Utilities
                 }
 
             }
+
+            ticketFromDb.AppTicketStatus = AppTicketStatus.concluded;
 
             return ticketFromDb;
         }

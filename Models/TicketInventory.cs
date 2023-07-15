@@ -34,6 +34,7 @@ namespace Models
 
         #region Surgery section
         public DateTime? SurgeryDate { get; set; }
+        public string? SurgeryTestResult { get; set; }
         public SurgeryTicketStatus SurgeryTicketStatus { get; set; } = SurgeryTicketStatus.unknown;
         public ICollection<SurgeryTicketPersonnel> SurgeryTicketPersonnels { get; set; } = new List<SurgeryTicketPersonnel>();
         #endregion

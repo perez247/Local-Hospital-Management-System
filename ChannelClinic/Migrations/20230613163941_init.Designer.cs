@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChannelClinic.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20230525121017_inventory_dependant_default_amount")]
-    partial class inventory_dependant_default_amount
+    [Migration("20230613163941_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1109,6 +1109,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("FinanceDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
+
+                    b.Property<string>("ItemsUsed")
+                        .HasColumnType("text");
 
                     b.Property<string>("LabRadiologyTestResult")
                         .HasMaxLength(5000)

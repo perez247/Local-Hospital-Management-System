@@ -29,16 +29,18 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
         private readonly ITicketRepository iTicketRepository;
         private readonly IInventoryRepository iInventoryRepository;
         private readonly IDBRepository iDBRepository;
+        private readonly IAppointmentRepository iAppointmentRepository;
 
-        public SaveTicketAndInventoryHandler(ITicketRepository iTicketRepository, IInventoryRepository iInventoryRepository, IDBRepository iDBRepository)
+        public SaveTicketAndInventoryHandler(ITicketRepository iTicketRepository, IInventoryRepository iInventoryRepository, IDBRepository iDBRepository, IAppointmentRepository iAppointmentRepository)
         {
             this.iTicketRepository = iTicketRepository;
             this.iInventoryRepository = iInventoryRepository;
             this.iDBRepository = iDBRepository;
+            this.iAppointmentRepository = iAppointmentRepository;
         }
         public async Task<Unit> Handle(SaveTicketAndInventoryCommand request, CancellationToken cancellationToken)
         {
-            await TicketHelper.AddOrUpdateExistingTickets(request, iTicketRepository, iInventoryRepository, iDBRepository);
+            await TicketHelper.AddOrUpdateExistingTickets(request, iTicketRepository, iInventoryRepository, iDBRepository, iAppointmentRepository);
             
             await iDBRepository.Complete();
 

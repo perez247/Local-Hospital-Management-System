@@ -4,21 +4,22 @@
 
 namespace ChannelClinic.Migrations
 {
-    public partial class appinventoryitemused : Migration
+    public partial class surgery_result : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "ItemsUsed",
+                name: "SurgeryTestResult",
                 table: "TicketInventories",
-                type: "text",
+                type: "character varying(5000)",
+                maxLength: 5000,
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ItemsUsed",
+                name: "SurgeryTestResult",
                 table: "TicketInventories");
         }
     }

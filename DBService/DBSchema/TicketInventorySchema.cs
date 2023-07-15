@@ -57,6 +57,8 @@ namespace DBService.DBSchema
             builder.Property(x => x.LabRadiologyTestResult)
                 .HasMaxLength(5000);
 
+            builder.Property(x => x.SurgeryTestResult)
+                .HasMaxLength(5000);
         }
     }
 }

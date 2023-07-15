@@ -192,5 +192,6 @@ namespace Application.Utilities
                 throw new CustomMessageException("Ticket must be sent to the department");
             }
         }
+
     }
 }

@@ -1,8 +1,12 @@
-﻿using Application.Command.TicketEntities.AddPharmacyTicketInventory;
+﻿using Application.Command.TicketEntities.AddEmergencyTicket;
+using Application.Command.TicketEntities.AddPharmacyTicketInventory;
+using Application.Command.TicketEntities.ConcludeAdmissionTicket;
 using Application.Command.TicketEntities.ConcludeLabRadTicket;
 using Application.Command.TicketEntities.ConcludePharmacyTicket;
+using Application.Command.TicketEntities.ConcludeSurgeryTicket;
 using Application.Command.TicketEntities.DeleteTicket;
 using Application.Command.TicketEntities.SaveTicketAndInventory;
+using Application.Command.TicketEntities.SendAdmissionToFinance;
 using Application.Command.TicketEntities.SendAllTicketsToDepartment;
 using Application.Command.TicketEntities.SendLabTicketsToFinance;
 using Application.Command.TicketEntities.SendPharmacyTicketToFinance;
@@ -97,6 +101,38 @@ namespace ChannelClinic.Controllers
         }
 
         /// <summary>
+        /// conclude a list of Surgery ticket inventory of an appointment
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("conclude-surgery-ticket-inventory")]
+        public async Task<IActionResult> ConcludeSurgeryTicketInventory([FromBody] ConcludeSurgeryTicketCommand command)
+        {
+            await UpdateToken(command, nameof(ConcludeSurgeryTicketCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// conclude a list of Admission ticket inventory of an appointment
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("conclude-admission-ticket-inventory")]
+        public async Task<IActionResult> ConcludeAdmissionTicketInventory([FromBody] ConcludeAdmissionTicketCommand command)
+        {
+            await UpdateToken(command, nameof(ConcludeAdmissionTicketCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Get Tickets
         /// </summary>
         /// <param name="command"></param>
@@ -162,7 +198,7 @@ namespace ChannelClinic.Controllers
         }
 
         /// <summary>
-        /// Send lab tickets to finance
+        /// Send lab/Radiology tickets to finance
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
@@ -172,6 +208,54 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> SendLabToFinance([FromBody] SendLabTicketsToFinanceCommand command)
         {
             await UpdateToken(command, nameof(SendLabTicketsToFinanceCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Send Surgery tickets to finance
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("send-surgery-to-finance")]
+        public async Task<IActionResult> SendSurgeryToFinance([FromBody] SendLabTicketsToFinanceCommand command)
+        {
+            await UpdateToken(command, nameof(SendLabTicketsToFinanceCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Send admission tickets to finance
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("send-admission-to-finance")]
+        public async Task<IActionResult> SendAmission([FromBody] SendAdmissionToFinanceCommand command)
+        {
+            await UpdateToken(command, nameof(SendAdmissionToFinanceCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Create emergency ticket
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(AddEmergencyTicketResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("emergency-ticket")]
+        public async Task<IActionResult> EmergencyTicket([FromBody] AddEmergencyTicketCommand command)
+        {
+            await UpdateToken(command, nameof(AddEmergencyTicketCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

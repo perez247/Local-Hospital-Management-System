@@ -1132,6 +1132,10 @@ namespace ChannelClinic.Migrations
                     b.Property<DateTime?>("SurgeryDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("SurgeryTestResult")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
                     b.Property<int>("SurgeryTicketStatus")
                         .HasColumnType("integer");
 

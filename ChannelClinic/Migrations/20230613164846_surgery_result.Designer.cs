@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChannelClinic.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20230403051632_app_setting_table")]
-    partial class app_setting_table
+    [Migration("20230613164846_surgery_result")]
+    partial class surgery_result
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -233,6 +233,36 @@ namespace ChannelClinic.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppInventories");
+                });
+
+            modelBuilder.Entity("Models.AppInventoryDependencies", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AppInventoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DefaultAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("DependantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppInventoryId");
+
+                    b.HasIndex("DependantId");
+
+                    b.ToTable("AppInventoryDependencies");
                 });
 
             modelBuilder.Entity("Models.AppInventoryItem", b =>
@@ -1080,6 +1110,9 @@ namespace ChannelClinic.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
 
+                    b.Property<string>("ItemsUsed")
+                        .HasColumnType("text");
+
                     b.Property<string>("LabRadiologyTestResult")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
@@ -1100,6 +1133,10 @@ namespace ChannelClinic.Migrations
 
                     b.Property<DateTime?>("SurgeryDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SurgeryTestResult")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<int>("SurgeryTicketStatus")
                         .HasColumnType("integer");
@@ -1222,6 +1259,25 @@ namespace ChannelClinic.Migrations
                     b.Navigation("FinancialApprover");
 
                     b.Navigation("FinancialRecord");
+                });
+
+            modelBuilder.Entity("Models.AppInventoryDependencies", b =>
+                {
+                    b.HasOne("Models.AppInventory", "AppInventory")
+                        .WithMany()
+                        .HasForeignKey("AppInventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.AppInventory", "Dependant")
+                        .WithMany("Dependencies")
+                        .HasForeignKey("DependantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppInventory");
+
+                    b.Navigation("Dependant");
                 });
 
             modelBuilder.Entity("Models.AppInventoryItem", b =>
@@ -1516,6 +1572,8 @@ namespace ChannelClinic.Migrations
             modelBuilder.Entity("Models.AppInventory", b =>
                 {
                     b.Navigation("AppInventoryItems");
+
+                    b.Navigation("Dependencies");
 
                     b.Navigation("TicketInventories");
                 });

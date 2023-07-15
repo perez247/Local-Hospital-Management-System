@@ -17,5 +17,6 @@ namespace Application.Requests
         public string? AppTicketStatus { get; set; }
         public int? PrescribedQuantity { get; set; }
         public string? DepartmentDescription { get; set; }
+        public DateTime? AdmissionStartDate { get; set; }
     }
 }

@@ -35,6 +35,7 @@ namespace Application.Responses
 
         #region Surgery section
         public DateTime? SurgeryDate { get; set; }
+        public string? SurgeryTestResult { get; set; }
         public string? SurgeryTicketStatus { get; set; }
         public IEnumerable<SurgeryTicketPersonnelResponse>? SurgeryTicketPersonnels { get; set; }
         #endregion
@@ -87,6 +88,7 @@ namespace Application.Responses
                 #region Surgery section
 
                 SurgeryDate = ticketInventory.SurgeryDate,
+                SurgeryTestResult = ticketInventory.SurgeryTestResult,
                 SurgeryTicketStatus = ticketInventory.SurgeryTicketStatus.ToString(),
                 SurgeryTicketPersonnels = ticketInventory.SurgeryTicketPersonnels != null && ticketInventory.SurgeryTicketPersonnels.Count() > 0 ? ticketInventory.SurgeryTicketPersonnels.Select(x => SurgeryTicketPersonnelResponse.Create(x)) : null,
 

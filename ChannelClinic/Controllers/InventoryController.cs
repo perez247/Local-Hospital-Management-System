@@ -1,6 +1,7 @@
 ﻿using Application.Command.InventoryEntities.AddInventoryDependencies;
 using Application.Command.InventoryEntities.SaveInventory;
 using Application.Command.InventoryEntities.SaveInventoryItem;
+using Application.Command.TicketEntities.UpdateSurgeryTicket;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
 using Application.Query.InventoryEntities.GetInventories;
@@ -118,6 +119,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateDependencies([FromBody] AddInventoryDependenciesCommand command)
         {
             await UpdateToken(command, nameof(AddInventoryDependenciesCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Update surgery ticket inventory
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(UpdateSurgeryTicketResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("surgery-inventory")]
+        public async Task<IActionResult> UpdateSUrgeryInventory([FromBody] UpdateSurgeryTicketCommand command)
+        {
+            await UpdateToken(command, nameof(UpdateSurgeryTicketCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

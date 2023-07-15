@@ -77,6 +77,14 @@ namespace Application.Command.FinancialRecordEntities.InitialPayment
             appTicket.MustHvaeBeenSentToDepartment();
             appTicket.MustHaveBeenSentToFinance();
 
+            if (appTicket.AppInventoryType == AppInventoryType.admission)
+            {
+                if (request.Payments.Count > 0)
+                {
+                    throw new CustomMessageException("No initial payment is required for admission, payment should be made after conclusion from department");
+                }
+            }
+
             // make sure ticket is onging
             if (appTicket.AppTicketStatus != AppTicketStatus.ongoing)
             {

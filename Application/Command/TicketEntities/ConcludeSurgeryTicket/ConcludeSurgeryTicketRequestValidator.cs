@@ -6,16 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Command.TicketEntities.ConcludeLabRadTicket
+namespace Application.Command.TicketEntities.ConcludeSurgeryTicket
 {
-    public class ConcludeLabRadTicketRequestValidator : AbstractValidator<ConcludeLabRadTicketRequest>
+    public class ConcludeSurgeryTicketRequestValidator : AbstractValidator<ConcludeSurgeryTicketRequest>
     {
-        public ConcludeLabRadTicketRequestValidator()
+        public ConcludeSurgeryTicketRequestValidator()
         {
             Include(new ConcludeTicketRequestValidator());
 
-            RuleFor(x => x.LabRadiologyTestResult)
-                .Must(x => !string.IsNullOrEmpty(x)).WithMessage("Lab/Radiology result is required");
+            RuleFor(x => x.SurgeryTestResult)
+                .Must(x => !string.IsNullOrEmpty(x)).WithMessage("Surgery result is required");
 
             RuleForEach(x => x.ItemsUsed)
                 .Must(x => x.Quantity > 0).WithMessage("Quantity can not be lest than or equal to zero")

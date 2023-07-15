@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ChannelClinic.Migrations
 {
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,6 +27,21 @@ namespace ChannelClinic.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppInventories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppSettings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Data = table.Column<string>(type: "text", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppSettings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -87,12 +102,41 @@ namespace ChannelClinic.Migrations
                     PaymentStatus = table.Column<int>(type: "integer", nullable: false),
                     Payments = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
+                    TotalAppCosts = table.Column<int>(type: "integer", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FinancialRecords", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppInventoryDependencies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AppInventoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DependantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DefaultAmount = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppInventoryDependencies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppInventoryDependencies_AppInventories_AppInventoryId",
+                        column: x => x.AppInventoryId,
+                        principalTable: "AppInventories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AppInventoryDependencies_AppInventories_DependantId",
+                        column: x => x.DependantId,
+                        principalTable: "AppInventories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -561,11 +605,11 @@ namespace ChannelClinic.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AppCostId = table.Column<Guid>(type: "uuid", nullable: true),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Duration = table.Column<int>(type: "integer", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Duration = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -625,11 +669,11 @@ namespace ChannelClinic.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PatientId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AppCostId = table.Column<Guid>(type: "uuid", nullable: true),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Duration = table.Column<int>(type: "integer", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Duration = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -711,6 +755,7 @@ namespace ChannelClinic.Migrations
                     Description = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
                     DepartmentDescription = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
                     FinanceDescription = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
+                    ItemsUsed = table.Column<string>(type: "text", nullable: true),
                     PrescribedQuantity = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
                     SurgeryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     SurgeryTicketStatus = table.Column<int>(type: "integer", nullable: false),
@@ -799,6 +844,16 @@ namespace ChannelClinic.Migrations
                 name: "IX_AppCosts_FinancialRecordId",
                 table: "AppCosts",
                 column: "FinancialRecordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppInventoryDependencies_AppInventoryId",
+                table: "AppInventoryDependencies",
+                column: "AppInventoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppInventoryDependencies_DependantId",
+                table: "AppInventoryDependencies",
+                column: "DependantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppInventoryItems_AppInventoryId",
@@ -998,7 +1053,13 @@ namespace ChannelClinic.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AppInventoryDependencies");
+
+            migrationBuilder.DropTable(
                 name: "AppInventoryItems");
+
+            migrationBuilder.DropTable(
+                name: "AppSettings");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");

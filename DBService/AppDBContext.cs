@@ -42,19 +42,19 @@ namespace DBService
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-
+            var minYear = DateTime.MinValue.Year;
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<BaseEntity> entry in ChangeTracker.Entries<BaseEntity>())
             {
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.DateCreated = DateTime.UtcNow;
-                        entry.Entity.DateModified = DateTime.UtcNow;
+                        entry.Entity.DateCreated = entry.Entity.DateCreated.Year == minYear ? DateTime.UtcNow : entry.Entity.DateCreated.ToUniversalTime();
+                        entry.Entity.DateModified = entry.Entity.DateCreated.Year == minYear ? DateTime.UtcNow : entry.Entity.DateCreated.ToUniversalTime();
                         break;
 
                     case EntityState.Modified:
                         //entry.Entity.LastModifiedBy = _currentUserService.UserId;
-                        entry.Entity.DateModified = DateTime.UtcNow;
+                        entry.Entity.DateModified = entry.Entity.DateModified.Year == minYear ? DateTime.UtcNow : entry.Entity.DateModified.ToUniversalTime();
                         break;
                 }
             }
@@ -64,13 +64,13 @@ namespace DBService
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.DateCreated = DateTime.UtcNow;
-                        entry.Entity.DateModified = DateTime.UtcNow;
+                        entry.Entity.DateCreated = entry.Entity.DateCreated.Year == minYear ? DateTime.UtcNow : entry.Entity.DateCreated.ToUniversalTime();
+                        entry.Entity.DateModified = entry.Entity.DateCreated.Year == minYear ? DateTime.UtcNow : entry.Entity.DateCreated.ToUniversalTime();
                         break;
 
                     case EntityState.Modified:
                         //entry.Entity.LastModifiedBy = _currentUserService.UserId;
-                        entry.Entity.DateModified = DateTime.UtcNow;
+                        entry.Entity.DateModified = entry.Entity.DateModified.Year == minYear ? DateTime.UtcNow : entry.Entity.DateModified.ToUniversalTime();
                         break;
                 }
             }
