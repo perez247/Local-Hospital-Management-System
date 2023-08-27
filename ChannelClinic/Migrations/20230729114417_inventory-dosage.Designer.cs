@@ -3,6 +3,7 @@ using System;
 using DBService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChannelClinic.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230729114417_inventory-dosage")]
+    partial class inventorydosage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,38 +110,6 @@ namespace ChannelClinic.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Models.AdmissionPrescription", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("AppInventoryType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("AppTicketId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("AppTicketStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("DateModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("OverallDescription")
-                        .HasMaxLength(5000)
-                        .HasColumnType("character varying(5000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppTicketId");
-
-                    b.ToTable("AdmissionPrescriptions");
                 });
 
             modelBuilder.Entity("Models.AppAppointment", b =>
@@ -1094,9 +1064,6 @@ namespace ChannelClinic.Migrations
                     b.Property<DateTime?>("AdmissionEndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("AdmissionPrescriptionId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime?>("AdmissionStartDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1189,8 +1156,6 @@ namespace ChannelClinic.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdmissionPrescriptionId");
-
                     b.HasIndex("AppInventoryId");
 
                     b.HasIndex("AppTicketId");
@@ -1263,16 +1228,6 @@ namespace ChannelClinic.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.AdmissionPrescription", b =>
-                {
-                    b.HasOne("Models.AppTicket", "AppTicket")
-                        .WithMany("AdmissionPrescriptions")
-                        .HasForeignKey("AppTicketId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("AppTicket");
                 });
 
             modelBuilder.Entity("Models.AppAppointment", b =>
@@ -1577,11 +1532,6 @@ namespace ChannelClinic.Migrations
 
             modelBuilder.Entity("Models.TicketInventory", b =>
                 {
-                    b.HasOne("Models.AdmissionPrescription", "AdmissionPrescription")
-                        .WithMany("TicketInventories")
-                        .HasForeignKey("AdmissionPrescriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Models.AppInventory", "AppInventory")
                         .WithMany("TicketInventories")
                         .HasForeignKey("AppInventoryId")
@@ -1595,8 +1545,6 @@ namespace ChannelClinic.Migrations
                     b.HasOne("Models.Staff", "Staff")
                         .WithMany()
                         .HasForeignKey("StaffId");
-
-                    b.Navigation("AdmissionPrescription");
 
                     b.Navigation("AppInventory");
 
@@ -1613,11 +1561,6 @@ namespace ChannelClinic.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("AppUser");
-                });
-
-            modelBuilder.Entity("Models.AdmissionPrescription", b =>
-                {
-                    b.Navigation("TicketInventories");
                 });
 
             modelBuilder.Entity("Models.AppAppointment", b =>
@@ -1652,8 +1595,6 @@ namespace ChannelClinic.Migrations
 
             modelBuilder.Entity("Models.AppTicket", b =>
                 {
-                    b.Navigation("AdmissionPrescriptions");
-
                     b.Navigation("TicketInventories");
                 });
 

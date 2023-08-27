@@ -39,6 +39,7 @@ namespace DBService
         public DbSet<FinancialRequest> FinancialRequests { get; set; }
         public DbSet<UserFile> UserFiles { get; set; }
         public DbSet<AppSetting> AppSettings { get; set; }
+        public DbSet<AdmissionPrescription> AdmissionPrescriptions { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

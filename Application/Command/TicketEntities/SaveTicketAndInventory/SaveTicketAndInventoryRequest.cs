@@ -11,7 +11,14 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
     {
         [VerifyGuidAnnotation]
         public string? InventoryId { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? TicketInventoryId { get; set; }
         public string? DoctorsPrescription { get; set; }
         public string? PrescribedQuantity { get; set; }
+        public string? AppInventoryType { get; set; }
+        public int? Times { get; set; }
+        public int? Dosage { get; set; }
+        public string? Frequency { get; set; }
     }
 }

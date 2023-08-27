@@ -26,8 +26,9 @@ namespace Application.Responses
         public string? DepartmentDescription { get; set; }
         public string? FinanceDescription { get; set; }
         public IEnumerable<TicketInventoryItemUsedResponse>? ItemsUsed { get; set; } = new List<TicketInventoryItemUsedResponse>();
-
-
+        public int? Times { get; set; }
+        public int? Dosage { get; set; }
+        public string? Frequency { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }
@@ -79,6 +80,10 @@ namespace Application.Responses
                 FinanceDescription = ticketInventory.FinanceDescription,
 
                 ItemsUsed = ticketInventory.ItemsUsed != null && ticketInventory.ItemsUsed.Count > 0 ? ticketInventory.ItemsUsed.Select(x => TicketInventoryItemUsedResponse.Create(x)) : null,
+
+                Times = ticketInventory.Times,
+                Dosage = ticketInventory.Dosage,
+                Frequency = ticketInventory.Frequency,
 
                 #region Pharmacy section
                 PrescribedQuantity = ticketInventory.PrescribedQuantity,

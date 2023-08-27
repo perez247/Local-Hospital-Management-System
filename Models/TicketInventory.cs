@@ -11,6 +11,8 @@ namespace Models
     {
         public virtual AppTicket? AppTicket { get; set; }
         public Guid? AppTicketId { get; set; }
+        public virtual AdmissionPrescription? AdmissionPrescription { get; set; }
+        public Guid? AdmissionPrescriptionId { get; set; }
         public virtual AppInventory? AppInventory { get; set; }
         public Guid? AppInventoryId { get; set; }
         public int? AppInventoryQuantity { get; set; }
@@ -27,6 +29,9 @@ namespace Models
         public string? DepartmentDescription { get; set; }
         public string? FinanceDescription { get; set; }
         public ICollection<TicketInventoryItemUsed> ItemsUsed { get; set; } = new List<TicketInventoryItemUsed>();
+        public int? Times { get; set; }
+        public int? Dosage { get; set; }
+        public string? Frequency { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }

@@ -18,3 +18,5 @@ services:
       - POSTGRES_DB=db
     volumes:
       - auth_db:/var/postgresql/data
+
+

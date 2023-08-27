@@ -23,7 +23,6 @@ namespace Application.Query.TicketEntities.GetTickets
     public class GetTicketHandler : IRequestHandler<GetTicketsQuery, PaginationResponse<IEnumerable<AppTicketResponse>>>
     {
         private readonly ITicketRepository iTicketRepository;
-
         public GetTicketHandler(ITicketRepository ITicketRepository)
         {
             iTicketRepository = ITicketRepository;

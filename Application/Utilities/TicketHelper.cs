@@ -73,6 +73,7 @@ namespace Application.Utilities
         {
 
             var appointment = await iAppointmentRepository.AppAppointments()
+                                                          .Include(x => x.Patient)
                                                           .Include(x => x.Tickets.Where(x => x.Id.ToString() == request.TicketId))
                                                           .FirstOrDefaultAsync(x => x.Id.ToString() == request.AppointmentId);
 
@@ -86,6 +87,16 @@ namespace Application.Utilities
                 if (totalAppointmentTickets >= 20)
                 {
                     throw new CustomMessageException("Only a maximum of 20 tickets per appointment");
+                }
+
+                if (request.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.admission)
+                {
+                    var totalAdmissionTicket = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId && x.AppInventoryType == AppInventoryType.admission);
+
+                    if (totalAdmissionTicket > 0)
+                    {
+                        throw new CustomMessageException("This appointment has already prescribed an admission for the patient");
+                    }
                 }
 
                 ticketFromDb = new AppTicket
@@ -107,6 +118,11 @@ namespace Application.Utilities
             {
                 ticketFromDb.OverallDescription = request.OverallDescription.Trim();
                 iDBRepository.Update<AppTicket>(ticketFromDb);
+            }
+
+            if (ticketFromDb.AppInventoryType == AppInventoryType.admission)
+            {
+                await ticketFromDb.MustHaveOnlyOneAdmissionRunning(iTicketRepository, appointment.Patient.AppUserId.ToString());
             }
 
             ticketFromDb.MustNotHaveBeenSentToDepartment();
@@ -166,29 +182,35 @@ namespace Application.Utilities
                 throw new CustomMessageException($"{command.AppInventoryType} to add not found");
             }
 
-            var hasPharmacyInventory = ticketInventories.FirstOrDefault(x => x.Id.ToString() == request.InventoryId);
+            var hasInventory = ticketInventories.FirstOrDefault(x => x.Id.ToString() == request.TicketInventoryId);
 
-            if (hasPharmacyInventory != null)
+            if (hasInventory != null)
             {
-                hasPharmacyInventory.DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription;
-                hasPharmacyInventory.PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity;
-                iDBRepository.Update<TicketInventory>(hasPharmacyInventory);
+                hasInventory.DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription;
+                hasInventory.PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity;
+                hasInventory.Times = request.Times;
+                hasInventory.Dosage = request.Dosage;
+                hasInventory.Frequency = request.Frequency;
+                iDBRepository.Update<TicketInventory>(hasInventory);
             }
             else
             {
-                hasPharmacyInventory = new TicketInventory
+                hasInventory = new TicketInventory
                 {
                     Id = Guid.NewGuid(),
                     AppInventoryId = inventory.Id,
                     AppTicketId = ticketFromDb.Id,
                     DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription,
                     PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity,
+                    Times = request.Times,
+                    Dosage = request.Dosage,
+                    Frequency = request.Frequency
                 };
 
-                await iDBRepository.AddAsync<TicketInventory>(hasPharmacyInventory);
+                await iDBRepository.AddAsync<TicketInventory>(hasInventory);
             }
 
-            ticketsInventoriesUpdated.Add(hasPharmacyInventory.Id.Value);
+            ticketsInventoriesUpdated.Add(hasInventory.Id.Value);
         }
 
         public static async Task VerifyInventories(
@@ -301,6 +323,91 @@ namespace Application.Utilities
             ticketFromDb.AppTicketStatus = AppTicketStatus.concluded;
 
             return ticketFromDb;
+        }
+
+
+
+        public static void MustNotHaveBeenSentToDepartment(this AppTicket? ticketFromDb)
+        {
+            if (ticketFromDb == null)
+            {
+                throw new CustomMessageException("Ticket not found");
+            }
+
+            if (ticketFromDb.Sent.HasValue && ticketFromDb.Sent.Value)
+            {
+                throw new CustomMessageException("Ticket has already been sent to a department");
+            }
+        }
+
+        public static void CancelIfSentToDepartmentAndFinance(this AppTicket? ticketFromDb)
+        {
+            if (ticketFromDb == null)
+            {
+                throw new CustomMessageException("Ticket not found");
+            }
+
+            if ((ticketFromDb.Sent.HasValue && ticketFromDb.Sent.Value) && (ticketFromDb.SentToFinance.HasValue && ticketFromDb.SentToFinance.Value))
+            {
+                throw new CustomMessageException("Ticket has already been sent to all departments");
+            }
+        }
+        public static void MustHaveBeenSentToFinance(this AppTicket? ticketFromDb)
+        {
+            if (ticketFromDb == null)
+            {
+                throw new CustomMessageException("Ticket not found");
+            }
+
+            if (!ticketFromDb.SentToFinance.HasValue)
+            {
+                throw new CustomMessageException("Ticket must be sent to the finance department");
+            }
+
+            if (!ticketFromDb.SentToFinance.Value)
+            {
+                throw new CustomMessageException("Ticket must be sent to the finance department");
+            }
+        }
+
+        public static void MustHvaeBeenSentToDepartment(this AppTicket? ticketFromDb)
+        {
+            if (ticketFromDb == null)
+            {
+                throw new CustomMessageException("Ticket not found");
+            }
+
+            if (!ticketFromDb.Sent.HasValue)
+            {
+                throw new CustomMessageException("Ticket must be sent to the department");
+            }
+
+            if (!ticketFromDb.Sent.Value)
+            {
+                throw new CustomMessageException("Ticket must be sent to the department");
+            }
+        }
+
+        public static async Task MustHaveOnlyOneAdmissionRunning(this AppTicket? ticketFromDb, ITicketRepository iTicketRepository, string userId)
+        {
+            var admission = await iTicketRepository.AppTickets()
+                                             .Include(x => x.Appointment)
+                                                .ThenInclude(x => x.Patient)
+                                             .OrderByDescending(x => x.DateCreated)
+                                             .Where(x =>
+                                                x.AppInventoryType == AppInventoryType.admission &&
+                                                x.Appointment.Patient.AppUserId.ToString() == userId &&
+                                                x.AppTicketStatus == AppTicketStatus.ongoing &&
+                                                x.SentToFinance.HasValue &&
+                                                x.SentToFinance.Value
+                                                )
+                                             .Take(1)
+                                             .FirstOrDefaultAsync();
+
+            if (admission != null)
+            {
+                throw new CustomMessageException("Patient has already been admitted. kindly admission before creating a new one");
+            }
         }
     }
 }

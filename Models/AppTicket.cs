@@ -18,7 +18,8 @@ namespace Models
         public bool? SentToFinance { get; set; } = false;
         public AppTicketStatus AppTicketStatus { get; set; } = AppTicketStatus.ongoing;
         public AppInventoryType AppInventoryType { get; set; }
-        public ICollection<TicketInventory> TicketInventories { get; set; } = new List<TicketInventory>();
+        public ICollection<TicketInventory>? TicketInventories { get; set; } = new List<TicketInventory>();
+        public ICollection<AdmissionPrescription>? AdmissionPrescriptions { get; set; } = new List<AdmissionPrescription>();
     }
 }
 
