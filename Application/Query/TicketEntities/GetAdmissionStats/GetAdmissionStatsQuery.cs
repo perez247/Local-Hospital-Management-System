@@ -45,10 +45,10 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
                                                     AppTicketId = x.Id,
                                                     Patient = x.Appointment.Patient,
                                                     TicketInventories = x.TicketInventories,
-                                                    Pharmacy = x.AdmissionPrescriptions.Count(a => x.AppInventoryType == Models.Enums.AppInventoryType.pharmacy && a.AppTicketId.ToString() == request.TicketId),
-                                                    Lab = x.AdmissionPrescriptions.Count(a => x.AppInventoryType == Models.Enums.AppInventoryType.lab && a.AppTicketId.ToString() == request.TicketId),
-                                                    Radiology = x.AdmissionPrescriptions.Count(a => x.AppInventoryType == Models.Enums.AppInventoryType.radiology && a.AppTicketId.ToString() == request.TicketId),
-                                                    Surgery = x.AdmissionPrescriptions.Count(a => x.AppInventoryType == Models.Enums.AppInventoryType.surgery && a.AppTicketId.ToString() == request.TicketId),
+                                                    Pharmacy = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.pharmacy),
+                                                    Lab = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.lab),
+                                                    Radiology = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.radiology),
+                                                    Surgery = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.surgery),
                                                 })
                                                 .FirstOrDefaultAsync(x => x.AppTicketId.ToString() == request.TicketId);
 

@@ -1,4 +1,4 @@
-﻿using Application.Command.TicketEntities.AddPharmacyTicketInventory;
+﻿using Application.Command.TicketEntities.SaveTicketAndInventory;
 using Application.Validations;
 using FluentValidation;
 using Models.Enums;
@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Command.TicketEntities.SaveTicketAndInventory
+namespace Application.Command.AdmissionEntities.SaveAdmissionPrescription
 {
-    public class SaveTicketAndInventoryValidator : AbstractValidator<SaveTicketAndInventoryCommand>
+    public class SaveAdmissionPrescriptionValidator : AbstractValidator<SaveAdmissionPrescriptionCommand>
     {
-        public SaveTicketAndInventoryValidator() 
+        public SaveAdmissionPrescriptionValidator()
         {
             RuleFor(x => x.OverallDescription)
                 .Must(x => !string.IsNullOrEmpty(x)).WithMessage("Overal Description is required")
@@ -23,12 +23,15 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
                 .Must(x => CommonValidators.EnumsContains<AppInventoryType>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppInventoryType)))}");
 
             RuleFor(x => x.TicketInventories)
-                .Must(x => x != null && x.Count > 0).WithMessage("Inventory is required")
-                .Must(x => x != null && x.Count <= 20).WithMessage("A maximum of 20 ticket inventories per ticket");
+                .Must(x => x != null).WithMessage("Kindly pass an empty ticket inventory");
+
+            RuleFor(x => x.AppTicketStatus)
+                .Must(x => CommonValidators.EnumsContains<AppTicketStatus>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppTicketStatus)))}");
 
             RuleForEach(x => x.TicketInventories)
-                .SetValidator(x => new SaveTicketAndInventoryRequestValidator())
+                .SetValidator(x => new SaveAdmissionPrescriptionRequestValidator())
                 .When(x => x != null && x.TicketInventories.Count > 0);
+
         }
     }
 }

@@ -1,25 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ChannelClinic.Migrations
 {
-    public partial class surgery_result : Migration
+    public partial class ticketinventory_timetaken : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "SurgeryTestResult",
+            migrationBuilder.AddColumn<DateTime>(
+                name: "TimeGiven",
                 table: "TicketInventories",
-                type: "character varying(5000)",
-                maxLength: 5000,
+                type: "timestamp with time zone",
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "SurgeryTestResult",
+                name: "TimeGiven",
                 table: "TicketInventories");
         }
     }

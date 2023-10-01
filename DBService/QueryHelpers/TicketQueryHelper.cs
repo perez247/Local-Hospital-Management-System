@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Utilities;
 using Application.Query.TicketEntities.GetTickets;
+using Application.Query.AdmissionEntities.GetPrescriptions;
 
 namespace DBService.QueryHelpers
 {
@@ -71,6 +72,27 @@ namespace DBService.QueryHelpers
             {
                 var type = filter.PaymentStatus.Select(x => x.ParseEnum<PaymentStatus>());
                 query = query.Where(x => x.AppCost == null || type.Contains(x.AppCost.PaymentStatus));
+            }
+
+            return query;
+
+        }
+
+        public static IQueryable<AdmissionPrescription> FilterAdmissionPrescription(IQueryable<AdmissionPrescription> query, GetPrescriptionQueryFilter filter)
+        {
+            if (filter == null)
+            {
+                return query;
+            }
+
+            if (filter.TicketId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.AppTicketId.ToString() == filter.TicketId);
+            }
+
+            if (filter.PrescriptionId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.Id.ToString() == filter.PrescriptionId);
             }
 
             return query;

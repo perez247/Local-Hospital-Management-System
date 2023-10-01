@@ -131,6 +131,9 @@ namespace ChannelClinic.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("DoctorId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("OverallDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
@@ -138,6 +141,8 @@ namespace ChannelClinic.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppTicketId");
+
+                    b.HasIndex("DoctorId");
 
                     b.ToTable("AdmissionPrescriptions");
                 });
@@ -1181,6 +1186,9 @@ namespace ChannelClinic.Migrations
                     b.Property<int>("SurgeryTicketStatus")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("TimeGiven")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("Times")
                         .HasColumnType("integer");
 
@@ -1272,7 +1280,13 @@ namespace ChannelClinic.Migrations
                         .HasForeignKey("AppTicketId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Models.AppUser", "Doctor")
+                        .WithMany("AdmissionPrescriptions")
+                        .HasForeignKey("DoctorId");
+
                     b.Navigation("AppTicket");
+
+                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("Models.AppAppointment", b =>
@@ -1659,6 +1673,8 @@ namespace ChannelClinic.Migrations
 
             modelBuilder.Entity("Models.AppUser", b =>
                 {
+                    b.Navigation("AdmissionPrescriptions");
+
                     b.Navigation("Company");
 
                     b.Navigation("FinancialRecordPayerPayees");

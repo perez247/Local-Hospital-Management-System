@@ -23,6 +23,7 @@ namespace Models
         public ICollection<SurgeryTicketPersonnel> SurgeryTicketPersonnels { get; set; } = new List<SurgeryTicketPersonnel>();
         public ICollection<UserFile> UserFiles { get; set; } = new List<UserFile>();
         public ICollection<FinancialRecordPayerPayee> FinancialRecordPayerPayees { get; set; } = new List<FinancialRecordPayerPayee>();
+        public ICollection<AdmissionPrescription> AdmissionPrescriptions { get; set; } = new List<AdmissionPrescription>();
 
     }
 }

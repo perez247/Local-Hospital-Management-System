@@ -35,8 +35,8 @@ namespace DBService.Seeding
                 await CoreSeeding.BeginSeeding(defaultDataContext, defaultDataContextRoleManager, defaultDataContextUserManager);
 
                 // Seed Development Data
-                //if (!EnvironmentFunctions.isEnv("Production"))
-                //    await DevelopmentSeeding.BeginSeeding(defaultDataContext, defaultDataContextUserManager);
+                if (!EnvironmentFunctions.isEnv("Production"))
+                    await DevelopmentSeeding.BeginSeeding(defaultDataContext, defaultDataContextUserManager);
             }
             catch (Exception ex)
             {

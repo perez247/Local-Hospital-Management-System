@@ -1,4 +1,5 @@
 ﻿using Application.Paginations;
+using Application.Query.AdmissionEntities.GetPrescriptions;
 using Application.Query.TicketEntities.GetTickets;
 using Models;
 using System;
@@ -13,7 +14,9 @@ namespace Application.Interfaces.IRepositories
     {
         IQueryable<AppTicket> AppTickets();
         IQueryable<TicketInventory> TicketInventory();
+        IQueryable<AdmissionPrescription> TicketPrescription();
         Task<PaginationDto<AppTicket>> GetTickets(GetTicketsQueryFilter filter, PaginationCommand command);
         Task<PaginationDto<AppTicket>> GetLinerTickets(GetTicketsQueryFilter filter, PaginationCommand command);
+        Task<PaginationDto<AdmissionPrescription>> GetAdmissionPrescription(GetPrescriptionQueryFilter filter, PaginationCommand command);
     }
 }

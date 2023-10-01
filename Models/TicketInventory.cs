@@ -32,6 +32,7 @@ namespace Models
         public int? Times { get; set; }
         public int? Dosage { get; set; }
         public string? Frequency { get; set; }
+        public DateTime? TimeGiven { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }

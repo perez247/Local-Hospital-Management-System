@@ -68,7 +68,8 @@ namespace Application.Utilities
             ITicketRepository iTicketRepository,
             IInventoryRepository iInventoryRepository,
             IDBRepository iDBRepository,
-            IAppointmentRepository iAppointmentRepository
+            IAppointmentRepository iAppointmentRepository,
+            Boolean fromAdmission = false
             )
         {
 
@@ -84,18 +85,21 @@ namespace Application.Utilities
 
                 var totalAppointmentTickets = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId);
 
-                if (totalAppointmentTickets >= 20)
+                if (!fromAdmission)
                 {
-                    throw new CustomMessageException("Only a maximum of 20 tickets per appointment");
-                }
-
-                if (request.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.admission)
-                {
-                    var totalAdmissionTicket = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId && x.AppInventoryType == AppInventoryType.admission);
-
-                    if (totalAdmissionTicket > 0)
+                    if (totalAppointmentTickets >= 20)
                     {
-                        throw new CustomMessageException("This appointment has already prescribed an admission for the patient");
+                        throw new CustomMessageException("Only a maximum of 20 tickets per appointment");
+                    }
+
+                    if (request.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.admission)
+                    {
+                        var totalAdmissionTicket = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId && x.AppInventoryType == AppInventoryType.admission);
+
+                        if (totalAdmissionTicket > 0)
+                        {
+                            throw new CustomMessageException("This appointment has already prescribed an admission for the patient");
+                        }
                     }
                 }
 
@@ -120,12 +124,15 @@ namespace Application.Utilities
                 iDBRepository.Update<AppTicket>(ticketFromDb);
             }
 
-            if (ticketFromDb.AppInventoryType == AppInventoryType.admission)
+            if (ticketFromDb.AppInventoryType == AppInventoryType.admission && !fromAdmission)
             {
                 await ticketFromDb.MustHaveOnlyOneAdmissionRunning(iTicketRepository, appointment.Patient.AppUserId.ToString());
             }
 
-            ticketFromDb.MustNotHaveBeenSentToDepartment();
+            if (!fromAdmission)
+            {
+                ticketFromDb.MustNotHaveBeenSentToDepartment();
+            }
 
             request.TicketInventories = request.TicketInventories.DistinctBy(x => x.InventoryId).ToList();
 
@@ -144,25 +151,34 @@ namespace Application.Utilities
                                                .Where(x => x.AppTicketId == ticketFromDb.Id)
                                                .ToListAsync();
 
-            var ticketsInventoriesUpdated = new List<Guid>();
+            var ticketsInventoriesUpdated = new List<TicketInventory>();
 
             foreach (var ticketInventory in request.TicketInventories)
             {
                 await TicketHelper.SaveTicketInventory(request, ticketInventory, ticketFromDb, inventories, ticketInventories, iDBRepository, ticketsInventoriesUpdated);
             }
 
-            // Delete any ticket that was not found
-            var ticketsInventoriesToBeDeleted = ticketInventories.Where(x => !ticketsInventoriesUpdated.Contains(x.Id.Value));
-
-            if (ticketsInventoriesToBeDeleted.Count() > 0)
+            if (!fromAdmission)
             {
-                foreach (var inventory in ticketsInventoriesToBeDeleted)
+                // Delete any ticket that was not found
+                var ticketsInventoriesToBeDeleted = ticketInventories.Where(x => !ticketsInventoriesUpdated.Select(a => a.Id.Value).Contains(x.Id.Value));
+
+                if (ticketsInventoriesToBeDeleted.Count() > 0)
                 {
-                    iDBRepository.Remove<TicketInventory>(inventory);
+                    foreach (var inventory in ticketsInventoriesToBeDeleted)
+                    {
+                        iDBRepository.Remove<TicketInventory>(inventory);
+                    }
                 }
             }
 
-            return ticketFromDb;
+            var ticket = new AppTicket
+            {
+                Id = ticketFromDb.Id,
+                TicketInventories = ticketsInventoriesUpdated
+            };
+
+            return ticket;
         }
 
         private static async Task SaveTicketInventory(
@@ -172,7 +188,7 @@ namespace Application.Utilities
             List<AppInventory> appInventories,
             List<TicketInventory> ticketInventories,
             IDBRepository iDBRepository,
-            ICollection<Guid> ticketsInventoriesUpdated
+            ICollection<TicketInventory> ticketsInventoriesUpdated
             )
         {
             var inventory = appInventories.FirstOrDefault(x => x.Id.ToString() == request.InventoryId);
@@ -210,7 +226,7 @@ namespace Application.Utilities
                 await iDBRepository.AddAsync<TicketInventory>(hasInventory);
             }
 
-            ticketsInventoriesUpdated.Add(hasInventory.Id.Value);
+            ticketsInventoriesUpdated.Add(hasInventory);
         }
 
         public static async Task VerifyInventories(

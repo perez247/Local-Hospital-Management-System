@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChannelClinic.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20230613163941_init")]
-    partial class init
+    [Migration("20231001091035_ticket-inventory_time-taken")]
+    partial class ticketinventory_timetaken
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -110,6 +110,43 @@ namespace ChannelClinic.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Models.AdmissionPrescription", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AppInventoryType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("AppTicketId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AppTicketStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DoctorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("OverallDescription")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppTicketId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("AdmissionPrescriptions");
                 });
 
             modelBuilder.Entity("Models.AppAppointment", b =>
@@ -1064,6 +1101,9 @@ namespace ChannelClinic.Migrations
                     b.Property<DateTime?>("AdmissionEndDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("AdmissionPrescriptionId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("AdmissionStartDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1106,9 +1146,16 @@ namespace ChannelClinic.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
 
+                    b.Property<int?>("Dosage")
+                        .HasColumnType("integer");
+
                     b.Property<string>("FinanceDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
+
+                    b.Property<string>("Frequency")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("ItemsUsed")
                         .HasColumnType("text");
@@ -1134,13 +1181,25 @@ namespace ChannelClinic.Migrations
                     b.Property<DateTime?>("SurgeryDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("SurgeryTestResult")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
                     b.Property<int>("SurgeryTicketStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("TimeGiven")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Times")
                         .HasColumnType("integer");
 
                     b.Property<decimal?>("TotalPrice")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdmissionPrescriptionId");
 
                     b.HasIndex("AppInventoryId");
 
@@ -1214,6 +1273,22 @@ namespace ChannelClinic.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Models.AdmissionPrescription", b =>
+                {
+                    b.HasOne("Models.AppTicket", "AppTicket")
+                        .WithMany("AdmissionPrescriptions")
+                        .HasForeignKey("AppTicketId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Models.AppUser", "Doctor")
+                        .WithMany("AdmissionPrescriptions")
+                        .HasForeignKey("DoctorId");
+
+                    b.Navigation("AppTicket");
+
+                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("Models.AppAppointment", b =>
@@ -1518,6 +1593,11 @@ namespace ChannelClinic.Migrations
 
             modelBuilder.Entity("Models.TicketInventory", b =>
                 {
+                    b.HasOne("Models.AdmissionPrescription", "AdmissionPrescription")
+                        .WithMany("TicketInventories")
+                        .HasForeignKey("AdmissionPrescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Models.AppInventory", "AppInventory")
                         .WithMany("TicketInventories")
                         .HasForeignKey("AppInventoryId")
@@ -1531,6 +1611,8 @@ namespace ChannelClinic.Migrations
                     b.HasOne("Models.Staff", "Staff")
                         .WithMany()
                         .HasForeignKey("StaffId");
+
+                    b.Navigation("AdmissionPrescription");
 
                     b.Navigation("AppInventory");
 
@@ -1547,6 +1629,11 @@ namespace ChannelClinic.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("Models.AdmissionPrescription", b =>
+                {
+                    b.Navigation("TicketInventories");
                 });
 
             modelBuilder.Entity("Models.AppAppointment", b =>
@@ -1581,11 +1668,15 @@ namespace ChannelClinic.Migrations
 
             modelBuilder.Entity("Models.AppTicket", b =>
                 {
+                    b.Navigation("AdmissionPrescriptions");
+
                     b.Navigation("TicketInventories");
                 });
 
             modelBuilder.Entity("Models.AppUser", b =>
                 {
+                    b.Navigation("AdmissionPrescriptions");
+
                     b.Navigation("Company");
 
                     b.Navigation("FinancialRecordPayerPayees");

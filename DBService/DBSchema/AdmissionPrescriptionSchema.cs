@@ -17,6 +17,10 @@ namespace DBService.DBSchema
                 .WithMany(entity => entity.AdmissionPrescriptions)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(entity => entity.Doctor)
+                .WithMany(entity => entity.AdmissionPrescriptions)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
             builder.HasMany(entity => entity.TicketInventories)
                 .WithOne(entity => entity.AdmissionPrescription)
                 .OnDelete(DeleteBehavior.Cascade);

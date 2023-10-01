@@ -737,11 +737,35 @@ namespace ChannelClinic.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AdmissionPrescriptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AppTicketId = table.Column<Guid>(type: "uuid", nullable: true),
+                    OverallDescription = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
+                    AppTicketStatus = table.Column<int>(type: "integer", nullable: false),
+                    AppInventoryType = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AdmissionPrescriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AdmissionPrescriptions_AppTickets_AppTicketId",
+                        column: x => x.AppTicketId,
+                        principalTable: "AppTickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TicketInventories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppTicketId = table.Column<Guid>(type: "uuid", nullable: true),
+                    AdmissionPrescriptionId = table.Column<Guid>(type: "uuid", nullable: true),
                     AppInventoryId = table.Column<Guid>(type: "uuid", nullable: true),
                     AppInventoryQuantity = table.Column<int>(type: "integer", nullable: true),
                     CurrentPrice = table.Column<decimal>(type: "numeric", nullable: true),
@@ -756,8 +780,12 @@ namespace ChannelClinic.Migrations
                     DepartmentDescription = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
                     FinanceDescription = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
                     ItemsUsed = table.Column<string>(type: "text", nullable: true),
+                    Times = table.Column<int>(type: "integer", nullable: true),
+                    Dosage = table.Column<int>(type: "integer", nullable: true),
+                    Frequency = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     PrescribedQuantity = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
                     SurgeryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    SurgeryTestResult = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
                     SurgeryTicketStatus = table.Column<int>(type: "integer", nullable: false),
                     DateOfLabTest = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     LabRadiologyTestResult = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: true),
@@ -769,6 +797,12 @@ namespace ChannelClinic.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TicketInventories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketInventories_AdmissionPrescriptions_AdmissionPrescript~",
+                        column: x => x.AdmissionPrescriptionId,
+                        principalTable: "AdmissionPrescriptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TicketInventories_AppInventories_AppInventoryId",
                         column: x => x.AppInventoryId,
@@ -819,6 +853,11 @@ namespace ChannelClinic.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AdmissionPrescriptions_AppTicketId",
+                table: "AdmissionPrescriptions",
+                column: "AppTicketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppAppointments_CompanyId",
@@ -1030,6 +1069,11 @@ namespace ChannelClinic.Migrations
                 column: "TicketInventoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TicketInventories_AdmissionPrescriptionId",
+                table: "TicketInventories",
+                column: "AdmissionPrescriptionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TicketInventories_AppInventoryId",
                 table: "TicketInventories",
                 column: "AppInventoryId");
@@ -1114,6 +1158,9 @@ namespace ChannelClinic.Migrations
 
             migrationBuilder.DropTable(
                 name: "TicketInventories");
+
+            migrationBuilder.DropTable(
+                name: "AdmissionPrescriptions");
 
             migrationBuilder.DropTable(
                 name: "AppInventories");

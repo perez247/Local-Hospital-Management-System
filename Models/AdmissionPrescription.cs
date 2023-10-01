@@ -9,6 +9,8 @@ namespace Models
 {
     public class AdmissionPrescription : BaseEntity
     {
+        public virtual AppUser? Doctor { get; set; }
+        public Guid? DoctorId { get; set; }
         public virtual AppTicket? AppTicket { get; set; }
         public Guid? AppTicketId { get; set; }
         public string? OverallDescription { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.IRepositories;
 using Application.Paginations;
+using Application.Query.AdmissionEntities.GetPrescriptions;
 using Application.Query.TicketEntities.GetTickets;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,12 @@ namespace DBService.Repositories
         {
             return _context.TicketInventories.AsQueryable();
         }
+
+        public IQueryable<AdmissionPrescription> TicketPrescription()
+        {
+            return _context.AdmissionPrescriptions.AsQueryable();
+        }
+
         public async Task<PaginationDto<AppTicket>> GetTickets(GetTicketsQueryFilter filter, PaginationCommand command)
         {
             var query = _context.AppTickets
@@ -90,6 +97,20 @@ namespace DBService.Repositories
                                 .AsQueryable();
 
             query = TicketQueryHelper.FilterTicket(query, filter);
+
+            return await query.GenerateEntity(command);
+        }
+
+        public async Task<PaginationDto<AdmissionPrescription>> GetAdmissionPrescription(GetPrescriptionQueryFilter filter, PaginationCommand command)
+        {
+            var query = _context.AdmissionPrescriptions
+                                .Include(x => x.Doctor)
+                                .Include(x => x.TicketInventories)
+                                    .ThenInclude(x => x.AppInventory)
+                                .OrderByDescending(x => x.DateCreated)
+                                .AsQueryable();
+
+            query = TicketQueryHelper.FilterAdmissionPrescription(query, filter);
 
             return await query.GenerateEntity(command);
         }
