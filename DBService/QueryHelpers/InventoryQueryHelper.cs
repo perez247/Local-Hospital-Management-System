@@ -1,5 +1,6 @@
 ﻿using Application.Query.InventoryEntities.GetInventories;
 using Application.Query.InventoryEntities.GetInventoryItems;
+using Application.Query.InventoryEntities.GetTicketInventories;
 using Application.Query.StaffPaymentHistory;
 using Application.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -89,6 +90,31 @@ namespace DBService.QueryHelpers
             {
                 var name = filter.AppInventoryName.Trim();
                 query = query.Where(i => EF.Functions.Like(i.AppInventory.Name.ToLower(), $"%{name.ToLower()}%"));
+            }
+
+            return query;
+        }
+
+        public static IQueryable<TicketInventory> FilterTicketInventory(IQueryable<TicketInventory> query, GetTicketInventoriesFilter filter)
+        {
+            if (filter == null)
+            {
+                return query;
+            }
+
+            if (filter.PrescriptionId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.AdmissionPrescriptionId.ToString() == filter.PrescriptionId);
+            }
+
+            if (filter.AppticketId != Guid.Empty.ToString())
+            {
+                query = query.Where(x => x.AppTicketId.ToString() == filter.AppticketId);
+            }
+
+            if (filter.isTickets.HasValue && filter.isTickets.Value)
+            {
+                query = query.Where(x => x.AppTicketId.HasValue);
             }
 
             return query;

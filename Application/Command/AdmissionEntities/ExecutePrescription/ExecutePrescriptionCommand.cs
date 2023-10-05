@@ -81,6 +81,8 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 },
             };
 
+            newRequest.SetCurrentUserRequest(request.getCurrentUserRequest());
+
             var ticketTobeSaved = await TicketHelper.AddOrUpdateExistingTickets(newRequest, iTicketRepository, iInventoryRepository, iDBRepository, iAppointmentRepository, true);
 
             await iDBRepository.Complete();
@@ -90,6 +92,8 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
             foreach (var item in newTickets)
             {
                 item.TimeGiven = request.TimeGiven.Value.ToUniversalTime();
+                item.AdmissionPrescriptionId = ticketPrecriptionFromDb.AdmissionPrescriptionId;
+                item.AppTicketId = ticketPrecriptionFromDb.AdmissionPrescription.AppTicketId;
                 iDBRepository.Update<TicketInventory>(item);
             }
 

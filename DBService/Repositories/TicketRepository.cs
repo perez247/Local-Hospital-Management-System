@@ -105,7 +105,7 @@ namespace DBService.Repositories
         {
             var query = _context.AdmissionPrescriptions
                                 .Include(x => x.Doctor)
-                                .Include(x => x.TicketInventories)
+                                .Include(x => x.TicketInventories.Where(x => !x.AppTicketId.HasValue))
                                     .ThenInclude(x => x.AppInventory)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();

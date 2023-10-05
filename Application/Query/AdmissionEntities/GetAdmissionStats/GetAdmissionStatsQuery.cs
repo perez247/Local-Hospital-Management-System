@@ -32,6 +32,8 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
             var stats = await iTicketRepository.AppTickets()
                                                .Include(x => x.TicketInventories)
                                                 .ThenInclude(x => x.AppInventory)
+                                               //.Include(x => x.TicketInventories)
+                                               // .ThenInclude(x => x.AdmissionPrescription)
                                                .Include(x => x.AdmissionPrescriptions)
                                                .Include(x => x.Appointment)
                                                 .ThenInclude(x => x.Patient)
@@ -45,6 +47,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
                                                     AppTicketId = x.Id,
                                                     Patient = x.Appointment.Patient,
                                                     TicketInventories = x.TicketInventories,
+                                                    //TicketInventories = x.TicketInventories.Where(x => x.AppInventory.AppInventoryType == Models.Enums.AppInventoryType.admission).ToList(),
                                                     Pharmacy = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.pharmacy),
                                                     Lab = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.lab),
                                                     Radiology = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.radiology),

@@ -199,7 +199,6 @@ namespace Application.Utilities
             }
 
             var hasInventory = ticketInventories.FirstOrDefault(x => x.Id.ToString() == request.TicketInventoryId);
-
             if (hasInventory != null)
             {
                 hasInventory.DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription;
@@ -220,7 +219,8 @@ namespace Application.Utilities
                     PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity,
                     Times = request.Times,
                     Dosage = request.Dosage,
-                    Frequency = request.Frequency
+                    Frequency = request.Frequency,
+                    StaffId = command.getCurrentUserRequest().CurrentUser.Staff.Id,
                 };
 
                 await iDBRepository.AddAsync<TicketInventory>(hasInventory);

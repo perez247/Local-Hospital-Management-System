@@ -18,7 +18,7 @@ namespace Application.Responses
         public DateTime? ConcludedDate { get; set; }
         public string? AppTicketStatus { get; set; }
         public ICollection<string> Proof { get; set; } = new List<string>();
-        //public virtual Staff? Staff { get; set; }
+        public StaffResponse? Staff { get; set; }
         //public Guid? StaffId { get; set; }
         //public string? StaffObservation { get; set; }
         public string? DoctorsPrescription { get; set; }
@@ -29,6 +29,7 @@ namespace Application.Responses
         public int? Times { get; set; }
         public int? Dosage { get; set; }
         public string? Frequency { get; set; }
+        public AdmissionPrescriptionResponse? AdmissionPrescription { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }
@@ -54,7 +55,7 @@ namespace Application.Responses
 
         public BaseResponse? Base { get; set; }
 
-        public static TicketInventoryResponse? Create(TicketInventory ticketInventory)
+        public static TicketInventoryResponse? Create(TicketInventory ticketInventory, bool includePrescription = false)
         {
             if (ticketInventory == null)
             {
@@ -84,6 +85,8 @@ namespace Application.Responses
                 Times = ticketInventory.Times,
                 Dosage = ticketInventory.Dosage,
                 Frequency = ticketInventory.Frequency,
+
+                Staff = StaffResponse.Create(ticketInventory.Staff),
 
                 #region Pharmacy section
                 PrescribedQuantity = ticketInventory.PrescribedQuantity,
@@ -116,6 +119,11 @@ namespace Application.Responses
                 Base = BaseResponse.Create(ticketInventory),
 
             };
+
+            if (includePrescription)
+            {
+                data.AdmissionPrescription = AdmissionPrescriptionResponse.Create(ticketInventory.AdmissionPrescription);
+            }
 
             return data;
         }

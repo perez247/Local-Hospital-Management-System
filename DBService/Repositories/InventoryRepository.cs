@@ -2,6 +2,7 @@
 using Application.Paginations;
 using Application.Query.InventoryEntities.GetInventories;
 using Application.Query.InventoryEntities.GetInventoryItems;
+using Application.Query.InventoryEntities.GetTicketInventories;
 using DBService.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -54,6 +55,22 @@ namespace DBService.Repositories
                                 .AsQueryable();
 
             query = InventoryQueryHelper.FilterInventoryItem(query, filter);
+
+            return await query.GenerateEntity(command);
+        }
+
+        public async Task<PaginationDto<TicketInventory>> GetTickeyInventories(GetTicketInventoriesFilter filter, PaginationCommand command)
+        {
+            var query = _context.TicketInventories
+                                .Include(x => x.AppTicket)
+                                .Include(x => x.AdmissionPrescription)
+                                .Include(x => x.AppInventory)
+                                .Include(x => x.Staff)
+                                    .ThenInclude(x => x.AppUser)
+                                .OrderByDescending(x => x.DateCreated)
+                                .AsQueryable();
+
+            query = InventoryQueryHelper.FilterTicketInventory(query, filter);
 
             return await query.GenerateEntity(command);
         }

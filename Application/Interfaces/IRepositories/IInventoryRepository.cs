@@ -1,6 +1,7 @@
 ﻿using Application.Paginations;
 using Application.Query.InventoryEntities.GetInventories;
 using Application.Query.InventoryEntities.GetInventoryItems;
+using Application.Query.InventoryEntities.GetTicketInventories;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,6 @@ namespace Application.Interfaces.IRepositories
         IQueryable<AppInventoryItem> AppInventoryItems();
         Task<PaginationDto<AppInventory>> GetInventoryList(GetInventoriesFilter filter, PaginationCommand command);
         Task<PaginationDto<AppInventoryItem>> GetInventoryItemList(GetInventoryItemFilter filter, PaginationCommand command);
+        Task<PaginationDto<TicketInventory>> GetTickeyInventories(GetTicketInventoriesFilter filter, PaginationCommand command);
     }
 }

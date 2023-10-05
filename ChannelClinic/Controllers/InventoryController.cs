@@ -7,6 +7,7 @@ using Application.Paginations;
 using Application.Query.InventoryEntities.GetInventories;
 using Application.Query.InventoryEntities.GetInventoryItemAmount;
 using Application.Query.InventoryEntities.GetInventoryItems;
+using Application.Query.InventoryEntities.GetTicketInventories;
 using Application.RequestResponsePipeline;
 using Application.Responses;
 using MediatR;
@@ -135,6 +136,23 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateSUrgeryInventory([FromBody] UpdateSurgeryTicketCommand command)
         {
             await UpdateToken(command, nameof(UpdateSurgeryTicketCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// Get ticket inventories
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<TicketInventoryResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("ticket-inventories")]
+        public async Task<IActionResult> GetInventories([FromBody] GetTicketInventoriesQuery command)
+        {
+            await UpdateToken(command, nameof(GetTicketInventoriesQuery));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);
