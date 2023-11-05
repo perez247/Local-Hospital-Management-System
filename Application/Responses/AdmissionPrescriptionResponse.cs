@@ -15,7 +15,8 @@ namespace Application.Responses
         public string? OverallDescription { get; set; }
         public string? AppTicketStatus { get; set; }
         public string? AppInventoryType { get; set; }
-        public UserOnlyResponse Doctor { get; set; }
+        public StaffResponse Doctor { get; set; }
+        public AppTicketResponse? Ticket { get; set; }
         public IEnumerable<TicketInventoryResponse> TicketInventories { get; set; } = new List<TicketInventoryResponse>();
     
         public static AdmissionPrescriptionResponse? Create(AdmissionPrescription admissionPrescription)
@@ -25,6 +26,9 @@ namespace Application.Responses
                 return null;
             }
 
+            var staff = admissionPrescription.Doctor.Staff;
+            staff.AppUser = admissionPrescription.Doctor;
+
             return new AdmissionPrescriptionResponse
             {
                 Base = BaseResponse.Create(admissionPrescription),
@@ -32,7 +36,7 @@ namespace Application.Responses
                 OverallDescription = admissionPrescription.OverallDescription,
                 AppTicketStatus = admissionPrescription.AppTicketStatus.ToString(),
                 AppInventoryType = admissionPrescription.AppInventoryType.ToString(),
-                Doctor = UserOnlyResponse.Create(admissionPrescription.Doctor),
+                Doctor = StaffResponse.Create(staff),
                 TicketInventories = admissionPrescription.TicketInventories != null && admissionPrescription.TicketInventories.Count > 0 ?
                                     admissionPrescription.TicketInventories.Select(x => TicketInventoryResponse.Create(x)) : null,
             };

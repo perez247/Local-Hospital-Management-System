@@ -1,4 +1,5 @@
 ﻿
+using Application.Command.FinancialRecordEntities.BillClient;
 using Application.Command.FinancialRecordEntities.InitialPayment;
 using Application.Command.FinancialRecordEntities.PatientUpdatePayment;
 using Application.Command.FinancialRecordEntities.PayDebt;
@@ -9,6 +10,7 @@ using Application.Paginations;
 using Application.Query.FinancialRecordEntities.GetAppCosts;
 using Application.Query.FinancialRecordEntities.GetFinancialRecords;
 using Application.Query.FinancialRecordEntities.GetPendingUserContracts;
+using Application.Query.InventoryEntities.GetTicketInventoriesSumTotal;
 using Application.Query.StaffPaymentHistory;
 using Application.RequestResponsePipeline;
 using Application.Responses;
@@ -161,6 +163,41 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> DebtPayment([FromBody] PayDebtCommand command)
         {
             await UpdateToken(command, nameof(PayDebtCommand));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Bill the client for all service rendenered on ticket and add cost to ticket
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("bill-client")]
+        public async Task<IActionResult> BillClient([FromBody] BillClientCommand command)
+        {
+            await UpdateToken(command, nameof(BillClientCommand));
+
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// Get the total sum of the bill
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpGet("get-total-bill")]
+        public async Task<IActionResult> GetTotalBill([FromQuery] GetTicketInventoriesSumTotalQuery command)
+        {
+            await UpdateToken(command, nameof(GetTicketInventoriesSumTotalQuery));
 
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 

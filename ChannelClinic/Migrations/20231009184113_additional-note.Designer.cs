@@ -3,6 +3,7 @@ using System;
 using DBService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChannelClinic.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20231009184113_additional-note")]
+    partial class additionalnote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1150,9 +1152,6 @@ namespace ChannelClinic.Migrations
                     b.Property<int?>("Dosage")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("Duration")
-                        .HasColumnType("integer");
-
                     b.Property<string>("FinanceDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
@@ -1167,9 +1166,6 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("LabRadiologyTestResult")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
-
-                    b.Property<bool?>("LoggedQuantity")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("PrescribedQuantity")
                         .HasMaxLength(5000)

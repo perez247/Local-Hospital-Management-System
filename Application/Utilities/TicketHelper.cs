@@ -82,46 +82,11 @@ namespace Application.Utilities
 
             if (ticketFromDb == null)
             {
-
-                var totalAppointmentTickets = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId);
-
-                if (!fromAdmission)
-                {
-                    if (totalAppointmentTickets >= 20)
-                    {
-                        throw new CustomMessageException("Only a maximum of 20 tickets per appointment");
-                    }
-
-                    if (request.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.admission)
-                    {
-                        var totalAdmissionTicket = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId && x.AppInventoryType == AppInventoryType.admission);
-
-                        if (totalAdmissionTicket > 0)
-                        {
-                            throw new CustomMessageException("This appointment has already prescribed an admission for the patient");
-                        }
-                    }
-                }
-
-                ticketFromDb = new AppTicket
-                {
-                    Id = Guid.NewGuid(),
-                    AppInventoryType = request.AppInventoryType.ParseEnum<AppInventoryType>(),
-                    AppointmentId = request.AppointmentId != Guid.Empty.ToString() ? Guid.Parse(request.AppointmentId) : null,
-                };
-
-                if (appointment != null)
-                {
-                    ticketFromDb.DateCreated = appointment.AppointmentDate >= DateTime.Now ? appointment.AppointmentDate.AddMinutes(5).ToUniversalTime() : DateTime.Now;
-                }
-
-                ticketFromDb.OverallDescription = request.OverallDescription.Trim();
-                await iDBRepository.AddAsync<AppTicket>(ticketFromDb);
+                ticketFromDb = await CreateNewTicket(request, iTicketRepository, iDBRepository, fromAdmission, appointment, ticketFromDb);
             }
             else
             {
-                ticketFromDb.OverallDescription = request.OverallDescription.Trim();
-                iDBRepository.Update<AppTicket>(ticketFromDb);
+                UpdateExistingTicket(request, iDBRepository, ticketFromDb);
             }
 
             if (ticketFromDb.AppInventoryType == AppInventoryType.admission && !fromAdmission)
@@ -140,7 +105,7 @@ namespace Application.Utilities
 
             if (ids.Count() >= 30)
             {
-                throw new CustomMessageException("Only a maximum of 20 inventory per ticket");
+                throw new CustomMessageException("Only a maximum of 30 inventory per ticket");
             }
 
             var inventories = await iInventoryRepository.AppInventories()
@@ -181,6 +146,52 @@ namespace Application.Utilities
             return ticket;
         }
 
+        private static void UpdateExistingTicket(SaveTicketAndInventoryCommand request, IDBRepository iDBRepository, AppTicket? ticketFromDb)
+        {
+            ticketFromDb.OverallDescription = request.OverallDescription.Trim();
+            iDBRepository.Update<AppTicket>(ticketFromDb);
+        }
+
+        private static async Task<AppTicket?> CreateNewTicket(SaveTicketAndInventoryCommand request, ITicketRepository iTicketRepository, IDBRepository iDBRepository, bool fromAdmission, AppAppointment? appointment, AppTicket? ticketFromDb)
+        {
+            var totalAppointmentTickets = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId);
+
+            if (!fromAdmission)
+            {
+                if (totalAppointmentTickets >= 20)
+                {
+                    throw new CustomMessageException("Only a maximum of 20 tickets per appointment");
+                }
+
+                if (request.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.admission)
+                {
+                    var totalAdmissionTicket = await iTicketRepository.AppTickets().CountAsync(x => x.AppointmentId.ToString() == request.AppointmentId && x.AppInventoryType == AppInventoryType.admission);
+
+                    if (totalAdmissionTicket > 0)
+                    {
+                        throw new CustomMessageException("This appointment has already prescribed an admission for the patient");
+                    }
+                }
+            }
+
+            ticketFromDb = new AppTicket
+            {
+                Id = Guid.NewGuid(),
+                AppInventoryType = request.AppInventoryType.ParseEnum<AppInventoryType>(),
+
+                AppointmentId = request.AppointmentId != Guid.Empty.ToString() ? Guid.Parse(request.AppointmentId) : null,
+            };
+
+            if (appointment != null)
+            {
+                ticketFromDb.DateCreated = appointment.AppointmentDate >= DateTime.Now ? appointment.AppointmentDate.AddMinutes(5).ToUniversalTime() : DateTime.Now;
+            }
+
+            ticketFromDb.OverallDescription = request.OverallDescription.Trim();
+            await iDBRepository.AddAsync<AppTicket>(ticketFromDb);
+            return ticketFromDb;
+        }
+
         private static async Task SaveTicketInventory(
             SaveTicketAndInventoryCommand command,
             SaveTicketAndInventoryRequest request,
@@ -202,10 +213,14 @@ namespace Application.Utilities
             if (hasInventory != null)
             {
                 hasInventory.DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription;
-                hasInventory.PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity;
                 hasInventory.Times = request.Times;
                 hasInventory.Dosage = request.Dosage;
                 hasInventory.Frequency = request.Frequency;
+                hasInventory.Duration = request.Duration;
+                hasInventory.AppInventory = inventory;
+
+                hasInventory.PrescribedQuantity = (request.Times * request.Dosage * request.Duration).ToString();
+
                 iDBRepository.Update<TicketInventory>(hasInventory);
             }
             else
@@ -214,12 +229,14 @@ namespace Application.Utilities
                 {
                     Id = Guid.NewGuid(),
                     AppInventoryId = inventory.Id,
+                    AppInventory = inventory,
                     AppTicketId = ticketFromDb.Id,
                     DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription,
-                    PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity,
-                    Times = request.Times,
+                    PrescribedQuantity = (request.Times * request.Dosage * request.Duration).ToString(),
+                Times = request.Times,
                     Dosage = request.Dosage,
                     Frequency = request.Frequency,
+                    Duration = request.Duration,
                     StaffId = command.getCurrentUserRequest().CurrentUser.Staff.Id,
                 };
 

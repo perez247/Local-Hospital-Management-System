@@ -53,7 +53,7 @@ namespace DBService.Repositories
                                     .ThenInclude(x => x.AppInventory)
                                 .Include(x => x.TicketInventories)
                                     .ThenInclude(x => x.SurgeryTicketPersonnels)
-                                        .ThenInclude(x => x.Personnel)
+                                .ThenInclude(x => x.Personnel)
                                 .Include(x => x.Appointment)
                                     .ThenInclude(x => x.Patient)
                                         .ThenInclude(x => x.AppUser)
@@ -105,6 +105,7 @@ namespace DBService.Repositories
         {
             var query = _context.AdmissionPrescriptions
                                 .Include(x => x.Doctor)
+                                    .ThenInclude(x=> x.Staff)
                                 .Include(x => x.TicketInventories.Where(x => !x.AppTicketId.HasValue))
                                     .ThenInclude(x => x.AppInventory)
                                 .OrderByDescending(x => x.DateCreated)

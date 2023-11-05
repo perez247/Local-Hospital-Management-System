@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Application.Responses;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
     public class GetAdmissionStatsDTO
     {
         public Guid? AppTicketId { get; set; }
+        public AppTicket? AppTicket { get; set; }
         public Patient? Patient { get; set; }
         public int? Pharmacy { get; set; }
         public int? Lab { get; set; }

@@ -6,10 +6,8 @@ using Application.Command.TicketEntities.ConcludePharmacyTicket;
 using Application.Command.TicketEntities.ConcludeSurgeryTicket;
 using Application.Command.TicketEntities.DeleteTicket;
 using Application.Command.TicketEntities.SaveTicketAndInventory;
-using Application.Command.TicketEntities.SendAdmissionToFinance;
 using Application.Command.TicketEntities.SendAllTicketsToDepartment;
-using Application.Command.TicketEntities.SendLabTicketsToFinance;
-using Application.Command.TicketEntities.SendPharmacyTicketToFinance;
+using Application.Command.TicketEntities.SendTicketToFinance;
 using Application.Command.TicketEntities.UpdateTicket;
 using Application.Interfaces.IRepositories;
 using Application.Paginations;
@@ -188,58 +186,10 @@ namespace ChannelClinic.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("send-pharmacy-to-finance")]
-        public async Task<IActionResult> SendPharmacyToFinance([FromBody] SendPharmacyTicketToFinanceCommand command)
+        [HttpPost("send-to-finance")]
+        public async Task<IActionResult> SendToFinance([FromBody] SendTicketToFinanceCommand command)
         {
-            await UpdateToken(command, nameof(SendPharmacyTicketToFinanceCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Send lab/Radiology tickets to finance
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("send-lab-to-finance")]
-        public async Task<IActionResult> SendLabToFinance([FromBody] SendLabTicketsToFinanceCommand command)
-        {
-            await UpdateToken(command, nameof(SendLabTicketsToFinanceCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Send Surgery tickets to finance
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("send-surgery-to-finance")]
-        public async Task<IActionResult> SendSurgeryToFinance([FromBody] SendLabTicketsToFinanceCommand command)
-        {
-            await UpdateToken(command, nameof(SendLabTicketsToFinanceCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Send admission tickets to finance
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPost("send-admission-to-finance")]
-        public async Task<IActionResult> SendAmission([FromBody] SendAdmissionToFinanceCommand command)
-        {
-            await UpdateToken(command, nameof(SendAdmissionToFinanceCommand));
+            await UpdateToken(command, nameof(SendTicketToFinanceCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

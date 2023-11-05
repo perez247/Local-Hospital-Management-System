@@ -44,7 +44,7 @@ namespace Application.Command.TicketEntities.ConcludeLabRadTicket
 
                 ticketInventory.LabRadiologyTestResult = genericTicketInventory.LabRadiologyTestResult;
 
-                ticketInventory.ItemsUsed = genericTicketInventory.ItemsUsed;
+                ticketInventory.ItemsUsed = genericTicketInventory.ItemsUsed != null ? genericTicketInventory.ItemsUsed : new List<TicketInventoryItemUsed>();
 
                 iDBRepository.Update<TicketInventory>(ticketInventory);
             }

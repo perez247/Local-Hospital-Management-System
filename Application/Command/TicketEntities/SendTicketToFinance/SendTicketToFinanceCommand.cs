@@ -1,7 +1,6 @@
 ﻿using Application.Annotations;
-using Application.DTOs;
+using Application.Exceptions;
 using Application.Interfaces.IRepositories;
-using Application.Requests;
 using Application.Utilities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,42 +10,44 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Command.TicketEntities.SendLabTicketsToFinance
+namespace Application.Command.TicketEntities.SendTicketToFinance
 {
-    public class SendLabTicketsToFinanceCommand : TokenCredentials, IRequest<Unit>
+    public class SendTicketToFinanceCommand : TokenCredentials, IRequest<Unit>
     {
         [VerifyGuidAnnotation]
         public string? TicketId { get; set; }
-        public ICollection<SendTicketToFinanceRequest>? TicketInventories { get; set; }
     }
 
-    public class SendLabTicketsToFinanceHandler : IRequestHandler<SendLabTicketsToFinanceCommand, Unit>
+    public class SendTicketToFinanceHandler : IRequestHandler<SendTicketToFinanceCommand, Unit>
     {
         private readonly ITicketRepository iTicketRepository;
         private readonly IInventoryRepository iInventoryRepository;
         private readonly IDBRepository iDBRepository;
 
-        public SendLabTicketsToFinanceHandler(ITicketRepository ITicketRepository, IDBRepository IDBRepository, IInventoryRepository IInventoryRepository)
+        public SendTicketToFinanceHandler(ITicketRepository ITicketRepository, IDBRepository IDBRepository, IInventoryRepository IInventoryRepository)
         {
             iTicketRepository = ITicketRepository;
             iInventoryRepository = IInventoryRepository;
             iDBRepository = IDBRepository;
-        }
 
-        public async Task<Unit> Handle(SendLabTicketsToFinanceCommand request, CancellationToken cancellationToken)
+        }
+        public async Task<Unit> Handle(SendTicketToFinanceCommand request, CancellationToken cancellationToken)
         {
             var ticketFromDb = await iTicketRepository.AppTickets()
+                                          .Include(x => x.TicketInventories)
+                                          .ThenInclude(x => x.AppInventory)
                                           .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
 
             ticketFromDb.MustHvaeBeenSentToDepartment();
             ticketFromDb.CancelIfSentToDepartmentAndFinance();
 
-            request.TicketInventories = request.TicketInventories
-                                               .DistinctBy(x => x.InventoryId).ToList();
-
-            var inventoryIds = request.TicketInventories.Select(y => y.InventoryId);
-
-            await TicketHelper.VerifyInventories(request.TicketInventories, ticketFromDb, inventoryIds, iTicketRepository, iInventoryRepository, iDBRepository, null);
+            foreach (var item in ticketFromDb.TicketInventories)
+            {
+                if (item.AppInventory.Quantity < Int32.Parse(item.PrescribedQuantity))
+                {
+                    throw new CustomMessageException($"{item.AppInventory.Name} does not have enough available quantity");
+                }
+            }
 
             ticketFromDb.SentToFinance = true;
             iDBRepository.Update(ticketFromDb);

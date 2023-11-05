@@ -1,4 +1,6 @@
-﻿using Models;
+﻿using Application.Command.FinancialRecordEntities.InitialPayment;
+using Application.Exceptions;
+using Models;
 using Models.Enums;
 using System;
 using System.Collections.Generic;
@@ -62,6 +64,29 @@ namespace Application.Utilities.QueryHelpers
                     FinancialRecordId = Id
                 }).ToList(),
             };
+        }
+
+        public static void UpdateQuantity(TicketInventory ticketInventory, AppInventory? appInventory, int newQuantity)
+        {
+            var oldQuantity = Int32.Parse(ticketInventory.PrescribedQuantity);
+
+            if (ticketInventory.LoggedQuantity.HasValue && ticketInventory.LoggedQuantity.Value && oldQuantity != newQuantity)
+            {
+                appInventory.Quantity += oldQuantity;
+            }
+            else
+            {
+                ticketInventory.LoggedQuantity = true;
+            }
+
+            ticketInventory.PrescribedQuantity = newQuantity.ToString();
+
+            if (appInventory.Quantity < newQuantity)
+            {
+                throw new CustomMessageException($"Quantity of {ticketInventory.AppInventory.Name} is insufiicient");
+            }
+
+            appInventory.Quantity -= newQuantity;
         }
     }
 }

@@ -21,5 +21,6 @@ namespace Application.Command.AdmissionEntities.SaveAdmissionPrescription
         public int? Times { get; set; }
         public int? Dosage { get; set; }
         public string? Frequency { get; set; }
+        public int? Duration { get; set; }
     }
 }

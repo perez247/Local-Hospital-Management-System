@@ -148,6 +148,7 @@ namespace Application.Utilities
                 hasInventory.Times = request.Times;
                 hasInventory.Dosage = request.Dosage;
                 hasInventory.Frequency = request.Frequency;
+                hasInventory.Duration = request.Duration;
                 iDBRepository.Update<TicketInventory>(hasInventory);
             }
             else
@@ -162,7 +163,8 @@ namespace Application.Utilities
                     PrescribedQuantity = string.IsNullOrEmpty(request.PrescribedQuantity) ? null : request.PrescribedQuantity,
                     Times = request.Times,
                     Dosage = request.Dosage,
-                    Frequency = request.Frequency
+                    Frequency = request.Frequency,
+                    Duration = request.Duration
                 };
 
                 await iDBRepository.AddAsync<TicketInventory>(hasInventory);

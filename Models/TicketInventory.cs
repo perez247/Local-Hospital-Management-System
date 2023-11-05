@@ -29,10 +29,14 @@ namespace Models
         public string? DepartmentDescription { get; set; }
         public string? FinanceDescription { get; set; }
         public ICollection<TicketInventoryItemUsed> ItemsUsed { get; set; } = new List<TicketInventoryItemUsed>();
-        public int? Times { get; set; }
-        public int? Dosage { get; set; }
-        public string? Frequency { get; set; }
+        public int? Times { get; set; } = 1;
+        public int? Dosage { get; set; } = 1;
+        public string? Frequency { get; set; } = "Once";
+        public int? Duration { get; set; } = 1;
         public DateTime? TimeGiven { get; set; }
+        public string? AdditionalNote { get; set; }
+        public DateTime? Updated { get; set; }
+        public bool? LoggedQuantity { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }

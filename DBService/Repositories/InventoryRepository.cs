@@ -67,6 +67,8 @@ namespace DBService.Repositories
                                 .Include(x => x.AppInventory)
                                 .Include(x => x.Staff)
                                     .ThenInclude(x => x.AppUser)
+                                .Include(x => x.SurgeryTicketPersonnels)
+                                    .ThenInclude(x => x.Personnel)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();
 

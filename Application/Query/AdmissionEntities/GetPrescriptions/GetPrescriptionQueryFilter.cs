@@ -1,4 +1,5 @@
 ﻿using Application.Annotations;
+using Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace Application.Query.AdmissionEntities.GetPrescriptions
 
         [VerifyGuidAnnotation]
         public string? PrescriptionId { get; set; }
+        public string? AppInventoryType { get; set; }
     }
 }

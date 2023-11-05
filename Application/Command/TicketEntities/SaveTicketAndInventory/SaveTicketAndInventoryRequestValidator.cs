@@ -19,6 +19,7 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
                 .When(x => !string.IsNullOrEmpty(x.DoctorsPrescription));
 
             RuleFor(x => x.PrescribedQuantity)
+                .Must(x => Int32.TryParse(x, out int numValue)).WithMessage("Value must be a number")
                 .MaximumLength(1000)
                 .When(x => !string.IsNullOrEmpty(x.PrescribedQuantity));
 
@@ -27,17 +28,19 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
 
             RuleFor(x => x.Times)
                 .Must(x => x.HasValue).WithMessage("Times is required")
-                .GreaterThanOrEqualTo(1).WithMessage("Must be greater than 1")
-                .When(x => x.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.pharmacy);
+                .GreaterThanOrEqualTo(1).WithMessage("Must be greater than 1");
+                //.When(x => x.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.pharmacy);
 
             RuleFor(x => x.Dosage)
                 .Must(x => x.HasValue).WithMessage("Dosage is required")
-                .GreaterThanOrEqualTo(1).WithMessage("Must be greater than 1")
-                .When(x => x.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.pharmacy);
+                .GreaterThanOrEqualTo(1).WithMessage("Must be greater than 1");
+
+            RuleFor(x => x.Duration)
+                .Must(x => x.HasValue).WithMessage("Duration is required")
+                .GreaterThanOrEqualTo(1).WithMessage("Must be greater than 1");
 
             RuleFor(x => x.Frequency)
-                .Must(x => !string.IsNullOrEmpty(x)).WithMessage("Frequency is required")
-                .When(x => x.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.pharmacy);
+                .Must(x => !string.IsNullOrEmpty(x)).WithMessage("Frequency is required");
         }
     }
 }

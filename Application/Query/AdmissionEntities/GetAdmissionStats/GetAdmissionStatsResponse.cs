@@ -11,6 +11,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
     public class GetAdmissionStatsResponse
     {
         public string? AppTicketId { get; set; }
+        public AppTicketResponse? AppTicket { get; set; }
         public PatientResponse? Patient { get; set; }
         public int? Pharmacy { get; set; }
         public int? Lab { get; set; }
@@ -28,6 +29,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
             return new GetAdmissionStatsResponse
             {
                 AppTicketId = GetAdmissionStatsDTO.AppTicketId.ToString(),
+                AppTicket = AppTicketResponse.Create(GetAdmissionStatsDTO.AppTicket),
                 Patient = PatientResponse.Create(GetAdmissionStatsDTO.Patient),
                 TicketInventories = GetAdmissionStatsDTO.TicketInventories != null && GetAdmissionStatsDTO.TicketInventories.Count > 0 ?
                                     GetAdmissionStatsDTO.TicketInventories.Select(x => TicketInventoryResponse.Create(x)) : null,

@@ -95,6 +95,12 @@ namespace DBService.QueryHelpers
                 query = query.Where(x => x.Id.ToString() == filter.PrescriptionId);
             }
 
+            if (!string.IsNullOrEmpty(filter.AppInventoryType))
+            {
+                var type = filter.AppInventoryType.ParseEnum<AppInventoryType>();
+                query = query.Where(x => x.AppInventoryType == type);
+            }
+
             return query;
 
         }

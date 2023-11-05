@@ -29,7 +29,11 @@ namespace Application.Responses
         public int? Times { get; set; }
         public int? Dosage { get; set; }
         public string? Frequency { get; set; }
+        public int? Duration { get; set; }
         public AdmissionPrescriptionResponse? AdmissionPrescription { get; set; }
+        public string? AdditionalNote { get; set; }
+        public DateTime? Updated { get; set; }
+        public DateTime? TimeGiven { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }
@@ -85,8 +89,13 @@ namespace Application.Responses
                 Times = ticketInventory.Times,
                 Dosage = ticketInventory.Dosage,
                 Frequency = ticketInventory.Frequency,
+                Duration = ticketInventory.Duration,
 
                 Staff = StaffResponse.Create(ticketInventory.Staff),
+
+                AdditionalNote = ticketInventory.AdditionalNote,
+                Updated = ticketInventory.Updated,
+                TimeGiven = ticketInventory.TimeGiven,
 
                 #region Pharmacy section
                 PrescribedQuantity = ticketInventory.PrescribedQuantity,

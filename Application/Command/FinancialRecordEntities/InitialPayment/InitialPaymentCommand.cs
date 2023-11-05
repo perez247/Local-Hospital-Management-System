@@ -70,6 +70,7 @@ namespace Application.Command.FinancialRecordEntities.InitialPayment
                                                         .ThenInclude(x => x.Patient)
                                                    .Include(x => x.TicketInventories)
                                                         .ThenInclude(a => a.AppInventory)
+                                                            .ThenInclude(a => a.AppInventoryItems.Where(b => b.CompanyId == companyPaying.Id))
                                                    .FirstOrDefaultAsync(x => x.Id.ToString() == request.AppTicketId);
 
 
@@ -103,15 +104,15 @@ namespace Application.Command.FinancialRecordEntities.InitialPayment
             {
                 // if individual
                 // check that the indiviaul is not owing up to 10 
-                var ticketsOwing = await _ticketRepository.AppTickets()
-                                                          .Include(x => x.AppCost)
-                                                          .Where(x => x.AppCost != null && x.AppCost.PaymentStatus == PaymentStatus.owing)
-                                                          .ToListAsync();
+                //var ticketsOwing = await _ticketRepository.AppTickets()
+                //                                          .Include(x => x.AppCost)
+                //                                          .Where(x => x.AppCost != null && x.AppCost.PaymentStatus == PaymentStatus.owing)
+                //                                          .ToListAsync();
 
-                if (ticketsOwing.Count > 11)
-                {
-                    throw new CustomMessageException("An Individual cannot owe more than 10 tickets at a time, kindly pay for some tickets");
-                }
+                //if (ticketsOwing.Count > 11)
+                //{
+                //    throw new CustomMessageException("An Individual cannot owe more than 10 tickets at a time, kindly pay for some tickets");
+                //}
 
                 payerId = appTicket.Appointment.Patient.AppUserId;
             }
@@ -129,6 +130,8 @@ namespace Application.Command.FinancialRecordEntities.InitialPayment
                 throw new CustomMessageException("Sum total given is not equal to calculated from ticket inventory");
             }
 
+            // Get all the app inventory in order to update only one reference
+            var appInventories = appTicket.TicketInventories.Select(x => x.AppInventory).DistinctBy(x => x.Id).ToList();
 
             // update all ticketInventory 
             // total price,
@@ -140,22 +143,34 @@ namespace Application.Command.FinancialRecordEntities.InitialPayment
 
                 if (requestTicketInventory == null)
                 {
-                    throw new CustomMessageException($"{ticketInventory.AppInventory.Name} is missing from the update");
+                    throw new CustomMessageException($" Ticket Inventory with ID \"{requestTicketInventory.TicketInventoryId}\" is missing from the update");
                 }
 
                 if (ticketInventory.AppInventory == null)
                 {
-                    throw new CustomMessageException($"{ticketInventory.AppInventory.Name} is missing from the inventory");
+                    throw new CustomMessageException($"Inventory is missing");
+                }
+
+                var appInventory = appInventories.FirstOrDefault(x => x.Id == ticketInventory.AppInventoryId);
+
+                var inventoryItem = ticketInventory.AppInventory.AppInventoryItems.FirstOrDefault();
+
+                if (inventoryItem == null)
+                {
+                    throw new CustomMessageException($"Price for {ticketInventory.AppInventory.Name} is missing");
                 }
 
                 ticketInventory.TotalPrice = Math.Round(requestTicketInventory.TotalPrice.Value, 2);
-                ticketInventory.CurrentPrice = Math.Round(requestTicketInventory.CurrentPrice.Value, 2);
+                ticketInventory.CurrentPrice = Math.Round((inventoryItem.PricePerItem * requestTicketInventory.PrescribedQuantity).Value, 2);
                 ticketInventory.AppTicketStatus = requestTicketInventory.AppTicketStatus.ParseEnum<AppTicketStatus>();
-                _dBRepository.Update(ticketInventory);
 
-                ticketInventory.AppInventory.Quantity = ticketInventory.AppInventory.Quantity - requestTicketInventory.PrescribedQuantity.Value;
-                _dBRepository.Update(ticketInventory.AppInventory);
+
+                FinancialHelper.UpdateQuantity(ticketInventory, appInventory, requestTicketInventory.PrescribedQuantity.Value);
+                
+                _dBRepository.Update(ticketInventory);
             }
+
+            var r = appInventories.Select(x => { _dBRepository.Update<AppInventory>(x); return x.Id; });
 
             // Create an app cost for the ticket
             // sum amount from current price = Amount + tax

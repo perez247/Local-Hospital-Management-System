@@ -4,9 +4,11 @@ using Application.Command.TicketEntities.SaveTicketAndInventory;
 using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Application.Utilities;
+using Application.Utilities.QueryHelpers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,12 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
         [VerifyGuidAnnotation]
         public string? TicketInventoryId { get; set; }
         public DateTime? TimeGiven { get; set; }
+        public string? AppTicketStatus { get; set; }
+        public string? PrescribedQuantity { get; set; }
+        public string? DepartmentDescription { get; set; }
+        public string? labRadiologyTestResult { get; set; }
+        public string? AdditionalNote { get; set; }
+        public ICollection<string>? Proof { get; set; }
     }
 
     public class ExecutePrescriptionHandler : IRequestHandler<ExecutePrescriptionCommand, Unit>
@@ -72,11 +80,12 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                     new SaveTicketAndInventoryRequest { 
                         InventoryId =  ticketPrecriptionFromDb.AppInventory.Id.ToString(),
                         DoctorsPrescription = ticketPrecriptionFromDb.DoctorsPrescription,
-                        PrescribedQuantity = ticketPrecriptionFromDb.Dosage.ToString(),
+                        PrescribedQuantity = "0",
                         AppInventoryType = ticketPrecriptionFromDb.AppInventory.AppInventoryType.ToString(),
                         Times = ticketPrecriptionFromDb.Times,
                         Dosage = ticketPrecriptionFromDb.Dosage,
                         Frequency = ticketPrecriptionFromDb.Frequency,
+                        Duration = ticketPrecriptionFromDb.Duration,
                     }
                 },
             };
@@ -94,7 +103,22 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 item.TimeGiven = request.TimeGiven.Value.ToUniversalTime();
                 item.AdmissionPrescriptionId = ticketPrecriptionFromDb.AdmissionPrescriptionId;
                 item.AppTicketId = ticketPrecriptionFromDb.AdmissionPrescription.AppTicketId;
+                item.PrescribedQuantity = request.PrescribedQuantity;
+                item.AppTicketStatus = request.AppTicketStatus.ParseEnum<AppTicketStatus>();
+                item.AdditionalNote = request.AdditionalNote;
+
+                #region Lab or radiology
+                item.LabRadiologyTestResult = request.labRadiologyTestResult;
+                item.Proof = request.Proof != null ? request.Proof : new List<string>();
+                #endregion
+
+                item.DepartmentDescription = request.DepartmentDescription;
+                item.Updated = DateTime.Now.ToUniversalTime();
+                item.LoggedQuantity = true;
+
+                FinancialHelper.UpdateQuantity(item, item.AppInventory, Int32.Parse(request.PrescribedQuantity));
                 iDBRepository.Update<TicketInventory>(item);
+                iDBRepository.Update<AppInventory>(item.AppInventory);
             }
 
             await iDBRepository.Complete();

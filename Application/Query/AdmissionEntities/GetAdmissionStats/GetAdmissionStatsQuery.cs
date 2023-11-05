@@ -45,9 +45,10 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
                                                 .Select(x => new GetAdmissionStatsDTO
                                                 {
                                                     AppTicketId = x.Id,
+                                                    AppTicket = x,
                                                     Patient = x.Appointment.Patient,
-                                                    TicketInventories = x.TicketInventories,
-                                                    //TicketInventories = x.TicketInventories.Where(x => x.AppInventory.AppInventoryType == Models.Enums.AppInventoryType.admission).ToList(),
+                                                    //TicketInventories = x.TicketInventories,
+                                                    TicketInventories = x.TicketInventories.Where(x => x.AppInventory.AppInventoryType == Models.Enums.AppInventoryType.admission).ToList(),
                                                     Pharmacy = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.pharmacy),
                                                     Lab = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.lab),
                                                     Radiology = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.radiology),

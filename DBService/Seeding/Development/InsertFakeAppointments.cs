@@ -13,6 +13,7 @@ namespace DBService.Seeding.Development
 {
     public static class InsertFakeAppointments
     {
+        private static string[] Frequency = new string[5] { "Once", "Daily", "Weekly", "Monthly", "Yearly" };
         public async static Task CreateAppointments(AppDBContext context, string initialDir)
         {
             var oneInventoryItem = await context.AppAppointments.FirstOrDefaultAsync();
@@ -99,7 +100,11 @@ namespace DBService.Seeding.Development
                 AppTicketId = tickeTId,
                 AppInventoryId = x.Id,
                 DoctorsPrescription = "Sint proident nisi enim ex excepteur consequat eu eu. Eu excepteur et magna commodo pariatur et qui veniam amet. Est ullamco id aute reprehenderit. Elit tempor est dolore duis amet eu eu voluptate esse officia dolor est anim. Labore qui in exercitation laboris officia et reprehenderit id.\r\n",
-                PrescribedQuantity = random.Next(1, 10).ToString()
+                PrescribedQuantity = random.Next(1, 10).ToString(),
+                Times = random.Next(1, 10),
+                Dosage = random.Next(1, 10),
+                Frequency = InsertFakeAppointments.Frequency[random.Next(0, 4)],
+                Duration = random.Next(1, 30),
             }).ToList();
         }
 
