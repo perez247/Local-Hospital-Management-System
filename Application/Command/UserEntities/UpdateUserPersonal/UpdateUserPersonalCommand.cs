@@ -3,6 +3,7 @@ using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Application.Utilities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -22,22 +23,25 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string? Profile { get; set; }
+        public string? CompanyUniqueId { get; set; }
+        public string? OtherInformation { get; set; }
     }
 
     public class UpdateUserPersonalHandler : IRequestHandler<UpdateUserPersonalCommand, Unit>
     {
-        private readonly IStaffRepository iStaffRepository;
+        private readonly IUserRepository userRepository;
         private readonly IDBRepository iDBRepository;
 
-        public UpdateUserPersonalHandler(IStaffRepository IStaffRepository, IDBRepository IDBRepository)
+        public UpdateUserPersonalHandler(IDBRepository IDBRepository, IUserRepository userRepository)
         {
-            iStaffRepository = IStaffRepository;
             iDBRepository = IDBRepository;
+            this.userRepository = userRepository;
         }
 
         public async Task<Unit> Handle(UpdateUserPersonalCommand request, CancellationToken cancellationToken)
         {
-            var user = await iDBRepository.FindAsync<AppUser>(x => x.Id.ToString() == request.UserId);
+            var user = await userRepository.Users().Include(x => x.Patient)
+                                                   .FirstOrDefaultAsync(x => x.Id.ToString() == request.UserId);
 
             if (user == null)
             {
@@ -50,8 +54,34 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
             user.PhoneNumber = string.IsNullOrEmpty(request.Phone) ? null : request.Phone.Trim();
             user.Address = request.Address.Trim();
             user.Profile = request.Profile;
-
             iDBRepository.Update(user);
+
+            if (!string.IsNullOrEmpty(request.CompanyUniqueId) || !string.IsNullOrEmpty(request.OtherInformation))
+            {
+                var save = false;
+                if (user.Patient == null)
+                {
+                    throw new CustomMessageException("This user is not a patient");
+                }
+
+                if (user.Patient.CompanyUniqueId != request.CompanyUniqueId)
+                {
+                    user.Patient.CompanyUniqueId = request.CompanyUniqueId;
+                    save = true;
+                }
+
+                if (user.Patient.OtherInformation != request.OtherInformation)
+                {
+                    user.Patient.OtherInformation = request.OtherInformation;
+                    save = true;
+                }
+
+                if (save)
+                {
+                    iDBRepository.Update<Patient>(user.Patient);
+                }
+            }
+
             await iDBRepository.Complete();
 
             return Unit.Value;

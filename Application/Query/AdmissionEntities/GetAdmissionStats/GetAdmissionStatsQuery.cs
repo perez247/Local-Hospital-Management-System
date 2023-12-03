@@ -30,6 +30,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
         public async Task<GetAdmissionStatsResponse> Handle(GetAdmissionStatsQuery request, CancellationToken cancellationToken)
         {
             var stats = await iTicketRepository.AppTickets()
+                                               .Include(x => x.AppCost)
                                                .Include(x => x.TicketInventories)
                                                 .ThenInclude(x => x.AppInventory)
                                                //.Include(x => x.TicketInventories)

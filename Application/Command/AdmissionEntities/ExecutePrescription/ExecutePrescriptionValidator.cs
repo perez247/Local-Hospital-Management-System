@@ -29,10 +29,6 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 .MaximumLength(1000)
                 .When(x => !string.IsNullOrEmpty(x.DepartmentDescription));
 
-            RuleForEach(x => x.Proof)
-                .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Base 64 String")
-                .When(x => x.Proof != null && x.Proof.Count > 0);
-
             RuleFor(x => x.AdditionalNote)
                 .MaximumLength(5000)
                 .When(x => !string.IsNullOrEmpty(x.DepartmentDescription));

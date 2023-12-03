@@ -19,6 +19,7 @@ namespace Application.Responses
         public bool PatientContract { get; set; }
         public bool CompanyContract { get; set; }
         public IEnumerable<FinancailRecordPayerPayeeResponse> PayerPayee { get; set; }
+
         public BaseResponse? Base { get; set; }
 
         public static AppCostResponse? Create(AppCost appCost)

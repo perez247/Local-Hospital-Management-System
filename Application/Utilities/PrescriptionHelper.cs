@@ -22,12 +22,36 @@ namespace Application.Utilities
             IDBRepository iDBRepository
         )
         {
-            // Get the prescriptio
-            //var prescriptionFromDB = await iTicketRepository.TicketPrescription()
-            //                                          .FirstOrDefaultAsync(x => x.Id.ToString() == request.PrescriptionId);
+            var admissionInventory = await iInventoryRepository.TicketInventories()
+                                                                .Include( x => x.AppInventory)
+                                                                .Include(x => x.AppTicket)
+                                                                    .ThenInclude(x => x.Appointment)
+                                                                 .Include(x => x.AppTicket)
+                                                                    .ThenInclude(x => x.AppCost)
+                                                               .FirstOrDefaultAsync(x => x.AppInventory.AppInventoryType == AppInventoryType.admission && x.AppTicketId.ToString() == request.TicketId);
+
+            if (admissionInventory == null)
+            {
+                throw new CustomMessageException("Prescription can only be provided to patients who have been admitted");
+            }
+
+            if (!admissionInventory.AdmissionStartDate.HasValue)
+            {
+                throw new CustomMessageException("Kindly set the start date of this admission");
+            }
+
+            if (admissionInventory.AppTicket.AppCost != null)
+            {
+                throw new CustomMessageException("This patient has been billed, kindly contact a doctor to create a new admission ticket");
+            }
+
+            var inventoriesToPrescribe = request.TicketInventories.Select(x => Guid.Parse(x.InventoryId)).ToList();
+            var sponsorId = admissionInventory.AppTicket.Appointment.CompanyId;
+
+            await InventoryHelper.checkIfCompanyHasInventory(inventoriesToPrescribe, sponsorId.Value, iInventoryRepository);
 
             var secondPrescriptionFromDB = await iTicketRepository.TicketPrescription()
-                                                                  .Where(x => x.Id.ToString() == request.PrescriptionId || x.AppTicketId.ToString() == request.TicketId)
+                                                                  .Where(x => x.AppInventoryType == request.AppInventoryType.ParseEnum<AppInventoryType>() && (x.Id.ToString() == request.PrescriptionId || x.AppTicketId.ToString() == request.TicketId))
                                                                   .OrderByDescending(x => x.DateCreated)
                                                                   .Take(2)
                                                                   .ToListAsync();

@@ -4,6 +4,7 @@ using Application.Command.TicketEntities.ConcludeAdmissionTicket;
 using Application.Command.TicketEntities.ConcludeLabRadTicket;
 using Application.Command.TicketEntities.ConcludePharmacyTicket;
 using Application.Command.TicketEntities.ConcludeSurgeryTicket;
+using Application.Command.TicketEntities.ConcludeTicket;
 using Application.Command.TicketEntities.DeleteTicket;
 using Application.Command.TicketEntities.SaveTicketAndInventory;
 using Application.Command.TicketEntities.SendAllTicketsToDepartment;
@@ -125,6 +126,22 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> ConcludeAdmissionTicketInventory([FromBody] ConcludeAdmissionTicketCommand command)
         {
             await UpdateToken(command, nameof(ConcludeAdmissionTicketCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// conclude a Ticket and all the tickert inventory in it
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("conclude-ticket")]
+        public async Task<IActionResult> ConcludeTicket([FromBody] ConcludeTicketCommand command)
+        {
+            await UpdateToken(command, nameof(ConcludeTicketCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

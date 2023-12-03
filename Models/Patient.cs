@@ -13,10 +13,13 @@ namespace Models
         public virtual Company? Company { get; set; }
         public Guid? CompanyId { get; set; }
         public string? Allergies { get; set; }
+        public string? CompanyUniqueId { get; set; }
+        public string? OtherInformation { get; set; }
         public ICollection<PatientContract> PatientContracts { get; set; } = new List<PatientContract>();
         public ICollection<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
         public ICollection<AppAppointment> AppAppointments { get; set; } = new List<AppAppointment>();
         public ICollection<AppTicket> AppTickets { get; set; } = new List<AppTicket>();
+
 
         public bool HasContract()
         {
@@ -72,5 +75,6 @@ namespace Models
 
             return false;
         }
+
     }
 }

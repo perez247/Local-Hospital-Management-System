@@ -25,9 +25,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
         public string? AppTicketStatus { get; set; }
         public string? PrescribedQuantity { get; set; }
         public string? DepartmentDescription { get; set; }
-        public string? labRadiologyTestResult { get; set; }
         public string? AdditionalNote { get; set; }
-        public ICollection<string>? Proof { get; set; }
     }
 
     public class ExecutePrescriptionHandler : IRequestHandler<ExecutePrescriptionCommand, Unit>
@@ -51,6 +49,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                                                                 .Include(x => x.AdmissionPrescription)
                                                                     .ThenInclude(x => x.AppTicket)
                                                                 .Include(x => x.AppTicket)
+                                                                    .ThenInclude(x => x.AppCost)
                                                                 .Include(x => x.AppInventory)
                                                                 .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketInventoryId);
 
@@ -67,6 +66,11 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
             if (ticketPrecriptionFromDb.AppTicket != null)
             {
                 throw new CustomMessageException("Ticket Inventory already has an App Ticket");
+            }
+
+            if (ticketPrecriptionFromDb.AppTicket.AppCost != null)
+            {
+                throw new CustomMessageException("This patient has been billed, kindly contact a doctor to create a new ticket");
             }
 
             var newRequest = new SaveTicketAndInventoryCommand
@@ -107,10 +111,11 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 item.AppTicketStatus = request.AppTicketStatus.ParseEnum<AppTicketStatus>();
                 item.AdditionalNote = request.AdditionalNote;
 
-                #region Lab or radiology
-                item.LabRadiologyTestResult = request.labRadiologyTestResult;
-                item.Proof = request.Proof != null ? request.Proof : new List<string>();
-                #endregion
+                if (item.AppInventory.AppInventoryType == AppInventoryType.pharmacy)
+                {
+                    item.ConcludedDate = DateTime.Now.ToUniversalTime();
+                }
+
 
                 item.DepartmentDescription = request.DepartmentDescription;
                 item.Updated = DateTime.Now.ToUniversalTime();

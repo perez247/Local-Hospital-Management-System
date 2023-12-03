@@ -44,6 +44,7 @@ namespace Application.Command.TicketEntities.SendAllTicketsToDepartment
             foreach (var ticket in tickets)
             {
                 ticket.Sent = true;
+                ticket.SentToFinance = true;
                 _iDBRepository.Update(ticket);
             }
 

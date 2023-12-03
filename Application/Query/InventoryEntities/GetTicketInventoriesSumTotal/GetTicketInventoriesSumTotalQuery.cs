@@ -4,6 +4,7 @@ using Application.Interfaces.IRepositories;
 using Application.Utilities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +76,21 @@ namespace Application.Query.InventoryEntities.GetTicketInventoriesSumTotal
                         throw new CustomMessageException($"{companyPaying.AppUser.FirstName} price for {inventory.Name} not found");
                     }
 
-                    sumTotal += item.PricePerItem * Int32.Parse(ticketInventory.PrescribedQuantity);
+
+                    var addmissionDays = 1;
+                    if (ticketInventory.AppInventory.AppInventoryType == AppInventoryType.admission)
+                    {
+                        ticketInventory.AdmissionStartDate = ticketInventory.AdmissionStartDate.HasValue ? ticketInventory.AdmissionStartDate : DateTime.Today;
+                        ticketInventory.AdmissionEndDate = ticketInventory.AdmissionEndDate.HasValue ? ticketInventory.AdmissionEndDate : DateTime.Today;
+                        if (ticketInventory.AdmissionEndDate == null)
+                        {
+                            throw new CustomMessageException($"Admission End date for {ticketInventory.AppInventory.Name} is required");
+                        }
+
+                        addmissionDays = Math.Abs((ticketInventory.AdmissionEndDate - ticketInventory.AdmissionStartDate).Value.Days);
+                    }
+
+                    sumTotal += item.PricePerItem * Int32.Parse(ticketInventory.PrescribedQuantity) * addmissionDays;
 
                 }
             }

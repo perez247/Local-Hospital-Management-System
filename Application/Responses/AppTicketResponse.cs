@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Application.Query.AppointmentEntities.GetAppointments;
+using Models;
 using Models.Enums;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace Application.Responses
         public string? AppInventoryType { get; set; }
         public StaffResponse? Doctor { get; set; }
         public PatientResponse? Patient { get; set; }
+        public AppointmentOnlyResponse? Appointment { get; set; }
         public IEnumerable<TicketInventoryResponse> TicketInventories { get; set; }
         public IEnumerable<FinancailRecordPayerPayeeResponse> PayerPayee { get; set; }
 
@@ -45,6 +47,7 @@ namespace Application.Responses
                 Doctor = StaffResponse.Create(appTicket.Appointment.Doctor),
                 Patient = PatientResponse.Create(appTicket.Appointment.Patient),
                 OverallAppointmentDescription = appTicket.Appointment.OverallDescription,
+                Appointment = AppointmentOnlyResponse.Create(appTicket.Appointment),
                 PayerPayee =
                             (appTicket.AppCost != null) &&
                             (appTicket.AppCost.FinancialRecordPayerPayees != null && appTicket.AppCost.FinancialRecordPayerPayees.Count > 0) ?
@@ -64,6 +67,7 @@ namespace Application.Responses
         public string? AppTicketStatus { get; set; }
         public string? AppInventoryType { get; set; }
         public IEnumerable<TicketInventoryResponse> TicketInventories { get; set; }
+        public PatientOnlyResponse? Patient { get; set; }
         public static AppTicketResponseOnly? Create(AppTicket appTicket)
         {
             if (appTicket == null)
@@ -81,7 +85,7 @@ namespace Application.Responses
                 AppInventoryType = appTicket.AppInventoryType.ToString(),
                 AppTicketStatus = appTicket.AppTicketStatus.ToString(),
                 TicketInventories = appTicket.TicketInventories != null && appTicket.TicketInventories.Count() > 0 ? appTicket.TicketInventories.Select(x => TicketInventoryResponse.Create(x)) : null,
-
+                Patient = PatientOnlyResponse.Create(appTicket.Appointment.Patient),
             };
         }
     }

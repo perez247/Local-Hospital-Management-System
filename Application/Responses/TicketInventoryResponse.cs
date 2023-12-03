@@ -142,6 +142,7 @@ namespace Application.Responses
     {
         public BaseResponse? Base { get; set; }
         public UserOnlyResponse? Personnel { get; set; }
+        public string? PersonnelId { get; set; }
         public string? SurgeryRole { get; set; }
         public string? Description { get; set; }
         public string? SummaryOfSurgery { get; set; }
@@ -164,6 +165,7 @@ namespace Application.Responses
                 SummaryOfSurgery = surgeryTicketPersonnel.SummaryOfSurgery,
                 IsHeadPersonnel = surgeryTicketPersonnel.IsHeadPersonnel,
                 IsPatient = surgeryTicketPersonnel.IsPatient,
+                PersonnelId = surgeryTicketPersonnel.Personnel.Id.ToString(),
             };
         }
     }

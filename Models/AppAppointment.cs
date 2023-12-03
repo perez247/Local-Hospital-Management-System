@@ -17,6 +17,7 @@ namespace Models
         public bool? IsEmergency { get; set; } = false;
         public DateTime AppointmentDate { get; set; }
         public string? OverallDescription { get; set; }
+        public string? SponsorId { get; set; }
         public ICollection<AppTicket> Tickets { get; set; } = new List<AppTicket>();
     }
 }

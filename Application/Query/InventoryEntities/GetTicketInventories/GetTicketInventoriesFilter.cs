@@ -16,5 +16,6 @@ namespace Application.Query.InventoryEntities.GetTicketInventories
         public string? PrescriptionId { get; set; }
         public bool? isTickets { get; set; }
         public bool? isPrescriptions { get; set; }
+        public ICollection<string>? roles { get; set; } = new List<string>();
     }
 }

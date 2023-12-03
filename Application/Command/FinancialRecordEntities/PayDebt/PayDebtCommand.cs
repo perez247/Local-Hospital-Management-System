@@ -55,7 +55,7 @@ namespace Application.Command.FinancialRecordEntities.PayDebt
             var query = _financialRespository.GetAppCosts()
                                                   .Include(x => x.FinancialRecordPayerPayees)
                                                   .Include(x => x.AppTicket)
-                                                  .Where(x => x.FinancialRecordPayerPayees.Select(y => y.AppUserId.ToString()).Contains(request.UserId))
+                                                  .Where(x => x.FinancialRecordPayerPayees.FirstOrDefault(y => y.AppUserId.ToString() == request.UserId && y.Payer) != null)
                                                   .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing);
                                                   
             if (request.StartDate.HasValue)

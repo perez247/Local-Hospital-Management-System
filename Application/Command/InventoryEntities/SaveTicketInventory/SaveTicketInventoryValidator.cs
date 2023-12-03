@@ -1,4 +1,5 @@
-﻿using Application.Validations;
+﻿using Application.Command.TicketEntities.UpdateSurgeryTicket;
+using Application.Validations;
 using FluentValidation;
 using Models.Enums;
 using System;
@@ -59,10 +60,22 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
                 .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Base 64 String")
                 .When(x => x.Proof != null && x.Proof.Count > 0);
 
+            RuleFor(x => x.labRadiologyTestResult)
+                .MaximumLength(5000).WithMessage("Not more than 5000 characters")
+                .When(x => !string.IsNullOrEmpty(x.labRadiologyTestResult));
+
+            RuleFor(x => x.SurgeryTestResult)
+                .MaximumLength(5000).WithMessage("Not more than 5000 characters")
+                .When(x => !string.IsNullOrEmpty(x.SurgeryTestResult));
+
             RuleFor(x => x.AdmissionEndDate)
                 .Must((x, y, z) => x.AdmissionStartDate.HasValue).WithMessage("Admission Start Date is required")
                 .Must((x, y, z) => x.AdmissionEndDate > x.AdmissionStartDate).WithMessage("Admission Start date must be less than end date")
                 .When(x => x.AdmissionEndDate.HasValue);
+
+            RuleForEach(x => x.SurgeryTicketPersonnels)
+                .SetValidator(new UpdateSurgeryTicketPersonnelValidator())
+                .When(x => x.SurgeryTicketPersonnels != null && x.SurgeryTicketPersonnels.Count > 0);
         }
     }
 }

@@ -32,6 +32,7 @@ namespace Application.Query.InventoryEntities.GetTicketInventories
 
         public async Task<PaginationResponse<IEnumerable<TicketInventoryResponse>>> Handle(GetTicketInventoriesQuery request, CancellationToken cancellationToken)
         {
+            request.Filter.roles = request.getCurrentUserRequest().CurrentUser.UserRoles.Select(x => x.Role.Name).ToList();
             var inventoriesFromDB = await iInventoryRepository.GetTickeyInventories(request.Filter, request.Pagination);
 
             if (inventoriesFromDB.Results.Count <= 0)

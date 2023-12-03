@@ -56,6 +56,8 @@ namespace DBService.Repositories
                                 .Include(x => x.UserRoles)
                                 .ThenInclude(x => x.Role)
                                 .Include(x => x.NextOfKin)
+                                .Include(x => x.Company)
+                                    .ThenInclude(x => x.CompanyContracts.OrderByDescending(y => y.DateCreated).Take(1))
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();
 

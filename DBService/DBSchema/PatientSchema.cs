@@ -33,6 +33,14 @@ namespace DBService.DBSchema
             builder.Property(entity => entity.Allergies)
                 .IsRequired(false)
                 .HasMaxLength(10000);
+
+            builder.Property(entity => entity.CompanyUniqueId)
+                .IsRequired(false)
+                .HasMaxLength(255);
+
+            builder.Property(entity => entity.OtherInformation)
+                .IsRequired(false)
+                .HasMaxLength(10000);
         }
     }
 }

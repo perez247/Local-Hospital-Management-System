@@ -40,6 +40,7 @@ namespace Application.Command.TicketEntities.UpdateTicket
         {
             var ticketFromDb = await iTicketRepository.AppTickets()
                                                       .Include(x => x.TicketInventories)
+                                                        .ThenInclude(a => a.AppInventory)
                                                       .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketId);
 
             ticketFromDb.CancelIfSentToDepartmentAndFinance();
@@ -47,25 +48,6 @@ namespace Application.Command.TicketEntities.UpdateTicket
             ticketFromDb.OverallDescription = string.IsNullOrEmpty(request.OverallDescription) ? null : request.OverallDescription.Trim();
             ticketFromDb.Sent = request.Sent;
             ticketFromDb.SentToFinance = request.SentToFinance;
-
-            // This should be done automatically
-            //ticketFromDb.AppTicketStatus = request.AppTicketStatus.ParseEnum<AppTicketStatus>();
-            if (ticketFromDb.SentToFinance.HasValue && ticketFromDb.SentToFinance.Value)
-            {
-
-                var inventorySum = ticketFromDb.TicketInventories.Sum(x => x.TotalPrice);
-                var appCost = new AppCost
-                {
-                    Amount = inventorySum,
-                    ApprovedPrice = inventorySum,
-                    Description = "Total Cost for ticket inventory",
-                    CostType = AppCostType.profit,
-                    Id = Guid.NewGuid(),
-                };
-
-                ticketFromDb.AppCostId = appCost.Id;
-                iDBRepository.Update(appCost);
-            }
 
 
             iDBRepository.Update(ticketFromDb);

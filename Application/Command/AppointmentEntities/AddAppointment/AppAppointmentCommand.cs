@@ -20,6 +20,9 @@ namespace Application.Command.AppointmentEntities.AddAppointment
 
         [VerifyGuidAnnotation]
         public string? PatientId { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? SponsorId { get; set; }
         public DateTime? AppointmentDate { get; set; }
         public string? OverallDescription { get; set; }
     }
@@ -29,16 +32,18 @@ namespace Application.Command.AppointmentEntities.AddAppointment
         private readonly IPatientRepository iPatientRepository;
         private readonly IStaffRepository iStaffRepository;
         private readonly IDBRepository iDBRepository;
+        private readonly ICompanyRepository companyRepository;
 
-        public AppAppointmentHandler(IPatientRepository IPatientRepository, IDBRepository IDBRepository, IStaffRepository IStaffRepository)
+        public AppAppointmentHandler(IPatientRepository IPatientRepository, IDBRepository IDBRepository, IStaffRepository IStaffRepository, ICompanyRepository ICompanyRepository)
         {
             iPatientRepository = IPatientRepository;
             iDBRepository = IDBRepository;
             iStaffRepository = IStaffRepository;
+            companyRepository = ICompanyRepository;
         }
         public async Task<AddAppointmentResponse> Handle(AppAppointmentCommand request, CancellationToken cancellationToken)
         {
-            AppAppointment appointment = await TicketHelper.CreateAppointment(request, iStaffRepository, iPatientRepository);
+            AppAppointment appointment = await TicketHelper.CreateAppointment(request, iStaffRepository, iPatientRepository, companyRepository);
 
             await iDBRepository.AddAsync(appointment);
             await iDBRepository.Complete();

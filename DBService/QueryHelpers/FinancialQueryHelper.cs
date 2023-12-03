@@ -64,7 +64,8 @@ namespace DBService.QueryHelpers
 
             if (filter.CompanyId != Guid.Empty.ToString())
             {
-                query = query.Where(x => x.FinancialRecordPayerPayees.Select(x => x.AppUserId.ToString()).Contains(filter.CompanyId));
+                //query = query.Where(x => x.FinancialRecordPayerPayees.Select(x => x.AppUserId.ToString()).Contains(filter.CompanyId));
+                query = query.Where(x => x.FinancialRecordPayerPayees.FirstOrDefault(x => x.AppUserId.ToString() == filter.CompanyId && x.Payer) != null);
             }
 
             return query;

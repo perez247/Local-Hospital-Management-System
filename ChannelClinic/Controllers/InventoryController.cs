@@ -1,4 +1,5 @@
 ﻿using Application.Command.InventoryEntities.AddInventoryDependencies;
+using Application.Command.InventoryEntities.ConcludeInventory;
 using Application.Command.InventoryEntities.SaveInventory;
 using Application.Command.InventoryEntities.SaveInventoryItem;
 using Application.Command.InventoryEntities.SaveTicketInventory;
@@ -171,6 +172,23 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> UpdateTicketInventory([FromBody] SaveTicketInventoryCommand command)
         {
             await UpdateToken(command, nameof(SaveTicketInventoryCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Conclude a ticket inventory
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPut("conclude-inventory")]
+        public async Task<IActionResult> ConcludeTicketInventory([FromBody] ConcludeInventoryCommand command)
+        {
+            await UpdateToken(command, nameof(ConcludeInventoryCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

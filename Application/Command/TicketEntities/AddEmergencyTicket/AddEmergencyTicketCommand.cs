@@ -40,8 +40,9 @@ namespace Application.Command.TicketEntities.AddEmergencyTicket
         private readonly IStaffRepository _iStaffRepository;
         private readonly ITicketRepository _iTicketRepository;
         private readonly IAppointmentRepository _iAppointmentRepository;
+        private readonly ICompanyRepository _companyRepository;
 
-        public AddEmergencyTicketHandler(IDBRepository iDBRepository, IInventoryRepository iInventoryRepository, IStaffRepository iStaffRepository, IPatientRepository iPatientRepository, ITicketRepository iTicketRepository, IAppointmentRepository iAppointmentRepository)
+        public AddEmergencyTicketHandler(IDBRepository iDBRepository, IInventoryRepository iInventoryRepository, IStaffRepository iStaffRepository, IPatientRepository iPatientRepository, ITicketRepository iTicketRepository, IAppointmentRepository iAppointmentRepository, ICompanyRepository companyRepository)
         {
             _iDBRepository = iDBRepository;
             _iInventoryRepository = iInventoryRepository;
@@ -49,6 +50,7 @@ namespace Application.Command.TicketEntities.AddEmergencyTicket
             _iPatientRepository = iPatientRepository;
             _iTicketRepository = iTicketRepository;
             _iAppointmentRepository = iAppointmentRepository;
+            _companyRepository = companyRepository;
         }
 
         public async Task<AddEmergencyTicketResponse> Handle(AddEmergencyTicketCommand request, CancellationToken cancellationToken)
@@ -70,7 +72,7 @@ namespace Application.Command.TicketEntities.AddEmergencyTicket
             };
 
             // Get appointment
-            var appointment = await TicketHelper.CreateAppointment(addApointmentRequest, _iStaffRepository, _iPatientRepository);
+            var appointment = await TicketHelper.CreateAppointment(addApointmentRequest, _iStaffRepository, _iPatientRepository, _companyRepository);
 
             await _iDBRepository.AddAsync<AppAppointment>(appointment);
             // Save appointment to the database

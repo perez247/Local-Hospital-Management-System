@@ -32,6 +32,11 @@ namespace DBService.Repositories
             return _context.AppInventoryItems.AsQueryable();
         }
 
+        public IQueryable<TicketInventory> TicketInventories()
+        {
+            return _context.TicketInventories.AsQueryable();
+        }
+
         public async Task<PaginationDto<AppInventory>> GetInventoryList(GetInventoriesFilter filter, PaginationCommand command)
         {
             var query = _context.AppInventories

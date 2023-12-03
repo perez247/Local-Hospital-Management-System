@@ -5,6 +5,7 @@ using Application.DTOs;
 using Application.Exceptions;
 using Application.Interfaces.IRepositories;
 using Application.Requests;
+using Application.Utilities.QueryHelpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Enums;
@@ -18,7 +19,7 @@ namespace Application.Utilities
 {
     public static class TicketHelper
     {
-        public static async Task<AppAppointment> CreateAppointment(AppAppointmentCommand request, IStaffRepository iStaffRepository, IPatientRepository iPatientRepository)
+        public static async Task<AppAppointment> CreateAppointment(AppAppointmentCommand request, IStaffRepository iStaffRepository, IPatientRepository iPatientRepository, ICompanyRepository companyRepository)
         {
             var doctor = await iStaffRepository.Staff().FirstOrDefaultAsync(x => x.Id.ToString() == request.DoctorId);
 
@@ -43,6 +44,15 @@ namespace Application.Utilities
                 throw new CustomMessageException("Patient does not have any contract at the moment");
             }
 
+            // Get home company
+            var individualCompany = await CompanyHelper.GetIndividualCompany(companyRepository);
+            var companyContract = patient.Company;
+
+            if (individualCompany.Id.ToString() != request.SponsorId && companyContract.Id.ToString() != request.SponsorId)
+            {
+                throw new CustomMessageException("A sponsor is required");
+            }
+
             var time = request.AppointmentDate.Value.ToUniversalTime().Hour;
 
             if (time >= 22 || time <= 2)
@@ -54,7 +64,8 @@ namespace Application.Utilities
             {
                 DoctorId = doctorId,
                 PatientId = patient?.Id,
-                CompanyId = patient?.CompanyId,
+                CompanyId = Guid.Parse(request.SponsorId),
+                SponsorId = request.SponsorId,
                 AppointmentDate = request.AppointmentDate.Value.ToUniversalTime(),
                 OverallDescription = string.IsNullOrEmpty(request.OverallDescription) ? null : request.OverallDescription.Trim(),  
             };
@@ -73,10 +84,27 @@ namespace Application.Utilities
             )
         {
 
+            var addmission = request.TicketInventories.FirstOrDefault(x => x.AppInventoryType.ParseEnum<AppInventoryType>() == AppInventoryType.admission);
+
+            if (addmission != null && request.TicketInventories.Count > 1)
+            {
+                throw new CustomMessageException("You cannot add more prescription with admission. Admission should be added separately.");
+            }
+
             var appointment = await iAppointmentRepository.AppAppointments()
                                                           .Include(x => x.Patient)
                                                           .Include(x => x.Tickets.Where(x => x.Id.ToString() == request.TicketId))
                                                           .FirstOrDefaultAsync(x => x.Id.ToString() == request.AppointmentId);
+
+            if (appointment == null)
+            {
+                throw new CustomMessageException("Appointment not found");
+            }
+
+            var appInventories = request.TicketInventories.Select(x => Guid.Parse(x.InventoryId)).ToList();
+            var sponsorId = appointment.CompanyId;
+
+            await InventoryHelper.checkIfCompanyHasInventory(appInventories, sponsorId.Value, iInventoryRepository);
 
             var ticketFromDb = appointment.Tickets.FirstOrDefault();
 
@@ -233,7 +261,7 @@ namespace Application.Utilities
                     AppTicketId = ticketFromDb.Id,
                     DoctorsPrescription = string.IsNullOrEmpty(request.DoctorsPrescription) ? null : request.DoctorsPrescription,
                     PrescribedQuantity = (request.Times * request.Dosage * request.Duration).ToString(),
-                Times = request.Times,
+                    Times = request.Times,
                     Dosage = request.Dosage,
                     Frequency = request.Frequency,
                     Duration = request.Duration,
@@ -357,6 +385,78 @@ namespace Application.Utilities
 
             return ticketFromDb;
         }
+
+        public static async Task<AppTicket?> BasicConclusion2(
+        string ticketId,
+        ITicketRepository iTicketRepository,
+        IDBRepository iDBRepository
+        )
+        {
+            var ticketFromDb = await iTicketRepository.AppTickets()
+                                          .Include(x => x.TicketInventories)
+                                            .ThenInclude(x => x.AppInventory)
+                                          .Include(x => x.TicketInventories)
+                                            .ThenInclude(x => x.SurgeryTicketPersonnels)
+                                          .Include(x => x.AppCost)
+                                          .FirstOrDefaultAsync(x => x.Id.ToString() == ticketId);
+
+            ticketFromDb.MustHaveBeenSentToFinance();
+
+            if (ticketFromDb.AppTicketStatus == AppTicketStatus.concluded)
+            {
+                throw new CustomMessageException("Ticket has already been concluded");
+            }
+
+            var appCost = ticketFromDb.AppCost;
+
+            if (appCost == null)
+            {
+                throw new CustomMessageException("Client has not been billed yet");
+            }
+
+            if (appCost.PaymentStatus == PaymentStatus.pending)
+            {
+                throw new CustomMessageException("Payment status should not be pending");
+            }
+
+            var ticketInventories = ticketFromDb.TicketInventories.Count(x => x.AppTicketStatus == AppTicketStatus.ongoing || x.AppTicketStatus == AppTicketStatus.concluded);
+
+            if (ticketInventories == 0)
+            {
+                throw new CustomMessageException("Ar least one ongoing/concluded ticket inventory must be present");
+            }
+
+            foreach (var ticketInventory in ticketFromDb.TicketInventories)
+            {
+
+                if (ticketInventory.AppInventory == null)
+                {
+                    throw new CustomMessageException("Item not found in the inventory");
+                }
+
+                if (ticketInventory.AppTicketStatus == AppTicketStatus.concluded)
+                {
+                    throw new CustomMessageException("Some inventories have already been concluded");
+                }
+
+                if (!ticketInventory.ConcludedDate.HasValue)
+                {
+                    ticketInventory.ConcludedDate = DateTime.Now.ToUniversalTime();
+
+                    if (ticketInventory.AppTicketStatus == AppTicketStatus.ongoing)
+                    {
+                        ticketInventory.AppTicketStatus = AppTicketStatus.concluded;
+                    }
+                    iDBRepository.Update(ticketInventory);
+                }
+            }
+
+            ticketFromDb.AppTicketStatus = AppTicketStatus.concluded;
+            iDBRepository.Update<AppTicket>(ticketFromDb);
+
+            return ticketFromDb;
+        }
+
 
 
 

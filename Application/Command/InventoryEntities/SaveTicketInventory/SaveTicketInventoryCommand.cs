@@ -1,6 +1,8 @@
 ﻿using Application.Annotations;
+using Application.Command.TicketEntities.UpdateSurgeryTicket;
 using Application.Exceptions;
 using Application.Interfaces.IRepositories;
+using Application.Responses;
 using Application.Utilities;
 using Application.Utilities.QueryHelpers;
 using MediatR;
@@ -15,6 +17,10 @@ using System.Threading.Tasks;
 
 namespace Application.Command.InventoryEntities.SaveTicketInventory
 {
+    public class AppInventoryRequest
+    {
+        public BaseResponse? Base { get; set; }
+    }
     public class SaveTicketInventoryCommand : TokenCredentials, IRequest<Unit>
     {
         [VerifyGuidAnnotation]
@@ -29,8 +35,11 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
         public string? DepartmentDescription { get; set; }
         public string? AdditionalNote { get; set; }
         public string? labRadiologyTestResult { get; set; }
+        public string? SurgeryTestResult { get; set; }
+        public AppInventoryRequest? Inventory { get; set; }
         public DateTime? AdmissionStartDate { get; set; }
         public DateTime? AdmissionEndDate { get; set; }
+        public ICollection<UpdateSurgeryTicketPersonnel>? SurgeryTicketPersonnels { get; set; }
         public ICollection<string>? Proof { get; set; }
     }
 
@@ -51,6 +60,7 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
             var ticketInventory = await iTicketRepository.TicketInventory()
                                                          .Include(x => x.AppTicket)
                                                          .Include(x => x.AppInventory)
+                                                         .Include(x => x.SurgeryTicketPersonnels)
                                                          .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketInventoryId);
 
             if (ticketInventory == null)
@@ -82,6 +92,19 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
             #region Admission
             ticketInventory.AdmissionStartDate = request.AdmissionStartDate;
             ticketInventory.AdmissionEndDate = request.AdmissionEndDate;
+
+            if (ticketInventory.AppInventoryId.ToString() != request.Inventory.Base.Id)
+            {
+                var found = await iInventoryRepository.AppInventories().FirstOrDefaultAsync(x => x.Id.ToString() == request.Inventory.Base.Id);
+
+                if (found == null)
+                {
+                    throw new CustomMessageException("Updated admission not found");
+                }
+
+                ticketInventory.AppInventoryId = Guid.Parse(request.Inventory.Base.Id);
+            }
+
             #endregion
 
             if (ticketInventory.LoggedQuantity.HasValue && ticketInventory.LoggedQuantity.Value)
@@ -95,6 +118,36 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
                     iDBRepository.Update<AppInventory>(ticketInventory.AppInventory);
                 }
             }
+
+            #region Surgery
+
+            ticketInventory.SurgeryTestResult = request.SurgeryTestResult;
+
+            if (request.SurgeryTicketPersonnels != null && request.SurgeryTicketPersonnels.Count > 0)
+            {
+                request.SurgeryTicketPersonnels = request.SurgeryTicketPersonnels.DistinctBy(x => x.PersonnelId).ToList();
+
+                if (ticketInventory.SurgeryTicketPersonnels.Count > 0)
+                {
+                    foreach (var personnel in ticketInventory.SurgeryTicketPersonnels)
+                    {
+                        iDBRepository.Remove<SurgeryTicketPersonnel>(personnel);
+                    }
+                }
+
+                foreach (var personnel in request.SurgeryTicketPersonnels)
+                {
+                    await iDBRepository.AddAsync<SurgeryTicketPersonnel>(new SurgeryTicketPersonnel
+                    {
+                        TicketInventoryId = ticketInventory.Id,
+                        PersonnelId = Guid.Parse(personnel.PersonnelId),
+                        SurgeryRole = personnel.SurgeryRole.Trim(),
+                        IsHeadPersonnel = personnel.IsHeadPersonnel,
+                    });
+                }
+            }
+
+            #endregion
 
             ticketInventory.Updated = DateTime.Now.ToUniversalTime();
 

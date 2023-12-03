@@ -29,7 +29,8 @@ namespace DBService.QueryHelpers
             if (!string.IsNullOrEmpty(filter.AppInventoryType))
             {
                 var type = filter.AppInventoryType.ParseEnum<AppInventoryType>();
-                query = query.Where(x => x.AppInventoryType == type);
+                //query = query.Where(x => x.AppInventoryType == type);)
+                query = query.Where(x => x.TicketInventories.Select(y => y.AppInventory.AppInventoryType).Contains(type));
             }
 
             if (filter.PatientId != Guid.Empty.ToString())

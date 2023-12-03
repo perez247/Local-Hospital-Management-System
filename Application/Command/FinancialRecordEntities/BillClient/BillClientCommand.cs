@@ -83,7 +83,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                 throw new CustomMessageException("Ticket not found");
             }
 
-            appTicket.MustNotHaveBeenSentToDepartment();
+            appTicket.MustHvaeBeenSentToDepartment();
             appTicket.MustHaveBeenSentToFinance();
             
             if (appTicket.AppTicketStatus != AppTicketStatus.ongoing)
@@ -132,7 +132,25 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                         throw new CustomMessageException($"{x.AppInventory.Name} was not found for {companyName}");
                     }
 
-                    x.TotalPrice = decimal.Parse(x.PrescribedQuantity) * item.PricePerItem;
+                    var addmissionDays = 1;
+                    if (x.AppInventory.AppInventoryType == AppInventoryType.admission)
+                    {
+                        if (x.AdmissionStartDate == null)
+                        {
+                            throw new CustomMessageException($"Admission Start date for {x.AppInventory.Name} is required");
+                        }
+
+                        if (x.AdmissionEndDate == null)
+                        {
+                            throw new CustomMessageException($"Admission End date for {x.AppInventory.Name} is required");
+                        }
+
+                        addmissionDays = (x.AdmissionEndDate - x.AdmissionStartDate).Value.Days;
+                    }
+
+
+
+                    x.TotalPrice = decimal.Parse(x.PrescribedQuantity) * item.PricePerItem * addmissionDays;
                     x.CurrentPrice = item.PricePerItem;
                     sumTotal += x.TotalPrice.Value;
 
@@ -164,6 +182,13 @@ namespace Application.Command.FinancialRecordEntities.BillClient
 
             appTicket.AppCostId = newAppCost.Id;
             _dBRepository.Update<AppTicket>(appTicket);
+
+            // Update payer for appointment
+            if (appTicket.Appointment.CompanyId != companyPaying.Id)
+            {
+                appTicket.Appointment.CompanyId = companyPaying.Id;
+                _dBRepository.Update<AppAppointment>(appTicket.Appointment);
+            }
 
             // Save everything
 

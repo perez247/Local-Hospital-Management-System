@@ -35,4 +35,28 @@ namespace Application.Query.AppointmentEntities.GetAppointments
             };
         }
     }
+
+    public class AppointmentOnlyResponse
+    {
+        public BaseResponse? Base { get; set; }
+        public DateTime? AppointmentDate { get; set; }
+        public CompanyResponse? Company { get; set; }
+        public string? OverallDescription { get; set; }
+
+        public static AppointmentOnlyResponse Create(AppAppointment appAppointment)
+        {
+            if (appAppointment == null)
+            {
+                return null;
+            }
+
+            return new AppointmentOnlyResponse
+            {
+                Base = BaseResponse.Create(appAppointment),
+                AppointmentDate = appAppointment.AppointmentDate,
+                Company = CompanyResponse.Create(appAppointment.Company),
+                OverallDescription = appAppointment.OverallDescription,
+            };
+        }
+    }
 }
