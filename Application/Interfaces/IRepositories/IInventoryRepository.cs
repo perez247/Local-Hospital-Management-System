@@ -19,5 +19,7 @@ namespace Application.Interfaces.IRepositories
         Task<PaginationDto<AppInventory>> GetInventoryList(GetInventoriesFilter filter, PaginationCommand command);
         Task<PaginationDto<AppInventoryItem>> GetInventoryItemList(GetInventoryItemFilter filter, PaginationCommand command);
         Task<PaginationDto<TicketInventory>> GetTickeyInventories(GetTicketInventoriesFilter filter, PaginationCommand command);
+        Task<PaginationDto<AppInventoryItem>> SearchTickeyInventoriesByName(string companyId, List<string>? names);
+
     }
 }

@@ -92,6 +92,16 @@ namespace DBService.QueryHelpers
                 query = query.Where(i => EF.Functions.Like(i.AppInventory.Name.ToLower(), $"%{name.ToLower()}%"));
             }
 
+            //if (filter.InventoryItemNames != null && filter.InventoryItemNames.Count > 0)
+            //{
+            //    var searchConditions = string.Join(" OR ", filter.InventoryItemNames.Select(name => $"\"AppInventory.Name.ToLower()\" ILIKE '%{name.ToLower()}%'"));
+            //    var q = $"WHERE {searchConditions}";
+
+            //    query = query.Where(i => filter.InventoryItemNames.Any(a => EF.Functions.ILike(a.ToLower(), $"%{i.AppInventory.Name.ToLower()}%")));
+            //    //query = query.Where(i => filter.InventoryItemNames.FirstOrDefault(a => EF.Functions.Like(a.ToLower(), $"%{i.AppInventory.Name.ToLower()}%")) != null);
+            //    //query = query.Where(i => );
+            //}
+
             return query;
         }
 

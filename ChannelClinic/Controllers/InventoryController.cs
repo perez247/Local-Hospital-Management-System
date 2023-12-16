@@ -1,4 +1,5 @@
 ﻿using Application.Command.InventoryEntities.AddInventoryDependencies;
+using Application.Command.InventoryEntities.BulkSave;
 using Application.Command.InventoryEntities.ConcludeInventory;
 using Application.Command.InventoryEntities.SaveInventory;
 using Application.Command.InventoryEntities.SaveInventoryItem;
@@ -10,6 +11,7 @@ using Application.Query.InventoryEntities.GetInventories;
 using Application.Query.InventoryEntities.GetInventoryItemAmount;
 using Application.Query.InventoryEntities.GetInventoryItems;
 using Application.Query.InventoryEntities.GetTicketInventories;
+using Application.Query.InventoryEntities.SearchBulkUpload;
 using Application.RequestResponsePipeline;
 using Application.Responses;
 using MediatR;
@@ -189,6 +191,40 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> ConcludeTicketInventory([FromBody] ConcludeInventoryCommand command)
         {
             await UpdateToken(command, nameof(ConcludeInventoryCommand));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Search bulk upload for similar data
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PaginationResponse<IEnumerable<AppInventoryItemResponse>>), (int)HttpStatusCode.OK)]
+        [HttpPost("search-bulk-upload")]
+        public async Task<IActionResult> SearchBulkUpload([FromBody] SearchbulkUploadQuery command)
+        {
+            await UpdateToken(command, nameof(SearchbulkUploadQuery));
+            var result = await ApplicationUserRequest?.Mediator?.Send(command);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Upload bulk items to inventory
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
+        [HttpPost("bulk-upload")]
+        public async Task<IActionResult> BulkUpload([FromBody] BulkSaveCommand command)
+        {
+            await UpdateToken(command, nameof(BulkSaveCommand));
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

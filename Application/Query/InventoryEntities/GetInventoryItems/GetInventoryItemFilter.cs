@@ -18,5 +18,6 @@ namespace Application.Query.InventoryEntities.GetInventoryItems
         public string? AppInventoryType { get; set; }
         public string? CompanyName { get; set; }
         public string? AppInventoryName { get; set; }
+        //public List<string>? InventoryItemNames { get; set; }
     }
 }

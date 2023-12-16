@@ -10,9 +10,9 @@ namespace Models
     public class AppInventory : BaseEntity
     {
         public string? Name { get; set; }
-        public int Quantity { get; set; }
+        public int Quantity { get; set; } = 0;
         public AppInventoryType AppInventoryType { get; set; }
-        public bool NotifyWhenLow { get; set; }
+        public bool NotifyWhenLow { get; set; } = true;
         public int HowLow { get; set; } = 10;
         public string? Profile { get; set; }
         public ICollection<AppInventoryDependencies> Dependencies { get; set; } = new List<AppInventoryDependencies>();

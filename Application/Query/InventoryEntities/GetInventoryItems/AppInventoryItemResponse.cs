@@ -13,7 +13,7 @@ namespace Application.Query.InventoryEntities.GetInventoryItems
         public BaseResponse? Base { get; set; }
         public CompanyResponse? Company { get; set; }
         public InventoryResponse? Inventory { get; set; }
-        public decimal PricePerItem { get; set; }
+        public decimal? PricePerItem { get; set; }
 
         public static AppInventoryItemResponse? Create(AppInventoryItem appInventoryItem)
         {

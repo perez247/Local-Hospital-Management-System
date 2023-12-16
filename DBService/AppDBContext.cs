@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -97,6 +98,7 @@ namespace DBService
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.HasPostgresExtension("pg_trgm");
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(AppDBContext).Assembly);
         }

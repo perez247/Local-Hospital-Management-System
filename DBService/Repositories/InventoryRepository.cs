@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DBService.Repositories
@@ -80,6 +81,46 @@ namespace DBService.Repositories
             query = InventoryQueryHelper.FilterTicketInventory(query, filter);
 
             return await query.GenerateEntity(command);
+        }
+
+        public async Task<PaginationDto<AppInventoryItem>> SearchTickeyInventoriesByName(string companyId, List<string>? names)
+        {
+            string pattern = @"^\w+";
+            var lowerNames = names.Select(x => Regex.Match(x.ToLower(), pattern));
+            var searchConditions = string.Join(" OR ", lowerNames.Select(term => $"LOWER(\"AppInventories\".\"Name\") ILIKE '%{term}%'"));
+            var q = $"SELECT \"AppInventoryItems\".* FROM \"AppInventoryItems\" INNER JOIN \"AppInventories\" ON \"AppInventoryItems\".\"AppInventoryId\" = \"AppInventories\".\"Id\" WHERE({searchConditions}) AND \"AppInventoryItems\".\"CompanyId\" = '{companyId}'";
+
+            var query = await _context.AppInventoryItems
+                                .FromSqlRaw(q)
+                                .Include(x => x.AppInventory)
+                                .ToListAsync();
+
+            var inventoryQ = $"SELECT \"AppInventories\".* FROM \"AppInventories\" WHERE({searchConditions})";
+            var inventoryQuery = await _context.AppInventories
+                                               .FromSqlRaw(inventoryQ)
+                                               .ToListAsync();
+
+            var notFoundInQuery = inventoryQuery.Where(x => !query.Select(a => a.AppInventoryId).Contains(x.Id));
+
+            if (notFoundInQuery.Count() > 0)
+            {
+                var notFoundItems = notFoundInQuery.Select(x => new AppInventoryItem
+                {
+                    Company = null,
+                    PricePerItem = 0,
+                    AppInventory = x,
+                });
+
+                query = query.Concat(notFoundItems).ToList();
+            }
+
+            return new PaginationDto<AppInventoryItem>
+            {
+                totalItems = query.Count(),
+                Results = query,
+                PageNumber = 1,
+                PageSize = 100,
+            };
         }
     }
 }
