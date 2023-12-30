@@ -1,0 +1,22 @@
+version: "3.8"
+    
+volumes: 
+  auth_db:
+
+# For development
+# For full stack developers
+
+services:
+
+  auth_server_postgres_image:
+    image: postgres:14-alpine
+    ports:
+      - 5433:5432
+    environment: 
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db
+    volumes:
+      - auth_db:/var/postgresql/data
+
+
