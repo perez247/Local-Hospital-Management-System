@@ -10,5 +10,7 @@ namespace Application.Query.FinancialRecordEntities.GetRevenue
     {
         public decimal? Profit { get; set; }
         public decimal? Expense { get; set; }
+        public decimal? TotalProfit { get; set; }
+        public decimal? TotalExpense { get; set; }
     }
 }

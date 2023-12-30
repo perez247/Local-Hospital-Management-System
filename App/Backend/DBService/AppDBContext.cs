@@ -42,6 +42,7 @@ namespace DBService
         public DbSet<AppSetting> AppSettings { get; set; }
         public DbSet<AdmissionPrescription> AdmissionPrescriptions { get; set; }
         public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<MonthlyFinanceRecord> MonthlyFinanceRecords { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

@@ -8,6 +8,7 @@ using DBService;
 using DBService.Seeding;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Jobs;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -79,6 +80,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerDocumentation();
 
 builder.Services.ConfigureDefaultDataAccessDatabaseConnections(EnvironmentFunctions.CONNECTION_STRING);
+
+builder.Services.AddHostedService<FinancialRecordBackgroundService>();
 
 
 var app = builder.Build();

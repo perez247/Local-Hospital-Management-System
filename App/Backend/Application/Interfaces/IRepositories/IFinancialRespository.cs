@@ -15,6 +15,7 @@ namespace Application.Interfaces.IRepositories
     public interface IFinancialRespository 
     {
         IQueryable<FinancialRecord> FinancialRecords();
+        IQueryable<MonthlyFinanceRecord> MonthlyFinancialRecords();
         Task<decimal> GetTax();
         Task<decimal> CompanyContractCost();
         Task<decimal> GetPatientContractCost();

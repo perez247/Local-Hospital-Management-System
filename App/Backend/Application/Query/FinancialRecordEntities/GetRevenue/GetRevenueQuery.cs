@@ -32,7 +32,7 @@ namespace Application.Query.FinancialRecordEntities.GetRevenue
                 return new GetRevenueResponse { Expense = 0, Profit = 0 };
             }
 
-            return await _financialRespository.FinancialRecords()
+            var totalSum = await _financialRespository.FinancialRecords()
                                                   .Where(x => x.DateCreated >= request.StartDate && x.DateCreated <= request.EndDate)
                                                   .GroupBy(x => true)
                                                   .Select(y => new GetRevenueResponse
@@ -42,7 +42,30 @@ namespace Application.Query.FinancialRecordEntities.GetRevenue
                                                   })
                                                   .FirstOrDefaultAsync();
 
-            
+            if (totalSum == null)
+            {
+                totalSum = new GetRevenueResponse
+                {
+                    Expense = 0,
+                    Profit = 0
+                };
+            }
+
+            var lastMonthTotals = await _financialRespository.MonthlyFinancialRecords()
+                                                       .OrderBy(x => x.DateCreated)
+                                                       .FirstOrDefaultAsync();
+
+            if (lastMonthTotals == null)
+            {
+                totalSum.TotalProfit = 0;
+                totalSum.TotalExpense = 0;
+            } else
+            {
+                totalSum.TotalProfit = lastMonthTotals.Profit;
+                totalSum.TotalExpense = lastMonthTotals.Expense;
+            }
+
+            return totalSum;
         }
     }
 }

@@ -48,6 +48,11 @@ namespace DBService.Repositories
             return data.PatientRegistrationFee;
         }
 
+        public IQueryable<MonthlyFinanceRecord> MonthlyFinancialRecords()
+        {
+            return _context.MonthlyFinanceRecords.AsQueryable();
+        }
+
         private async Task<AppSettingBilling> GetBilling()
         {
             var billing = await _context.AppSettings.FirstOrDefaultAsync(x => x.Type == Models.Enums.AppSettingType.billings);
