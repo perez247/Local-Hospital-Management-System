@@ -1,0 +1,9 @@
+﻿[
+  '{{repeat(50, 50)}}',
+  {
+    id: '{{guid()}}',
+    overallDescription: '{{lorem(1, "paragraphs")}}',
+    appTicketStatus: '0',
+    appInventoryType: '{{integer(0, 4)}}'
+  }
+]
