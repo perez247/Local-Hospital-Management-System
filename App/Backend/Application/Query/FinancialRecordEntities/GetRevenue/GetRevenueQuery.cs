@@ -44,6 +44,7 @@ namespace Application.Query.FinancialRecordEntities.GetRevenue
 
             if (totalSum == null)
             {
+                // Create new 
                 totalSum = new GetRevenueResponse
                 {
                     Expense = 0,
