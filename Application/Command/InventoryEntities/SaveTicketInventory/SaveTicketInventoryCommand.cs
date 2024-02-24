@@ -36,11 +36,15 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
         public string? AdditionalNote { get; set; }
         public string? labRadiologyTestResult { get; set; }
         public string? SurgeryTestResult { get; set; }
+        public string? StaffObservation { get; set; }
         public AppInventoryRequest? Inventory { get; set; }
         public DateTime? AdmissionStartDate { get; set; }
         public DateTime? AdmissionEndDate { get; set; }
         public ICollection<UpdateSurgeryTicketPersonnel>? SurgeryTicketPersonnels { get; set; }
         public ICollection<string>? Proof { get; set; }
+        public ICollection<SaveTicketInventoryDebtor>? Debtors { get; set; }
+        public decimal? TotalPrice { get; set; }
+        public decimal? ConcludedPrice { get; set; }
     }
 
     public class SaveTicketInventoryHandler : IRequestHandler<SaveTicketInventoryCommand, Unit>
@@ -61,6 +65,7 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
                                                          .Include(x => x.AppTicket)
                                                          .Include(x => x.AppInventory)
                                                          .Include(x => x.SurgeryTicketPersonnels)
+                                                         .Include(x => x.TicketInventoryDebtors)
                                                          .FirstOrDefaultAsync(x => x.Id.ToString() == request.TicketInventoryId);
 
             if (ticketInventory == null)
@@ -82,6 +87,8 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
             ticketInventory.PrescribedQuantity = request.PrescribedQuantity;
             ticketInventory.DepartmentDescription = request.DepartmentDescription;
             ticketInventory.AdditionalNote = request.AdditionalNote;
+            ticketInventory.StaffObservation = request.StaffObservation;
+            ticketInventory.ConcludedPrice = request.ConcludedPrice;
 
 
             #region Lab or radiology
@@ -109,14 +116,7 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
 
             if (ticketInventory.LoggedQuantity.HasValue && ticketInventory.LoggedQuantity.Value)
             {
-                var oldQuantity = ticketInventory.AppInventory.Quantity;
-
-                FinancialHelper.UpdateQuantity(ticketInventory, ticketInventory.AppInventory, Int32.Parse(request.PrescribedQuantity));
-
-                if (oldQuantity != ticketInventory.AppInventory.Quantity)
-                {
-                    iDBRepository.Update<AppInventory>(ticketInventory.AppInventory);
-                }
+                FinancialHelper.UpdateQuantity(ticketInventory, ticketInventory.AppInventory, Int32.Parse(request.PrescribedQuantity), request.getCurrentUserRequest().CurrentUser.Id, iDBRepository, nameof(SaveTicketInventoryCommand));
             }
 
             #region Surgery
@@ -149,6 +149,8 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
 
             #endregion
 
+            await UpdateDebtors(request, ticketInventory);
+
             ticketInventory.Updated = DateTime.Now.ToUniversalTime();
 
             iDBRepository.Update<TicketInventory>(ticketInventory);
@@ -156,6 +158,53 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
             await iDBRepository.Complete();
 
             return Unit.Value;
+        }
+
+        private async Task UpdateDebtors(SaveTicketInventoryCommand request, TicketInventory? ticketInventory)
+        {
+            if (request.Debtors != null && request.Debtors.Count > 0)
+            {
+                string id = null;
+                var sum = 0.0m;
+                foreach (var debtor in ticketInventory.TicketInventoryDebtors)
+                {
+                    iDBRepository.Remove<TicketInventoryDebtor>(debtor);
+                }
+
+                foreach (var newDebtor in request.Debtors)
+                {
+                    if (newDebtor.PayerId == id)
+                    {
+                        throw new CustomMessageException("Only one payer should be added");
+                    }
+
+                    sum += newDebtor.Amount.Value;
+
+                    await iDBRepository.AddAsync<TicketInventoryDebtor>(new TicketInventoryDebtor
+                    {
+                        PayerId = Guid.Parse(newDebtor.PayerId),
+                        TicketInventoryId = ticketInventory.Id,
+                        Amount = newDebtor.Amount,
+                        Description = newDebtor.Description,
+                    });
+                }
+
+                //var totalPrice = ticketInventory.TotalPrice != null ? ticketInventory.TotalPrice : request.TotalPrice;
+                var totalPrice = ticketInventory.ConcludedPrice;
+
+                if (sum != totalPrice)
+                {
+                    throw new CustomMessageException($"{ticketInventory.AppInventory.Name} total price for payers must be equal to {totalPrice}");
+                }
+            }
+
+            if (request.Debtors == null || request.Debtors.Count == 0)
+            {
+                foreach (var debtor in ticketInventory.TicketInventoryDebtors)
+                {
+                    iDBRepository.Remove<TicketInventoryDebtor>(debtor);
+                }
+            }
         }
     }
 }

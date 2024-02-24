@@ -25,6 +25,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
         public string? AppTicketStatus { get; set; }
         public string? PrescribedQuantity { get; set; }
         public string? DepartmentDescription { get; set; }
+        public string? StaffObservation { get; set; }
         public string? AdditionalNote { get; set; }
     }
 
@@ -68,7 +69,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 throw new CustomMessageException("Ticket Inventory already has an App Ticket");
             }
 
-            if (ticketPrecriptionFromDb.AppTicket.AppCost != null)
+            if (ticketPrecriptionFromDb.AdmissionPrescription.AppTicket.AppCost != null)
             {
                 throw new CustomMessageException("This patient has been billed, kindly contact a doctor to create a new ticket");
             }
@@ -90,6 +91,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                         Dosage = ticketPrecriptionFromDb.Dosage,
                         Frequency = ticketPrecriptionFromDb.Frequency,
                         Duration = ticketPrecriptionFromDb.Duration,
+                        StaffObservation = request.StaffObservation,
                     }
                 },
             };
@@ -116,14 +118,12 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                     item.ConcludedDate = DateTime.Now.ToUniversalTime();
                 }
 
-
                 item.DepartmentDescription = request.DepartmentDescription;
                 item.Updated = DateTime.Now.ToUniversalTime();
                 item.LoggedQuantity = true;
 
-                FinancialHelper.UpdateQuantity(item, item.AppInventory, Int32.Parse(request.PrescribedQuantity));
+                FinancialHelper.UpdateQuantity(item, item.AppInventory, Int32.Parse(request.PrescribedQuantity), request.getCurrentUserRequest().CurrentUser.Id, iDBRepository, nameof(ExecutePrescriptionCommand));
                 iDBRepository.Update<TicketInventory>(item);
-                iDBRepository.Update<AppInventory>(item.AppInventory);
             }
 
             await iDBRepository.Complete();

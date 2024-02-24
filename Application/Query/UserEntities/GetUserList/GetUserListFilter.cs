@@ -30,6 +30,7 @@ namespace Application.Query.UserEntities.GetUserList
 
         [VerifyGuidAnnotation]
         public string? PatientCompanyId { get; set; }
+        public string? CompanyUniqueId { get; set; }
         public ICollection<string>? Roles { get; set; }
     }
 }

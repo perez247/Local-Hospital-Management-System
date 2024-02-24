@@ -20,6 +20,8 @@ namespace Application.Responses
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? Address { get; set; }
+        public string? Occupation { get; set; }
+        public string? Gender { get; set; }
         public string? Profile { get; set; }
         public BaseResponse? Base { get; set; }
 
@@ -37,6 +39,8 @@ namespace Application.Responses
             data.Phone = user.PhoneNumber;
             data.Email = user.Email;
             data.Address = user.Address;
+            data.Occupation = user.Occupation;
+            data.Gender = user.Gender;
             data.Profile = user.Profile;
             data.Staff = StaffResponse.Create(user?.Staff);
             data.Company = CompanyResponse.Create(user?.Company);

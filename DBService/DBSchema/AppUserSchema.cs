@@ -25,6 +25,14 @@ namespace DBService.DBSchema
                 .IsRequired(false)
                 .HasMaxLength(250);
 
+            builder.Property(entity => entity.Occupation)
+                .IsRequired(false)
+                .HasMaxLength(250);
+
+            builder.Property(entity => entity.Gender)
+                .IsRequired(false)
+                .HasMaxLength(250);
+
             builder.Property(entity => entity.Address)
                 .IsRequired()
                 .HasMaxLength(5000);

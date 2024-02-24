@@ -20,6 +20,7 @@ namespace Application.Command.PatientEntities.AddPatientContract
         [VerifyGuidAnnotation]
         public string? PatientId { get; set; }
         public int? DurationInDays { get; set; }
+        public decimal? Amount { get; set; }
     }
 
     public class AddPatientContractHandler : IRequestHandler<AddPatientContractCommand, Unit>
@@ -41,7 +42,7 @@ namespace Application.Command.PatientEntities.AddPatientContract
             // Get our home company
             var homeCompany = await CompanyHelper.GetHomeCompany(_companyRepository);
 
-            var cost = await iFinancialRespository.GetPatientContractCost();
+            //var cost = await iFinancialRespository.GetPatientContractCost();
             var patient = await iPatientRepository.Patients()
                                                 .Include(x => x.Company)
                                                 .Include(y => y.PatientContracts.OrderByDescending(z => z.StartDate).Take(2)).ThenInclude(z => z.AppCost)
@@ -87,15 +88,11 @@ namespace Application.Command.PatientEntities.AddPatientContract
                 Duration = durationInDays,
             };
 
-            AppCost appCost = FinancialHelper.AppCostFactory(patient.AppUserId, homeCompany.AppUserId, cost, Description, AppCostType.profit);
+            AppCost appCost = FinancialHelper.AppCostFactory(patient.AppUserId, homeCompany.AppUserId, request.Amount.Value, Description, AppCostType.profit);
             appCost.PaymentStatus = PaymentStatus.owing;
+            appCost.CostType = AppCostType.part_ticket;
 
             newContract.AppCostId = appCost.Id;
-
-            foreach (var item in appCost.FinancialRecordPayerPayees)
-            {
-                await iDBRepository.AddAsync<FinancialRecordPayerPayee>(item);
-            }
 
             await iDBRepository.AddAsync(appCost);
             await iDBRepository.AddAsync(newContract);

@@ -58,7 +58,7 @@ namespace Application.Command.InventoryEntities.UpdateQuantity
                 inventory.Quantity -= request.Amount.Value;
             }
 
-            var action = request.Add.Value ? "Adding" : "Subtracting" ;
+            var action = request.Add.Value ? "adding" : "subtracting" ;
             var newActivityLog = new ActivityLog
             {
                 ActorId = request.getCurrentUserRequest().CurrentUser.Id,

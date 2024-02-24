@@ -82,6 +82,7 @@ namespace Application.Command.CompanyEntities.AddCompanyContract
 
             AppCost appCost = FinancialHelper.AppCostFactory(company.AppUserId, homeCompany.AppUserId, cost, Description, AppCostType.profit);
             appCost.PaymentStatus = PaymentStatus.owing;
+            appCost.CostType = AppCostType.part_ticket;
 
             newContract.AppCostId = appCost.Id;
 

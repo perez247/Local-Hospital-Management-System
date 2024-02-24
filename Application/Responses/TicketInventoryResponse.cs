@@ -15,12 +15,13 @@ namespace Application.Responses
         public int? AppInventoryQuantity { get; set; }
         public decimal? CurrentPrice { get; set; }
         public decimal? TotalPrice { get; set; }
+        public decimal? ConcludedPrice { get; set; }
         public DateTime? ConcludedDate { get; set; }
         public string? AppTicketStatus { get; set; }
         public ICollection<string> Proof { get; set; } = new List<string>();
         public StaffResponse? Staff { get; set; }
         //public Guid? StaffId { get; set; }
-        //public string? StaffObservation { get; set; }
+        public string? StaffObservation { get; set; }
         public string? DoctorsPrescription { get; set; }
         public string? Description { get; set; }
         public string? DepartmentDescription { get; set; }
@@ -34,6 +35,7 @@ namespace Application.Responses
         public string? AdditionalNote { get; set; }
         public DateTime? Updated { get; set; }
         public DateTime? TimeGiven { get; set; }
+        public IEnumerable<TicketInventoryDebtorResponse>? Debtors { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }
@@ -73,6 +75,7 @@ namespace Application.Responses
                 AppInventoryQuantity = ticketInventory.AppInventoryQuantity,
                 CurrentPrice = ticketInventory.CurrentPrice,
                 TotalPrice = ticketInventory.TotalPrice,
+                ConcludedPrice = ticketInventory.ConcludedPrice,
                 ConcludedDate = ticketInventory.ConcludedDate,
                 AppTicketStatus = ticketInventory.AppTicketStatus.ToString(),
                 Proof = ticketInventory.Proof,
@@ -83,8 +86,10 @@ namespace Application.Responses
                 DoctorsPrescription = ticketInventory.DoctorsPrescription,
                 DepartmentDescription = ticketInventory.DepartmentDescription,
                 FinanceDescription = ticketInventory.FinanceDescription,
+                StaffObservation = ticketInventory.StaffObservation,
 
-                ItemsUsed = ticketInventory.ItemsUsed != null && ticketInventory.ItemsUsed.Count > 0 ? ticketInventory.ItemsUsed.Select(x => TicketInventoryItemUsedResponse.Create(x)) : null,
+                ItemsUsed = ticketInventory.ItemsUsed != null && ticketInventory.ItemsUsed.Count > 0 ? ticketInventory.ItemsUsed.Select(x => TicketInventoryItemUsedResponse.Create(x)) : Array.Empty<TicketInventoryItemUsedResponse>(),
+                Debtors = ticketInventory.TicketInventoryDebtors != null && ticketInventory.TicketInventoryDebtors.Count > 0 ? ticketInventory.TicketInventoryDebtors.Select(x => TicketInventoryDebtorResponse.Create(x)) : Array.Empty<TicketInventoryDebtorResponse>(),
 
                 Times = ticketInventory.Times,
                 Dosage = ticketInventory.Dosage,
@@ -188,6 +193,28 @@ namespace Application.Responses
                 Id = ticketInventoryItemUsed.Id,
                 Name = ticketInventoryItemUsed.Name,
                 Quantity = ticketInventoryItemUsed.Quantity,
+            };
+        }
+    }
+
+    public class TicketInventoryDebtorResponse
+    {
+        public string? PayerId { get; set; }
+        public UserOnlyResponse? Payer { get; set; }
+        public decimal? Amount { get; set; }
+        public string? Description { get; set; }
+
+        public static TicketInventoryDebtorResponse? Create(TicketInventoryDebtor response)
+        {
+            if (response == null)
+            {  return null; }
+
+            return new TicketInventoryDebtorResponse
+            {
+                Payer = UserOnlyResponse.Create(response.Payer),
+                Amount = response.Amount,
+                Description = response.Description,
+                PayerId = response.Payer.Id.ToString(),
             };
         }
     }

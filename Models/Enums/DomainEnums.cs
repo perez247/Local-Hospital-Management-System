@@ -33,7 +33,9 @@ namespace Models.Enums
     {
         profit,
         expense,
-        tax
+        tax,
+        overall_ticket,
+        part_ticket,
     }
 
     public enum PaymentStatus
@@ -65,6 +67,7 @@ namespace Models.Enums
         lab,
         radiology,
         admission,
+        nursing,
         other,
     }
     public enum SurgeryTicketStatus

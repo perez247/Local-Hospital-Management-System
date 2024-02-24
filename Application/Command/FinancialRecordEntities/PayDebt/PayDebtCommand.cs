@@ -24,6 +24,7 @@ namespace Application.Command.FinancialRecordEntities.PayDebt
         public DateTime? EndDate { get; set; }
         public string? Proof { get; set; }
         public string? PaymentType { get; set; }
+        public bool? FullPayment { get; set; }
     }
 
     public class PayDebtHandler : IRequestHandler<PayDebtCommand, Unit>
@@ -56,7 +57,7 @@ namespace Application.Command.FinancialRecordEntities.PayDebt
                                                   .Include(x => x.FinancialRecordPayerPayees)
                                                   .Include(x => x.AppTicket)
                                                   .Where(x => x.FinancialRecordPayerPayees.FirstOrDefault(y => y.AppUserId.ToString() == request.UserId && y.Payer) != null)
-                                                  .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing);
+                                                  .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing && x.CostType == AppCostType.part_ticket);
                                                   
             if (request.StartDate.HasValue)
             {
@@ -79,46 +80,101 @@ namespace Application.Command.FinancialRecordEntities.PayDebt
 
             var financialId = Guid.NewGuid();
 
-            foreach (var cost in costs)
+            var amountToPay = request.AmountToPay;
+
+            var descriptions = new List<string>();
+
+            if (request.FullPayment.Value)
             {
-                sum += cost.ApprovedPrice.Value;
-                cost.PaymentStatus = Models.Enums.PaymentStatus.approved;
-                cost.FinancialRecordId = financialId;
-
-                if (cost.Payments.Count > 0)
+                foreach (var cost in costs)
                 {
-                    var costSum = 0m;
-                    cost.Payments.Select(x =>
-                    {
-                        costSum += x.Amount;
-                        return costSum;
-                    });
+                    sum += cost.ApprovedPrice.Value;
+                    cost.PaymentStatus = Models.Enums.PaymentStatus.approved;
+                    cost.FinancialRecordId = financialId;
 
-                    cost.Payments.Add(new Payment
-                    {
-                        Amount = cost.ApprovedPrice.Value - costSum,
-                        PaymentType = request.PaymentType.ParseEnum<PaymentType>(),
-                        DatePaid = DateTime.Now,
-                        Proof = request.Proof,
-                        Tax = (cost.ApprovedPrice.Value - costSum) * tax
-                    });
+                    descriptions.Add(cost.Description);
 
-                } else
-                {
-                    cost.Payments = new List<Payment>
+                    if (cost.Payments.Count > 0)
                     {
-                        new Payment {
-                            Amount = cost.ApprovedPrice.Value, 
+                        var costSum = 0m;
+                        cost.Payments.Select(x =>
+                        {
+                            costSum += x.Amount;
+                            return costSum;
+                        });
+
+                        cost.Payments.Add(new Payment
+                        {
+                            Amount = cost.ApprovedPrice.Value - costSum,
                             PaymentType = request.PaymentType.ParseEnum<PaymentType>(),
                             DatePaid = DateTime.Now,
                             Proof = request.Proof,
-                            Tax = cost.ApprovedPrice.Value * tax
-                        }
-                    };
+                            Tax = (cost.ApprovedPrice.Value - costSum) * tax
+                        });
+
+                    } else
+                    {
+                        cost.Payments = new List<Payment>
+                        {
+                            new Payment {
+                                Amount = cost.ApprovedPrice.Value, 
+                                PaymentType = request.PaymentType.ParseEnum<PaymentType>(),
+                                DatePaid = DateTime.Now,
+                                Proof = request.Proof,
+                                Tax = cost.ApprovedPrice.Value * tax
+                            }
+                        };
+                    }
+
+                    _dBRepository.Update<AppCost>(cost);
                 }
 
-                _dBRepository.Update<AppCost>(cost);
+
+            } else
+            {
+                foreach (var cost in costs)
+                {
+                    var totalPaidSoFar = cost.Payments.Sum(x => x.Amount);
+                    totalPaidSoFar = totalPaidSoFar != null ? totalPaidSoFar : 0;
+                    var amountToPayNow = cost.ApprovedPrice.Value - totalPaidSoFar;
+
+                    descriptions.Add(cost.Description);
+
+                    if (amountToPay >= amountToPayNow)
+                    {
+                        cost.Payments.Add(new Payment
+                        {
+                            Amount = amountToPayNow,
+                            PaymentType = request.PaymentType.ParseEnum<PaymentType>(),
+                            DatePaid = DateTime.Now,
+                            Proof = request.Proof,
+                        });
+
+                        cost.PaymentStatus = PaymentStatus.approved;
+                        _dBRepository.Update<AppCost>(cost);
+                        amountToPay = amountToPay - amountToPayNow;
+                        sum += amountToPayNow;
+                    } else
+                    {
+                        if (amountToPay > 0)
+                        {
+                            var amountAdded = amountToPayNow - amountToPay;
+                            cost.Payments.Add(new Payment
+                            {
+                                Amount = amountToPay.Value,
+                                PaymentType = request.PaymentType.ParseEnum<PaymentType>(),
+                                DatePaid = DateTime.Now,
+                                Proof = request.Proof,
+                            });
+
+                            _dBRepository.Update<AppCost>(cost);
+                            sum += amountToPay.Value;
+                            amountToPay = 0;
+                        }
+                    }
+                }
             }
+
 
             var newFinancialRecord = new FinancialRecord
             {
@@ -128,6 +184,7 @@ namespace Application.Command.FinancialRecordEntities.PayDebt
                 PaymentStatus = PaymentStatus.approved,
                 CostType = request.UserId == homeCompany.AppUserId.ToString() ? Models.Enums.AppCostType.expense : Models.Enums.AppCostType.profit,
                 ActorId = request.getCurrentUserRequest().CurrentUser.Id,
+                Description = string.Join(" | ", descriptions),
                 Payments = new List<Payment>
                 {
                     new Payment
@@ -160,4 +217,5 @@ namespace Application.Command.FinancialRecordEntities.PayDebt
             return Unit.Value;
         }
     }
+
 }

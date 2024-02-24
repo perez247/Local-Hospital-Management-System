@@ -54,6 +54,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
                                                     Lab = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.lab),
                                                     Radiology = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.radiology),
                                                     Surgery = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.surgery),
+                                                    Nursing = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.nursing),
                                                 })
                                                 .FirstOrDefaultAsync(x => x.AppTicketId.ToString() == request.TicketId);
 

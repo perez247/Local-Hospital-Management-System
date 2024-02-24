@@ -29,6 +29,10 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 .MaximumLength(1000)
                 .When(x => !string.IsNullOrEmpty(x.DepartmentDescription));
 
+            RuleFor(x => x.StaffObservation)
+                .MaximumLength(1000)
+                .When(x => !string.IsNullOrEmpty(x.StaffObservation));
+
             RuleFor(x => x.AdditionalNote)
                 .MaximumLength(5000)
                 .When(x => !string.IsNullOrEmpty(x.DepartmentDescription));

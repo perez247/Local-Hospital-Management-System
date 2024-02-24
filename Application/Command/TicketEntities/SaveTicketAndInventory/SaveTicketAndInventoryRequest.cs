@@ -21,5 +21,6 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
         public int? Dosage { get; set; }
         public int? Duration { get; set; }
         public string? Frequency { get; set; }
+        public string? StaffObservation { get; set; }
     }
 }

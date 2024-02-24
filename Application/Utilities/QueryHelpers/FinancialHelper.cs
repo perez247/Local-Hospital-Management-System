@@ -1,5 +1,6 @@
-﻿using Application.Command.FinancialRecordEntities.InitialPayment;
+﻿using Application.Command.AdmissionEntities.ExecutePrescription;
 using Application.Exceptions;
+using Application.Interfaces.IRepositories;
 using Models;
 using Models.Enums;
 using System;
@@ -66,8 +67,16 @@ namespace Application.Utilities.QueryHelpers
             };
         }
 
-        public static void UpdateQuantity(TicketInventory ticketInventory, AppInventory? appInventory, int newQuantity)
+        public static async Task UpdateQuantity(
+            TicketInventory ticketInventory, 
+            AppInventory? appInventory, 
+            int newQuantity,
+            Guid? userId,
+            IDBRepository dBRepository,
+            string actionName
+            )
         {
+            var oldInventoryQuantity = appInventory.Quantity;
             var oldQuantity = Int32.Parse(ticketInventory.PrescribedQuantity);
 
             if (ticketInventory.LoggedQuantity.HasValue && ticketInventory.LoggedQuantity.Value && oldQuantity != newQuantity)
@@ -87,6 +96,24 @@ namespace Application.Utilities.QueryHelpers
             }
 
             appInventory.Quantity -= newQuantity;
+
+            if (appInventory.Quantity != oldInventoryQuantity)
+            {
+                var duringEvent = actionName == nameof(ExecutePrescriptionCommand) ? "during nursing" : "during Billing";
+                var newActivityLog = new ActivityLog
+                {
+                    ActorId = userId,
+                    ActionType = actionName,
+                    ObjectType = nameof(AppInventory),
+                    ObjectId = appInventory.Id.ToString(),
+                    ActionDescription = $"Update Quantity from {oldInventoryQuantity} to {appInventory.Quantity} by subtracting {newQuantity} {duringEvent}",
+                    OtherDescription = "",
+                };
+
+                dBRepository.Update<AppInventory>(appInventory);
+                await dBRepository.AddAsync<ActivityLog>(newActivityLog);
+
+            }
         }
     }
 }

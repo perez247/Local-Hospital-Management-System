@@ -107,7 +107,7 @@ namespace DBService.Repositories
                                 .Include(x => x.FinancialRecordPayerPayees)
                                     .ThenInclude(x => x.AppUser)
                                         .ThenInclude(x => x.Company)
-                                .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing && x.PatientContract == null)
+                                .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();
 

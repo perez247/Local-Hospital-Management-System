@@ -32,10 +32,6 @@ namespace Application.Command.FinancialRecordEntities.BillClient
         private IFinancialRespository? _financialRespository { get; set; }
         private IDBRepository? _dBRepository { get; set; }
 
-        IDictionary<string, string> d = new Dictionary<string, string>();
-
-        public int Count => d.Count;
-
         public BillClientHandler(IDBRepository? dBRepository, IFinancialRespository? financialRespository, ITicketRepository? ticketRepository, ICompanyRepository? companyRepository)
         {
             _dBRepository = dBRepository;
@@ -72,6 +68,8 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                                                         .ThenInclude(x => x.Patient)
                                                             .ThenInclude(x => x.Company)
                                                                 .ThenInclude(x => x.CompanyContracts.OrderByDescending(y => y.DateCreated).Take(1))
+                                                   .Include(x => x.TicketInventories)
+                                                        .ThenInclude(x => x.TicketInventoryDebtors)
                                                    .Include(x => x.TicketInventories)
                                                         .ThenInclude(a => a.AppInventory)
                                                             .ThenInclude(a => a.AppInventoryItems.Where(b => b.CompanyId == companyPaying.Id))
@@ -115,6 +113,8 @@ namespace Application.Command.FinancialRecordEntities.BillClient
 
             // Get the sumtotal
             decimal sumTotal = 0.0m;
+            var debtors = new List<TicketInventoryDebtor>();
+            var description = "Appointment";
 
             foreach (var x in appTicket.TicketInventories)
             {
@@ -122,7 +122,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                 {
                     if (x.AppInventory == null)
                     {
-                        throw new CustomMessageException("One the items to bill was not found in the inventory");
+                        throw new CustomMessageException("One of the items to bill was not found in the inventory");
                     }
 
                     var item = x.AppInventory.AppInventoryItems.FirstOrDefault();
@@ -146,24 +146,22 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                         }
 
                         addmissionDays = (x.AdmissionEndDate - x.AdmissionStartDate).Value.Days;
+
+                        description = "Admission";
                     }
 
 
 
                     x.TotalPrice = decimal.Parse(x.PrescribedQuantity) * item.PricePerItem * addmissionDays;
                     x.CurrentPrice = item.PricePerItem;
-                    sumTotal += x.TotalPrice.Value;
+
+                    //verify sum of all debtor must equal cost provided
+                    await CollateDebtorsAmount(debtors, x, payerId.Value, _dBRepository);
 
                     if (!x.LoggedQuantity.HasValue || (x.LoggedQuantity.HasValue && !x.LoggedQuantity.Value))
                     {
-                        var oldQuantity = x.AppInventory.Quantity;
-
-                        FinancialHelper.UpdateQuantity(x, x.AppInventory, int.Parse(x.PrescribedQuantity));
-
-                        if (oldQuantity != x.AppInventory.Quantity)
-                        {
-                            _dBRepository.Update<AppInventory>(x.AppInventory);
-                        }
+                        FinancialHelper.UpdateQuantity(x, x.AppInventory, int.Parse(x.PrescribedQuantity), request.getCurrentUserRequest().CurrentUser.Id, _dBRepository, nameof(BillClientCommand));
+                    
                     }
 
                     _dBRepository.Update<TicketInventory>(x);
@@ -171,9 +169,19 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             }
 
             // Update the financial record
+            foreach (var debtor in debtors)
+            {
+                var appCostForDebtor = FinancialHelper.AppCostFactory(debtor.PayerId, homeCompany.AppUserId, 0, description + ": " + debtor.Description, AppCostType.part_ticket);
+                appCostForDebtor.Amount = debtor.Amount;
+                appCostForDebtor.ApprovedPrice = debtor.Amount;
+                appCostForDebtor.Payments = new List<Payment>();
+                appCostForDebtor.PaymentStatus = PaymentStatus.owing;
+                appCostForDebtor.AppTicketId = appTicket.Id;
+                await _dBRepository.AddAsync<AppCost>(appCostForDebtor);
+            }
 
-            sumTotal = Math.Round(sumTotal, 2);
-            AppCost newAppCost = FinancialHelper.AppCostFactory(payerId, homeCompany.AppUserId, 0, "", AppCostType.profit);
+            sumTotal = debtors.Sum(x => x.Amount).Value;
+            AppCost newAppCost = FinancialHelper.AppCostFactory(payerId, homeCompany.AppUserId, 0, description, AppCostType.overall_ticket);
             newAppCost.Amount = sumTotal;
             newAppCost.ApprovedPrice = sumTotal;
             newAppCost.Payments = new List<Payment>();
@@ -192,9 +200,56 @@ namespace Application.Command.FinancialRecordEntities.BillClient
 
             // Save everything
 
-            await _dBRepository.Complete();
+            try
+            {
+                await _dBRepository.Complete();
+            }
+            catch (Exception e)
+            {
+
+                throw new CustomMessageException(e.Message);
+            }
 
             return Unit.Value;
+        }
+
+        private static async Task CollateDebtorsAmount(List<TicketInventoryDebtor> debtors, TicketInventory x, Guid payerId, IDBRepository dBRepository)
+        {
+
+            if (x.TicketInventoryDebtors == null || x.TicketInventoryDebtors.Count == 0)
+            {
+                TicketInventoryDebtor newDebtor = new TicketInventoryDebtor
+                {
+                    PayerId = payerId,
+                    TicketInventoryId = x.Id,
+                    Amount = x.ConcludedPrice
+                };
+
+                await dBRepository.AddAsync<TicketInventoryDebtor>(newDebtor);
+                x.TicketInventoryDebtors = new List<TicketInventoryDebtor>() { newDebtor };
+            }
+
+            var debtSum = x.TicketInventoryDebtors.Sum(a => a.Amount);
+            if (debtSum == null || debtSum != x.ConcludedPrice)
+            {
+                throw new CustomMessageException($"Kindly add all the list of debtors for {x.AppInventory.Name} to complete amount to be paid");
+            }
+
+            foreach (var debtor in x.TicketInventoryDebtors)
+            {
+                var foundDebtor = debtors.FirstOrDefault(d => d.PayerId == debtor.PayerId);
+                if (foundDebtor != null)
+                {
+                    foundDebtor.Amount += debtor.Amount;
+                    foundDebtor.Description += " - " + x.AppInventory.Name;
+                    debtors.Add(foundDebtor);
+                }
+                else
+                {
+                    debtor.Description = x.AppInventory.Name;
+                    debtors.Add(debtor);
+                }
+            }
         }
     }
 }

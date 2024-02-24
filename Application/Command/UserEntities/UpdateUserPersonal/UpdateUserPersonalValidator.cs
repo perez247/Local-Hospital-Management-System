@@ -46,6 +46,14 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
             RuleFor(x => x.Profile)
                 .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Image")
                 .When(x => !string.IsNullOrEmpty(x.Profile));
+
+            RuleFor(x => x.Occupation)
+                .MaximumLength(200).WithMessage("Maximum of 200 chars")
+                .When(x => !string.IsNullOrEmpty(x.Occupation));
+
+            RuleFor(x => x.Gender)
+                .MaximumLength(200).WithMessage("Maximum of 200 chars")
+                .When(x => !string.IsNullOrEmpty(x.Gender));
         }
     }
 }

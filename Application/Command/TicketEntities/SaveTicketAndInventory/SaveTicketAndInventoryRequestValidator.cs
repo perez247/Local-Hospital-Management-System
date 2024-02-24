@@ -18,6 +18,10 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
                 .MaximumLength(1000)
                 .When(x => !string.IsNullOrEmpty(x.DoctorsPrescription));
 
+            RuleFor(x => x.StaffObservation)
+                .MaximumLength(1000)
+                .When(x => !string.IsNullOrEmpty(x.StaffObservation));
+
             RuleFor(x => x.PrescribedQuantity)
                 .Must(x => Int32.TryParse(x, out int numValue)).WithMessage("Value must be a number")
                 .MaximumLength(1000)

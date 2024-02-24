@@ -17,10 +17,14 @@ namespace Application.Command.FinancialRecordEntities.PayDebt
                 .Must(x => x.HasValue).WithMessage("Amount to pay is required");
 
             RuleFor(x => x.Proof)
-                .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid file uploaded");
+                .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid file uploaded")
+                .When(x => !string.IsNullOrEmpty(x.Proof));
 
             RuleFor(x => x.PaymentType)
                 .Must(x => CommonValidators.EnumsContains<PaymentType>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(PaymentType)))}");
+
+            RuleFor(x => x.FullPayment)
+                .Must(x => x.HasValue).WithMessage("Must be either full payment or not");
         }
     }
 }

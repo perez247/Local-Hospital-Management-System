@@ -131,9 +131,9 @@ namespace Application.Utilities
 
             var ids = request.TicketInventories.Select(x => x.InventoryId);
 
-            if (ids.Count() >= 30)
+            if (ids.Count() >= 100)
             {
-                throw new CustomMessageException("Only a maximum of 30 inventory per ticket");
+                throw new CustomMessageException("Only a maximum of 100 inventory per ticket");
             }
 
             var inventories = await iInventoryRepository.AppInventories()
@@ -245,6 +245,7 @@ namespace Application.Utilities
                 hasInventory.Dosage = request.Dosage;
                 hasInventory.Frequency = request.Frequency;
                 hasInventory.Duration = request.Duration;
+                hasInventory.StaffObservation = request.StaffObservation;
                 hasInventory.AppInventory = inventory;
 
                 hasInventory.PrescribedQuantity = (request.Times * request.Dosage * request.Duration).ToString();
@@ -265,6 +266,7 @@ namespace Application.Utilities
                     Dosage = request.Dosage,
                     Frequency = request.Frequency,
                     Duration = request.Duration,
+                    StaffObservation = request.StaffObservation,
                     StaffId = command.getCurrentUserRequest().CurrentUser.Staff.Id,
                 };
 

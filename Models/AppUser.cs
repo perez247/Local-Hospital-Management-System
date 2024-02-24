@@ -20,6 +20,8 @@ namespace Models
         public string? OtherName { get; set; }
         public string? Address { get; set; }
         public string? Profile { get; set; }
+        public string? Occupation { get; set; }
+        public string? Gender { get; set; }
         public ICollection<SurgeryTicketPersonnel> SurgeryTicketPersonnels { get; set; } = new List<SurgeryTicketPersonnel>();
         public ICollection<UserFile> UserFiles { get; set; } = new List<UserFile>();
         public ICollection<FinancialRecordPayerPayee> FinancialRecordPayerPayees { get; set; } = new List<FinancialRecordPayerPayee>();

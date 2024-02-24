@@ -21,6 +21,8 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
         public string? LastName { get; set; }
         public string? OtherName { get; set; }
         public string? Phone { get; set; }
+        public string? Occupation { get; set; }
+        public string? Gender { get; set; }
         public string? Address { get; set; }
         public string? Profile { get; set; }
         public string? CompanyUniqueId { get; set; }
@@ -54,6 +56,8 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
             user.PhoneNumber = string.IsNullOrEmpty(request.Phone) ? null : request.Phone.Trim();
             user.Address = request.Address.Trim();
             user.Profile = request.Profile;
+            user.Occupation = request.Occupation;
+            user.Gender = request.Gender;
             iDBRepository.Update(user);
 
             if (!string.IsNullOrEmpty(request.CompanyUniqueId) || !string.IsNullOrEmpty(request.OtherInformation))
