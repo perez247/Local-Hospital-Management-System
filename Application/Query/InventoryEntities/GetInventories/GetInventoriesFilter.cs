@@ -12,6 +12,7 @@ namespace Application.Query.InventoryEntities.GetInventories
         public string? Name { get; set; }
         public ICollection<string>? AppInventoryType { get; set; }
         public string? Quantity { get; set; }
+        public bool? Low { get; set; }
 
         [VerifyGuidAnnotation]
         public string? InventoryId { get; set; }

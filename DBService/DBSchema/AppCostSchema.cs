@@ -33,6 +33,10 @@ namespace DBService.DBSchema
                 .HasForeignKey<AppTicket>(entity => entity.AppCostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(entity => entity.AppTicketPart)
+                .WithMany(entity => entity.AppCosts)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Property(entity => entity.Payments)
                 .IsRequired(false)
                 .HasConversion(

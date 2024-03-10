@@ -176,7 +176,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                 appCostForDebtor.ApprovedPrice = debtor.Amount;
                 appCostForDebtor.Payments = new List<Payment>();
                 appCostForDebtor.PaymentStatus = PaymentStatus.owing;
-                appCostForDebtor.AppTicketId = appTicket.Id;
+                appCostForDebtor.AppTicketPartId = appTicket.Id;
                 await _dBRepository.AddAsync<AppCost>(appCostForDebtor);
             }
 
@@ -186,6 +186,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             newAppCost.ApprovedPrice = sumTotal;
             newAppCost.Payments = new List<Payment>();
             newAppCost.PaymentStatus = PaymentStatus.owing;
+            newAppCost.AppTicketId = appTicket.Id;
             await _dBRepository.AddAsync<AppCost>(newAppCost);
 
             appTicket.AppCostId = newAppCost.Id;

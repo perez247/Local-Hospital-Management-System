@@ -47,6 +47,11 @@ namespace DBService.QueryHelpers
                 query = query.Where(x => x.Id.ToString() == filter.InventoryId);
             }
 
+            if (filter.Low.HasValue && filter.Low.Value)
+            {
+                query = query.Where(x => x.Quantity < x.HowLow);
+            }
+
 
             return query;
         }
