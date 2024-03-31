@@ -90,7 +90,6 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
             ticketInventory.StaffObservation = request.StaffObservation;
             ticketInventory.ConcludedPrice = request.ConcludedPrice;
 
-
             #region Lab or radiology
             ticketInventory.LabRadiologyTestResult = request.labRadiologyTestResult;
             ticketInventory.Proof = request.Proof != null ? request.Proof : new List<string>();
@@ -152,6 +151,8 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
             await UpdateDebtors(request, ticketInventory);
 
             ticketInventory.Updated = DateTime.Now.ToUniversalTime();
+
+            ticketInventory.StaffId = request.getCurrentUserRequest().CurrentUser.StaffId;
 
             iDBRepository.Update<TicketInventory>(ticketInventory);
 

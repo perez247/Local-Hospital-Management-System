@@ -17,6 +17,7 @@ namespace Application.Responses
         public bool NotifyWhenLow { get; set; }
         public int HowLow { get; set; }
         public string? Profile { get; set; }
+        public string? SellType { get; set; }
         public IEnumerable<InventoryOnlyResponse>? Dependencies { get; set; }
 
         public static InventoryResponse? Create(AppInventory appInventory)
@@ -35,6 +36,7 @@ namespace Application.Responses
                 NotifyWhenLow = appInventory.NotifyWhenLow,
                 HowLow = appInventory.HowLow,
                 Profile = appInventory.Profile,
+                SellType = appInventory.SellType,
                 Dependencies = appInventory.Dependencies.Select(x => InventoryOnlyResponse.Create(x.AppInventory))
             };
         }

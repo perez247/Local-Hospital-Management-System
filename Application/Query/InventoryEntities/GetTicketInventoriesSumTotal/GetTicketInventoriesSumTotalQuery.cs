@@ -90,7 +90,13 @@ namespace Application.Query.InventoryEntities.GetTicketInventoriesSumTotal
                         addmissionDays = Math.Abs((ticketInventory.AdmissionEndDate - ticketInventory.AdmissionStartDate).Value.Days);
                     }
 
-                    sumTotal += item.PricePerItem * Int32.Parse(ticketInventory.PrescribedQuantity) * addmissionDays;
+                    if (ticketInventory.ConcludedPrice.HasValue)
+                    {
+                        sumTotal += ticketInventory.ConcludedPrice.Value;
+                    } else
+                    {
+                        sumTotal += item.PricePerItem * Int32.Parse(ticketInventory.PrescribedQuantity) * addmissionDays;
+                    }
 
                 }
             }

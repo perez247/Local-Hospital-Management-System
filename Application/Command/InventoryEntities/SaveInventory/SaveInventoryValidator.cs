@@ -25,6 +25,10 @@ namespace Application.Command.InventoryEntities.SaveInventory
             RuleFor(x => x.Profile)
                 .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Image")
                 .When(x => !string.IsNullOrEmpty(x.Profile));
+
+            RuleFor(x => x.SellType)
+                .MaximumLength(100).WithMessage("Maximum of 100 chars")
+                .When(x => !string.IsNullOrEmpty(x.SellType));
         }
     }
 }

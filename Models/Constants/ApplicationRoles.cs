@@ -74,6 +74,17 @@ namespace Models.Constants
         public const string Company = "company";
 
         /// <summary>
+        /// Reception
+        /// </summary>
+        public const string Reception = "reception";
+
+
+        /// <summary>
+        /// Other
+        /// </summary>
+        public const string Other = "other";
+
+        /// <summary>
         /// All the roles in the
         /// </summary>
         /// <returns></returns>
@@ -93,7 +104,9 @@ namespace Models.Constants
                 Staff, 
                 Company,
                 HR,
-                Finance
+                Finance,
+                Reception,
+                Other
             };
         }
     }

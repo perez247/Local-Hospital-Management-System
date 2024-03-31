@@ -24,6 +24,7 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
         public string? Occupation { get; set; }
         public string? Gender { get; set; }
         public string? Address { get; set; }
+        public string? Email { get; set; }
         public string? Profile { get; set; }
         public string? CompanyUniqueId { get; set; }
         public string? OtherInformation { get; set; }
@@ -50,6 +51,14 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
                 throw new CustomMessageException("User not found", System.Net.HttpStatusCode.NotFound);
             }
 
+            var otherEmail = await userRepository.Users()
+                                                 .FirstOrDefaultAsync(x => x.Email == request.Email && x.Id != user.Id);
+
+            if (otherEmail != null)
+            {
+                throw new CustomMessageException($"{otherEmail.Email} belongs to '{otherEmail.FirstName}' in the application");
+            }
+
             user.FirstName = request.FirstName.Trim();
             user.LastName = request.LastName.Trim();
             user.OtherName = string.IsNullOrEmpty(request.OtherName) ? null : request.OtherName.Trim();
@@ -58,6 +67,7 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
             user.Profile = request.Profile;
             user.Occupation = request.Occupation;
             user.Gender = request.Gender;
+            user.Email = request.Email;
             iDBRepository.Update(user);
 
             if (!string.IsNullOrEmpty(request.CompanyUniqueId) || !string.IsNullOrEmpty(request.OtherInformation))

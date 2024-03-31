@@ -61,8 +61,8 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
                 .When(x => !string.IsNullOrEmpty(x.StaffObservation));
 
             RuleFor(x => x.ConcludedPrice)
-                .Must(x => x.HasValue).WithMessage("Concluded Price is required")
-                .Must(x => x.Value > 0).WithMessage("Concluded price must be greater than or equal to zero");
+                .Must(x => x.HasValue && x.Value > 0).WithMessage("Concluded price must be greater than or equal to zero")
+                .Must(x => x.HasValue).WithMessage("Concluded Price is required");
 
             RuleForEach(x => x.Proof)
                 .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Base 64 String")
