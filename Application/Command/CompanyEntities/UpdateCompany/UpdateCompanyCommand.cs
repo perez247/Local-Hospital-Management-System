@@ -31,13 +31,14 @@ namespace Application.Command.CompanyEntities.UpdateCompany
     public class UpdateCompanyHandler : IRequestHandler<UpdateCompanyCommand, Unit>
     {
         private readonly ICompanyRepository iCompanyRepository;
-        private readonly IUserRepository userRepository;
+        private readonly IUserRepository iUserRepository;
         private readonly IDBRepository iDBRepository;
 
-        public UpdateCompanyHandler(IDBRepository IDBRepository, ICompanyRepository ICompanyRepository)
+        public UpdateCompanyHandler(IDBRepository IDBRepository, ICompanyRepository ICompanyRepository, IUserRepository userRepository)
         {
             iDBRepository = IDBRepository;
             iCompanyRepository = ICompanyRepository;
+            iUserRepository = userRepository;
         }
         public async Task<Unit> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
         {
@@ -54,7 +55,7 @@ namespace Application.Command.CompanyEntities.UpdateCompany
             }
 
 
-            var otherEmail = await userRepository.Users()
+            var otherEmail = await iUserRepository.Users()
                                                  .FirstOrDefaultAsync(x => x.Email == request.Email && x.Id != company.AppUserId);
 
             if (otherEmail != null)

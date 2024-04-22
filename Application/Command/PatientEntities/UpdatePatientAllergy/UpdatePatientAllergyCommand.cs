@@ -42,7 +42,7 @@ namespace Application.Command.PatientEntities.UpdatePatientAllergy
 
             patient.Allergies = request.Allergies;
 
-            iDBRepository.Update(patient);
+            iDBRepository.Update<Patient>(patient);
             await iDBRepository.Complete();
 
             return Unit.Value;

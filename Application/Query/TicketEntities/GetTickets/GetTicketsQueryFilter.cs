@@ -26,6 +26,7 @@ namespace Application.Query.TicketEntities.GetTickets
         public bool? SentToFinance { get; set; }
         public string? AppTicketStatus { get; set; }
         public ICollection<string>? PaymentStatus { get; set; }
+        //public ICollection<string>? AppInventoryTypes { get; set; }
         public DateTime? BeforeDateTime { get; set; }
     }
 }

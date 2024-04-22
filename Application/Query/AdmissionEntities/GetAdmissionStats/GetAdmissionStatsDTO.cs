@@ -17,7 +17,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
         public int? Lab { get; set; }
         public int? Radiology { get; set; }
         public int? Surgery { get; set; }
-        public int? Nursing { get; set; }
+        public int? Nurse { get; set; }
         public ICollection<TicketInventory>? TicketInventories { get; set; }
     }
 }

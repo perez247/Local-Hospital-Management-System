@@ -32,18 +32,18 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
 
     public class UpdateUserPersonalHandler : IRequestHandler<UpdateUserPersonalCommand, Unit>
     {
-        private readonly IUserRepository userRepository;
+        private readonly IUserRepository iUserRepository;
         private readonly IDBRepository iDBRepository;
 
         public UpdateUserPersonalHandler(IDBRepository IDBRepository, IUserRepository userRepository)
         {
             iDBRepository = IDBRepository;
-            this.userRepository = userRepository;
+            iUserRepository = userRepository;
         }
 
         public async Task<Unit> Handle(UpdateUserPersonalCommand request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.Users().Include(x => x.Patient)
+            var user = await iUserRepository.Users().Include(x => x.Patient)
                                                    .FirstOrDefaultAsync(x => x.Id.ToString() == request.UserId);
 
             if (user == null)
@@ -51,7 +51,7 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
                 throw new CustomMessageException("User not found", System.Net.HttpStatusCode.NotFound);
             }
 
-            var otherEmail = await userRepository.Users()
+            var otherEmail = await iUserRepository.Users()
                                                  .FirstOrDefaultAsync(x => x.Email == request.Email && x.Id != user.Id);
 
             if (otherEmail != null)

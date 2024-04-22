@@ -67,7 +67,7 @@ namespace Models.Enums
         lab,
         radiology,
         admission,
-        nursing,
+        nurse,
         other,
     }
     public enum SurgeryTicketStatus

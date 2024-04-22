@@ -84,9 +84,9 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             appTicket.MustHvaeBeenSentToDepartment();
             appTicket.MustHaveBeenSentToFinance();
             
-            if (appTicket.AppTicketStatus != AppTicketStatus.ongoing)
+            if (appTicket.AppCost != null)
             {
-                throw new CustomMessageException("Ticket must be ongoing");
+                throw new CustomMessageException("Patient has been billed");
             }
 
             // Check the companies to make payment
@@ -120,6 +120,11 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             {
                 if (x.AppTicketStatus == Models.Enums.AppTicketStatus.ongoing)
                 {
+                    if (!x.ConcludedDate.HasValue && appTicket.AppInventoryType == AppInventoryType.admission)
+                    {
+                        throw new CustomMessageException($"Item {x.AppInventory.Name} has not been conluded. This is happening because all admission tickets must be concluded before billing");
+                    }
+
                     if (x.AppInventory == null)
                     {
                         throw new CustomMessageException("One of the items to bill was not found in the inventory");

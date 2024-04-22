@@ -13,7 +13,7 @@ namespace Application.Command.PatientEntities.AddPatientContract
         {
             RuleFor(x => x.DurationInDays)
                 .Must(x => x.HasValue).WithMessage("Duration is required")
-                .GreaterThan(366).WithMessage("Must be at least 1 Year")
+                .GreaterThanOrEqualTo(365).WithMessage("Must be at least 1 Year")
                 .LessThanOrEqualTo(1828).WithMessage("Must be less than or equal to 5 years");
         }
     }
