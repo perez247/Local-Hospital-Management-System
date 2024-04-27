@@ -40,7 +40,7 @@ namespace Application.Command.TicketEntities.SaveTicketAndInventory
                 .GreaterThanOrEqualTo(1).WithMessage("Must be greater than 1");
 
             RuleFor(x => x.Duration)
-                .Must(x => x.HasValue).WithMessage("Duration is required")
+                //.Must(x => x.HasValue).WithMessage("Duration is required")
                 .GreaterThanOrEqualTo(1).WithMessage("Must be greater than 1");
 
             RuleFor(x => x.Frequency)

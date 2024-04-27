@@ -237,6 +237,7 @@ namespace Application.Utilities
                 throw new CustomMessageException($"{command.AppInventoryType} to add not found");
             }
 
+            request.Duration = request.Duration.HasValue && request.Duration > 0 ? request.Duration : 1;
             var hasInventory = ticketInventories.FirstOrDefault(x => x.Id.ToString() == request.TicketInventoryId);
             if (hasInventory != null)
             {

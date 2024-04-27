@@ -52,17 +52,21 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
         private readonly ITicketRepository iTicketRepository;
         private readonly IInventoryRepository iInventoryRepository;
         private readonly IDBRepository iDBRepository;
+        private readonly ICompanyRepository icompanyRepository;
 
-        public SaveTicketInventoryHandler(ITicketRepository iTicketRepository, IInventoryRepository iInventoryRepository, IDBRepository iDBRepository)
+        public SaveTicketInventoryHandler(ITicketRepository iTicketRepository, IInventoryRepository iInventoryRepository, IDBRepository iDBRepository, ICompanyRepository companyRepository)
         {
             this.iTicketRepository = iTicketRepository;
             this.iInventoryRepository = iInventoryRepository;
             this.iDBRepository = iDBRepository;
+            this.icompanyRepository = companyRepository;
         }
         public async Task<Unit> Handle(SaveTicketInventoryCommand request, CancellationToken cancellationToken)
         {
             var ticketInventory = await iTicketRepository.TicketInventory()
                                                          .Include(x => x.AppTicket)
+                                                            .ThenInclude(x => x.Appointment)
+                                                                .ThenInclude(x => x.Patient)
                                                          .Include(x => x.AppInventory)
                                                          .Include(x => x.SurgeryTicketPersonnels)
                                                          .Include(x => x.TicketInventoryDebtors)

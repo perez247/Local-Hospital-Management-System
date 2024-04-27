@@ -46,7 +46,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             // Get home company
             var homeCompany = await CompanyHelper.GetHomeCompany(_companyRepository);
 
-            // Get home company
+            // Get individual company
             var individualCompany = await CompanyHelper.GetIndividualCompany(_companyRepository);
 
 
@@ -120,11 +120,6 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             {
                 if (x.AppTicketStatus == Models.Enums.AppTicketStatus.ongoing)
                 {
-                    if (!x.ConcludedDate.HasValue && appTicket.AppInventoryType == AppInventoryType.admission)
-                    {
-                        throw new CustomMessageException($"Item {x.AppInventory.Name} has not been conluded. This is happening because all admission tickets must be concluded before billing");
-                    }
-
                     if (x.AppInventory == null)
                     {
                         throw new CustomMessageException("One of the items to bill was not found in the inventory");
@@ -135,6 +130,11 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                     if (item == null)
                     {
                         throw new CustomMessageException($"{x.AppInventory.Name} was not found for {companyName}");
+                    }
+
+                    if (!x.ConcludedDate.HasValue && appTicket.AppInventoryType == AppInventoryType.admission)
+                    {
+                        throw new CustomMessageException($"Item {x.AppInventory.Name} ({x.AppInventory.AppInventoryType}) has not been conluded. This is happening because all admission tickets must be concluded before billing");
                     }
 
                     var addmissionDays = 1;
@@ -161,7 +161,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                     x.CurrentPrice = item.PricePerItem;
 
                     //verify sum of all debtor must equal cost provided
-                    await CollateDebtorsAmount(debtors, x, payerId.Value, _dBRepository);
+                    await CollateDebtorsAmount(debtors, x, payerId.Value, _dBRepository, individualCompany.AppUserId.Value, appTicket.Appointment.Patient.AppUserId.Value);
 
                     if (!x.LoggedQuantity.HasValue || (x.LoggedQuantity.HasValue && !x.LoggedQuantity.Value))
                     {
@@ -173,8 +173,31 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                 }
             }
 
+
+            var groupDebtors = new List<TicketInventoryDebtor>();
+
+            foreach (var x in debtors)
+            {
+                var foundDebtor = groupDebtors.FirstOrDefault(a => a.PayerId == x.PayerId);
+
+                if (foundDebtor == null)
+                {
+                    groupDebtors.Add(new TicketInventoryDebtor
+                    {
+                        PayerId = x.PayerId,
+                        Amount = x.Amount,
+                        Description = x.Description,
+                    });
+                }
+                else
+                {
+                    foundDebtor.Amount += x.Amount;
+                    foundDebtor.Description += " - " + x.Description;
+                }
+            }
+
             // Update the financial record
-            foreach (var debtor in debtors)
+            foreach (var debtor in groupDebtors)
             {
                 var appCostForDebtor = FinancialHelper.AppCostFactory(debtor.PayerId, homeCompany.AppUserId, 0, description + ": " + debtor.Description, AppCostType.part_ticket);
                 appCostForDebtor.Amount = debtor.Amount;
@@ -219,7 +242,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             return Unit.Value;
         }
 
-        private static async Task CollateDebtorsAmount(List<TicketInventoryDebtor> debtors, TicketInventory x, Guid payerId, IDBRepository dBRepository)
+        private static async Task CollateDebtorsAmount(List<TicketInventoryDebtor> debtors, TicketInventory x, Guid payerId, IDBRepository dBRepository, Guid? individualId, Guid? userId)
         {
 
             if (x.TicketInventoryDebtors == null || x.TicketInventoryDebtors.Count == 0)
@@ -243,18 +266,22 @@ namespace Application.Command.FinancialRecordEntities.BillClient
 
             foreach (var debtor in x.TicketInventoryDebtors)
             {
-                var foundDebtor = debtors.FirstOrDefault(d => d.PayerId == debtor.PayerId);
-                if (foundDebtor != null)
-                {
-                    foundDebtor.Amount += debtor.Amount;
-                    foundDebtor.Description += " - " + x.AppInventory.Name;
-                    debtors.Add(foundDebtor);
-                }
-                else
-                {
-                    debtor.Description = x.AppInventory.Name;
-                    debtors.Add(debtor);
-                }
+                debtor.PayerId = debtor.PayerId == individualId ? userId : debtor.PayerId;
+                debtor.Description = x.AppInventory.Name;
+                debtors.Add(debtor);
+
+                //var foundDebtor = debtors.FirstOrDefault(d => d.PayerId == debtor.PayerId);
+                //if (foundDebtor != null)
+                //{
+                //    foundDebtor.Amount += debtor.Amount;
+                //    foundDebtor.Description += " - " + x.AppInventory.Name;
+                //    //debtors.Add(foundDebtor);
+                //}
+                //else
+                //{
+                //    debtor.Description = x.AppInventory.Name;
+                //    debtors.Add(debtor);
+                //}
             }
         }
     }
