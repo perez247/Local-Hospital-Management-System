@@ -148,6 +148,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("OtherDescription")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ActeeId");
@@ -184,6 +187,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("OverallDescription")
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -226,6 +232,9 @@ namespace ChannelClinic.Migrations
 
                     b.Property<string>("SponsorId")
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -280,6 +289,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("Payments")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppTicketPartId");
@@ -326,6 +338,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("SellType")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.ToTable("AppInventories");
@@ -350,6 +365,9 @@ namespace ChannelClinic.Migrations
                         .HasColumnType("integer");
 
                     b.Property<Guid>("DependantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("StaffResponsible")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -381,6 +399,9 @@ namespace ChannelClinic.Migrations
 
                     b.Property<decimal>("PricePerItem")
                         .HasColumnType("numeric");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -433,6 +454,9 @@ namespace ChannelClinic.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -480,6 +504,9 @@ namespace ChannelClinic.Migrations
 
                     b.Property<bool?>("SentToFinance")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -644,6 +671,9 @@ namespace ChannelClinic.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("UniqueId")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
@@ -676,6 +706,9 @@ namespace ChannelClinic.Migrations
 
                     b.Property<int>("Duration")
                         .HasColumnType("integer");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
@@ -727,6 +760,9 @@ namespace ChannelClinic.Migrations
                     b.Property<string>("Payments")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("TotalAppCosts")
                         .HasColumnType("integer");
 
@@ -760,6 +796,9 @@ namespace ChannelClinic.Migrations
 
                     b.Property<bool>("Payer")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -800,6 +839,9 @@ namespace ChannelClinic.Migrations
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FinancialRecordId");
@@ -830,6 +872,9 @@ namespace ChannelClinic.Migrations
 
                     b.Property<decimal>("Profit")
                         .HasColumnType("numeric");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -883,6 +928,9 @@ namespace ChannelClinic.Migrations
                         .HasMaxLength(15000)
                         .HasColumnType("character varying(15000)");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId")
@@ -921,6 +969,9 @@ namespace ChannelClinic.Migrations
                         .HasMaxLength(10000)
                         .HasColumnType("character varying(10000)");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId")
@@ -950,6 +1001,9 @@ namespace ChannelClinic.Migrations
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("PatientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("StaffResponsible")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartDate")
@@ -987,6 +1041,9 @@ namespace ChannelClinic.Migrations
                     b.Property<Guid?>("PatientId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NurseId");
@@ -1021,6 +1078,9 @@ namespace ChannelClinic.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<Guid?>("StaffId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("StaffResponsible")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Tax")
@@ -1088,6 +1148,9 @@ namespace ChannelClinic.Migrations
                     b.Property<decimal?>("Salary")
                         .HasColumnType("numeric");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId")
@@ -1112,6 +1175,9 @@ namespace ChannelClinic.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("StaffId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("StaffResponsible")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartDate")
@@ -1151,6 +1217,9 @@ namespace ChannelClinic.Migrations
                     b.Property<Guid?>("StaffId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StaffId");
@@ -1181,6 +1250,9 @@ namespace ChannelClinic.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<Guid?>("PersonnelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("StaffResponsible")
                         .HasColumnType("uuid");
 
                     b.Property<string>("SummaryOfSurgery")
@@ -1302,6 +1374,9 @@ namespace ChannelClinic.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("character varying(5000)");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("SurgeryDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1358,6 +1433,9 @@ namespace ChannelClinic.Migrations
                     b.Property<Guid?>("PayerId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TicketInventoryId")
                         .HasColumnType("uuid");
 
@@ -1391,6 +1469,9 @@ namespace ChannelClinic.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("StaffResponsible")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 

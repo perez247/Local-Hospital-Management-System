@@ -13,6 +13,9 @@ namespace Application.Command.PatientEntities.AddPatientVital
         [VerifyGuidAnnotation]
         public string? PatientId { get; set; }
         public string? Data { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? StaffResponsible { get; set; }
     }
 
     public class AddPatientVitalHandler : IRequestHandler<AddPatientVitalCommand, Unit>
@@ -42,10 +45,13 @@ namespace Application.Command.PatientEntities.AddPatientVital
                 throw new CustomMessageException("Patient not found", System.Net.HttpStatusCode.NotFound);
             }
 
+
+
             var vital = new PatientVital
             {
                 PatientId = patientFromDb.Id,
                 NurseId = request.getCurrentUserRequest().CurrentUser.Staff.Id,
+                StaffResponsible = request.StaffResponsible == Guid.Empty.ToString() ? request.getCurrentUserRequest().CurrentUser.Id : Guid.Parse(request.StaffResponsible),
                 Data = request.Data
             };
 

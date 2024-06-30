@@ -251,6 +251,11 @@ namespace Application.Utilities
 
                 hasInventory.PrescribedQuantity = (request.Times * request.Dosage * request.Duration).ToString();
 
+                if (hasInventory.StaffId == null)
+                {
+                    hasInventory.StaffId = command.getCurrentUserRequest().CurrentUser.Staff.Id;
+                } 
+
                 iDBRepository.Update<TicketInventory>(hasInventory);
             }
             else

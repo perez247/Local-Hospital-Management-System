@@ -20,6 +20,7 @@ namespace Application.Command.CompanyEntities.AddCompanyContract
         [VerifyGuidAnnotation]
         public string? CompanyId { get; set; }
         public int? DurationInDays { get; set; }
+        public decimal? Amount { get; set; }
     }
 
     public class AddCompanyContactHandler : IRequestHandler<AddCompanyContractCommand, Unit>
@@ -40,7 +41,6 @@ namespace Application.Command.CompanyEntities.AddCompanyContract
             // Get our home company
             var homeCompany = await CompanyHelper.GetHomeCompany(iCompanyRepository);
 
-            var cost = await _iFinancialRespository.CompanyContractCost();
             var company = await iCompanyRepository.Companies()
                                                   .Include(x => x.CompanyContracts.OrderByDescending(z => z.StartDate).Take(2)).ThenInclude(z => z.AppCost)
                                                   .FirstOrDefaultAsync(x => x.Id.ToString() == request.CompanyId);
@@ -80,7 +80,7 @@ namespace Application.Command.CompanyEntities.AddCompanyContract
                 Duration = durationInDays,
             };
 
-            AppCost appCost = FinancialHelper.AppCostFactory(company.AppUserId, homeCompany.AppUserId, cost, Description, AppCostType.profit);
+            AppCost appCost = FinancialHelper.AppCostFactory(company.AppUserId, homeCompany.AppUserId, request.Amount.Value, Description, AppCostType.profit);
             appCost.PaymentStatus = PaymentStatus.owing;
             appCost.CostType = AppCostType.part_ticket;
 

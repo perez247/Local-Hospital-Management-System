@@ -15,6 +15,10 @@ namespace Application.Command.CompanyEntities.AddCompanyContract
                 .Must(x => x.HasValue).WithMessage("Duration is required")
                 .GreaterThan(28).WithMessage("Must be at least 1 Month")
                 .LessThanOrEqualTo(366).WithMessage("Must be less than or equal to 12 months");
+
+            RuleFor(x => x.Amount)
+                .Must(x => x.HasValue).WithMessage("Amount is required")
+                .GreaterThanOrEqualTo(1000).WithMessage("Amount must be at least 1000");
         }
     }
 }

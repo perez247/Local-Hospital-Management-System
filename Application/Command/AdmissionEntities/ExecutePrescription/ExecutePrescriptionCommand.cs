@@ -27,6 +27,9 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
         public string? DepartmentDescription { get; set; }
         public string? StaffObservation { get; set; }
         public string? AdditionalNote { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? StaffResponsible { get; set; }
     }
 
     public class ExecutePrescriptionHandler : IRequestHandler<ExecutePrescriptionCommand, Unit>
@@ -129,6 +132,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 item.DepartmentDescription = request.DepartmentDescription;
                 item.Updated = DateTime.Now.ToUniversalTime();
                 item.LoggedQuantity = true;
+                item.StaffResponsible = request.StaffResponsible == Guid.Empty.ToString() ? request.getCurrentUserRequest().CurrentUser.Id : Guid.Parse(request.StaffResponsible);
 
                 FinancialHelper.UpdateQuantity(item, item.AppInventory, Int32.Parse(request.PrescribedQuantity), request.getCurrentUserRequest().CurrentUser.Id, iDBRepository, nameof(ExecutePrescriptionCommand));
                 iDBRepository.Update<TicketInventory>(item);

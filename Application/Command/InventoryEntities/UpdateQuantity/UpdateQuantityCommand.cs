@@ -55,7 +55,7 @@ namespace Application.Command.InventoryEntities.UpdateQuantity
                     throw new CustomMessageException($"{inventory.Quantity} is less than {request.Amount.Value}.");
                 }
 
-                inventory.Quantity -= request.Amount.Value;
+                inventory.Quantity = inventory.Quantity - request.Amount.Value;
             }
 
             var action = request.Add.Value ? "adding" : "subtracting" ;
