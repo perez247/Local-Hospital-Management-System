@@ -16,6 +16,7 @@ namespace Application.Responses
         public string? CostType { get; set; }
         public string? PaymentStatus { get; set; }
         public AppTicketResponseOnly? Ticket { get; set; }
+        public AppTicketResponseOnly? TicketPart { get; set; }
         public bool PatientContract { get; set; }
         public bool CompanyContract { get; set; }
         public IEnumerable<FinancailRecordPayerPayeeResponse> PayerPayee { get; set; }
@@ -43,6 +44,7 @@ namespace Application.Responses
                             appCost.FinancialRecordPayerPayees.Select(x => FinancailRecordPayerPayeeResponse.Create(x)) :
                             null,
                 Ticket = appCost.AppTicket != null ? AppTicketResponseOnly.Create(appCost.AppTicket) : null,
+                TicketPart = appCost.AppTicketPart != null ? AppTicketResponseOnly.Create(appCost.AppTicketPart) : null,
                 PatientContract = appCost.PatientContract != null,
                 CompanyContract = appCost.CompanyContract != null,
             };

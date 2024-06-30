@@ -1,7 +1,5 @@
 ﻿
 using Application.Command.FinancialRecordEntities.BillClient;
-using Application.Command.FinancialRecordEntities.InitialPayment;
-using Application.Command.FinancialRecordEntities.PatientUpdatePayment;
 using Application.Command.FinancialRecordEntities.PayDebt;
 using Application.Command.FinancialRecordEntities.SaveRecord;
 using Application.Command.FinancialRecordEntities.UpdateContract;
@@ -48,38 +46,6 @@ namespace ChannelClinic.Controllers
         public async Task<IActionResult> GetPaymentHistory([FromBody] StaffPaymentHistoryQuery command)
         {
             await UpdateToken(command, nameof(StaffPaymentHistoryQuery));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-        /// <summary>
-        /// Start initial payment
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("initial-payment")]
-        public async Task<IActionResult> InitialPayment([FromBody] InitialPaymentCommand command)
-        {
-            await UpdateToken(command, nameof(InitialPaymentCommand));
-            var result = await ApplicationUserRequest?.Mediator?.Send(command);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Update payment
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [ProducesResponseType(typeof(ApplicationErrorResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ApplicationBlankResponse), (int)HttpStatusCode.OK)]
-        [HttpPut("update-patient-payment")]
-        public async Task<IActionResult> UpdatePatientPayment([FromBody] PatientUpdatePaymentCommand command)
-        {
-            await UpdateToken(command, nameof(PatientUpdatePaymentCommand));
-
             var result = await ApplicationUserRequest?.Mediator?.Send(command);
 
             return Ok(result);

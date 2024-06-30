@@ -14,6 +14,8 @@ namespace Application.Responses
         public string? OtherName { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
+        public string? Occupation { get; set; }
+        public string? Gender { get; set; }
         public string? Address { get; set; }
         public string? Profile { get; set; }
         public bool IsPatient { get; set; }
@@ -32,6 +34,8 @@ namespace Application.Responses
             data.LastName = user.LastName;
             data.OtherName = user.OtherName;
             data.Phone = user.PhoneNumber;
+            data.Occupation = user.Occupation;
+            data.Gender = user.Gender;
             data.Email = user.Email;
             data.Address = user.Address;
             data.Profile = user.Profile;

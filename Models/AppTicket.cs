@@ -20,6 +20,7 @@ namespace Models
         public AppInventoryType AppInventoryType { get; set; }
         public ICollection<TicketInventory>? TicketInventories { get; set; } = new List<TicketInventory>();
         public ICollection<AdmissionPrescription>? AdmissionPrescriptions { get; set; } = new List<AdmissionPrescription>();
+        public ICollection<AppCost> AppCosts { get; set; } = new List<AppCost>();
     }
 }
 

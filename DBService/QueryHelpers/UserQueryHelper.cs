@@ -115,6 +115,11 @@ namespace DBService.QueryHelpers
                 query = query.Where(x => x.Company.ForIndividual == filter.ForIndividual.Value);
             }
 
+            if (!string.IsNullOrEmpty(filter.CompanyUniqueId))
+            {
+                query = query.Where(x => x.Patient.CompanyUniqueId != null && EF.Functions.Like(x.Patient.CompanyUniqueId.ToLower(), $"%{filter.CompanyUniqueId.ToLower()}%"));
+            }
+
             if (!string.IsNullOrEmpty(filter.UserSearchId))
             {
                 query = query.Where(i => EF.Functions.Like(i.Id.ToString().ToLower(), $"%{filter.UserSearchId.ToLower()}%"));

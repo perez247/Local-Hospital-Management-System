@@ -63,10 +63,10 @@ namespace Models
                 return false;
             }
 
-            if (IsPatient && contract.AppCost.PaymentStatus == Enums.PaymentStatus.owing)
-            {
-                return false;
-            }
+            //if (IsPatient && contract.AppCost.PaymentStatus == Enums.PaymentStatus.owing)
+            //{
+            //    return false;
+            //}
 
             if (contract.AppCost.PaymentStatus == Enums.PaymentStatus.owing || contract.AppCost.PaymentStatus == Enums.PaymentStatus.approved)
             {

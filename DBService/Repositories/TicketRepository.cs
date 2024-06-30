@@ -49,7 +49,7 @@ namespace DBService.Repositories
                                 //    .ThenInclude(x => x.AppUser)
                                 //.Include(x => x.Company)
                                 //    .ThenInclude(x => x.AppUser)
-                                .Include(x => x.TicketInventories.Take(10))
+                                .Include(x => x.TicketInventories.OrderBy(a => a.DateCreated).Take(10))
                                     .ThenInclude(x => x.AppInventory)
                                 //.Include(x => x.TicketInventories).Take(10).AsQueryable()
                                 //    .ThenInclude(x => x.SurgeryTicketPersonnels)
@@ -96,7 +96,7 @@ namespace DBService.Repositories
                                 .Include(x => x.Appointment)
                                     .ThenInclude(x => x.Doctor)
                                         .ThenInclude(x => x.AppUser)
-                                .Include(x => x.TicketInventories.Take(10))
+                                    .Include(x => x.TicketInventories.OrderBy(a => a.DateCreated).Take(10))
                                     .ThenInclude(x => x.AppInventory)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();

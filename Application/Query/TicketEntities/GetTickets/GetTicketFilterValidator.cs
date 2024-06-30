@@ -17,6 +17,10 @@ namespace Application.Query.TicketEntities.GetTickets
                 .Must(x => CommonValidators.EnumsContains<AppInventoryType>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppInventoryType)))}")
                 .When(x => !string.IsNullOrEmpty(x.AppInventoryType));
 
+            //RuleForEach(x => x.AppInventoryTypes)
+            //    .Must(x => CommonValidators.EnumsContains<AppInventoryType>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppInventoryType)))}")
+            //    .When(x => x.AppInventoryTypes != null && x.AppInventoryTypes.Count > 0);
+
             RuleFor(x => x.AppTicketStatus)
                 .Must(x => CommonValidators.EnumsContains<AppTicketStatus>(x)).WithMessage($"Only: {string.Join(", ", Enum.GetNames(typeof(AppTicketStatus)))}")
                 .When(x => !string.IsNullOrEmpty(x.AppInventoryType));

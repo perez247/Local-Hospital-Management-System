@@ -131,9 +131,9 @@ namespace Application.Utilities
 
             var ids = request.TicketInventories.Select(x => x.InventoryId);
 
-            if (ids.Count() >= 30)
+            if (ids.Count() >= 100)
             {
-                throw new CustomMessageException("Only a maximum of 30 inventory per ticket");
+                throw new CustomMessageException("Only a maximum of 100 inventory per ticket");
             }
 
             var inventories = await iInventoryRepository.AppInventories()
@@ -237,6 +237,7 @@ namespace Application.Utilities
                 throw new CustomMessageException($"{command.AppInventoryType} to add not found");
             }
 
+            request.Duration = request.Duration.HasValue && request.Duration > 0 ? request.Duration : 1;
             var hasInventory = ticketInventories.FirstOrDefault(x => x.Id.ToString() == request.TicketInventoryId);
             if (hasInventory != null)
             {
@@ -245,9 +246,15 @@ namespace Application.Utilities
                 hasInventory.Dosage = request.Dosage;
                 hasInventory.Frequency = request.Frequency;
                 hasInventory.Duration = request.Duration;
+                hasInventory.StaffObservation = request.StaffObservation;
                 hasInventory.AppInventory = inventory;
 
                 hasInventory.PrescribedQuantity = (request.Times * request.Dosage * request.Duration).ToString();
+
+                if (hasInventory.StaffId == null)
+                {
+                    hasInventory.StaffId = command.getCurrentUserRequest().CurrentUser.Staff.Id;
+                } 
 
                 iDBRepository.Update<TicketInventory>(hasInventory);
             }
@@ -265,6 +272,7 @@ namespace Application.Utilities
                     Dosage = request.Dosage,
                     Frequency = request.Frequency,
                     Duration = request.Duration,
+                    StaffObservation = request.StaffObservation,
                     StaffId = command.getCurrentUserRequest().CurrentUser.Staff.Id,
                 };
 

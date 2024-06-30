@@ -17,6 +17,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
         public int? Lab { get; set; }
         public int? Radiology { get; set; }
         public int? Surgery { get; set; }
+        public int? Nurse { get; set; }
         public IEnumerable<TicketInventoryResponse>? TicketInventories { get; set; }
 
         public static GetAdmissionStatsResponse? Create(GetAdmissionStatsDTO GetAdmissionStatsDTO)
@@ -37,6 +38,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
                 Lab = GetAdmissionStatsDTO.Lab,
                 Radiology = GetAdmissionStatsDTO.Radiology,
                 Surgery = GetAdmissionStatsDTO?.Surgery,
+                Nurse = GetAdmissionStatsDTO?.Nurse,
             };
         }
     }

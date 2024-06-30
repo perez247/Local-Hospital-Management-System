@@ -90,10 +90,10 @@ namespace DBService.Repositories
         public async Task<PaginationDto<FinancialDebtDTO>> GetAppCostForDebts(GetAppCostFilter filter, PaginationCommand command)
         {
             var query = _context.AppCosts
-                                .Include(x => x.AppTicket)
-                                    .ThenInclude(x => x.TicketInventories)
-                                        .ThenInclude(x => x.AppInventory)
-                                .Include(x => x.AppTicket)
+                                .Include(x => x.AppTicketPart)
+                                .ThenInclude(x => x.TicketInventories)
+                                    .ThenInclude(x => x.AppInventory)
+                                .Include(x => x.AppTicketPart)
                                     .ThenInclude(x => x.Appointment)
                                         .ThenInclude(x => x.Patient)
                                         .ThenInclude(x => x.AppUser)
@@ -107,7 +107,7 @@ namespace DBService.Repositories
                                 .Include(x => x.FinancialRecordPayerPayees)
                                     .ThenInclude(x => x.AppUser)
                                         .ThenInclude(x => x.Company)
-                                .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing && x.PatientContract == null)
+                                .Where(x => x.PaymentStatus == Models.Enums.PaymentStatus.owing && x.CostType == Models.Enums.AppCostType.part_ticket)
                                 .OrderByDescending(x => x.DateCreated)
                                 .AsQueryable();
 

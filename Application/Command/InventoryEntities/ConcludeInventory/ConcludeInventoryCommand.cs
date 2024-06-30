@@ -52,10 +52,10 @@ namespace Application.Command.InventoryEntities.ConcludeInventory
                 throw new CustomMessageException($"{ticketInventory.AppInventory.Name} Has been concluded");
             }
 
-            if (ticketInventory.AppTicket.AppCost == null && ticketInventory.AdmissionPrescription == null)
-            {
-                throw new CustomMessageException("Client must be billed first, except this is for admission patients");
-            }
+            //if (ticketInventory.AppTicket.AppCost == null && ticketInventory.AdmissionPrescription == null)
+            //{
+            //    throw new CustomMessageException("Client must be billed first, except this is for admission patients");
+            //}
 
             if (ticketInventory.AppInventory.AppInventoryType == Models.Enums.AppInventoryType.surgery)
             {
@@ -75,6 +75,14 @@ namespace Application.Command.InventoryEntities.ConcludeInventory
                 if (string.IsNullOrEmpty(ticketInventory.LabRadiologyTestResult))
                 {
                     throw new CustomMessageException("Result for lab/radiology is required before conclusion");
+                }
+            }
+
+            if (ticketInventory.AppInventory.AppInventoryType == Models.Enums.AppInventoryType.admission)
+            {
+                if (!ticketInventory.AdmissionStartDate.HasValue || !ticketInventory.AdmissionEndDate.HasValue)
+                {
+                    throw new CustomMessageException("Admission start date and end date must be entered first");
                 }
             }
 

@@ -43,6 +43,9 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
                                                 .ThenInclude(x => x.Patient)
                                                     .ThenInclude(x => x.Company)
                                                         .ThenInclude(x => x.AppUser)
+                                               .Include(x => x.Appointment)
+                                                    .ThenInclude(x => x.Company)
+                                                        .ThenInclude(x => x.AppUser)
                                                 .Select(x => new GetAdmissionStatsDTO
                                                 {
                                                     AppTicketId = x.Id,
@@ -54,6 +57,7 @@ namespace Application.Query.TicketEntities.GetAdmissionStats
                                                     Lab = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.lab),
                                                     Radiology = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.radiology),
                                                     Surgery = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.surgery),
+                                                    Nurse = x.AdmissionPrescriptions.Count(a => a.AppInventoryType == Models.Enums.AppInventoryType.nurse),
                                                 })
                                                 .FirstOrDefaultAsync(x => x.AppTicketId.ToString() == request.TicketId);
 

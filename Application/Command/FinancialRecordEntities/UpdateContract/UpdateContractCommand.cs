@@ -91,6 +91,7 @@ namespace Application.Command.FinancialRecordEntities.UpdateContract
 
 
             financialRecord.Payments = appCost.Payments;
+            financialRecord.ActorId = request.getCurrentUserRequest().CurrentUser.Id;
 
             if (appCost.PatientContract != null)
             {

@@ -56,6 +56,14 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
                 .MaximumLength(1000)
                 .When(x => !string.IsNullOrEmpty(x.DepartmentDescription));
 
+            RuleFor(x => x.StaffObservation)
+                .MaximumLength(1000)
+                .When(x => !string.IsNullOrEmpty(x.StaffObservation));
+
+            RuleFor(x => x.ConcludedPrice)
+                .Must(x => x.HasValue && x.Value > 0).WithMessage("Concluded price must be greater than or equal to zero")
+                .Must(x => x.HasValue).WithMessage("Concluded Price is required");
+
             RuleForEach(x => x.Proof)
                 .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Base 64 String")
                 .When(x => x.Proof != null && x.Proof.Count > 0);
@@ -76,6 +84,11 @@ namespace Application.Command.InventoryEntities.SaveTicketInventory
             RuleForEach(x => x.SurgeryTicketPersonnels)
                 .SetValidator(new UpdateSurgeryTicketPersonnelValidator())
                 .When(x => x.SurgeryTicketPersonnels != null && x.SurgeryTicketPersonnels.Count > 0);
+
+            RuleForEach(x => x.Debtors)
+                .SetValidator(new SaveTicketInventoryDebtorValidator())
+                .When(x => x.Debtors != null && x.Debtors.Count > 0);
+
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Models
         public int? AppInventoryQuantity { get; set; }
         public decimal? CurrentPrice { get; set; }
         public decimal? TotalPrice { get; set; }
+        public decimal? ConcludedPrice { get; set; }
         public DateTime? ConcludedDate { get; set; }
         public AppTicketStatus AppTicketStatus { get; set; } = AppTicketStatus.ongoing;
         public ICollection<string> Proof { get; set; } = new List<string>();
@@ -37,6 +38,7 @@ namespace Models
         public string? AdditionalNote { get; set; }
         public DateTime? Updated { get; set; }
         public bool? LoggedQuantity { get; set; }
+        public ICollection<TicketInventoryDebtor>? TicketInventoryDebtors { get; set; }
 
         #region Pharmacy section
         public string? PrescribedQuantity { get; set; }

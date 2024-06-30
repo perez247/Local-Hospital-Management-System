@@ -21,7 +21,10 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
         public string? LastName { get; set; }
         public string? OtherName { get; set; }
         public string? Phone { get; set; }
+        public string? Occupation { get; set; }
+        public string? Gender { get; set; }
         public string? Address { get; set; }
+        public string? Email { get; set; }
         public string? Profile { get; set; }
         public string? CompanyUniqueId { get; set; }
         public string? OtherInformation { get; set; }
@@ -29,23 +32,31 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
 
     public class UpdateUserPersonalHandler : IRequestHandler<UpdateUserPersonalCommand, Unit>
     {
-        private readonly IUserRepository userRepository;
+        private readonly IUserRepository iUserRepository;
         private readonly IDBRepository iDBRepository;
 
         public UpdateUserPersonalHandler(IDBRepository IDBRepository, IUserRepository userRepository)
         {
             iDBRepository = IDBRepository;
-            this.userRepository = userRepository;
+            iUserRepository = userRepository;
         }
 
         public async Task<Unit> Handle(UpdateUserPersonalCommand request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.Users().Include(x => x.Patient)
+            var user = await iUserRepository.Users().Include(x => x.Patient)
                                                    .FirstOrDefaultAsync(x => x.Id.ToString() == request.UserId);
 
             if (user == null)
             {
                 throw new CustomMessageException("User not found", System.Net.HttpStatusCode.NotFound);
+            }
+
+            var otherEmail = await iUserRepository.Users()
+                                                 .FirstOrDefaultAsync(x => x.Email == request.Email && x.Id != user.Id);
+
+            if (otherEmail != null)
+            {
+                throw new CustomMessageException($"{otherEmail.Email} belongs to '{otherEmail.FirstName}' in the application");
             }
 
             user.FirstName = request.FirstName.Trim();
@@ -54,6 +65,9 @@ namespace Application.Command.UserEntities.UpdateUserPersonal
             user.PhoneNumber = string.IsNullOrEmpty(request.Phone) ? null : request.Phone.Trim();
             user.Address = request.Address.Trim();
             user.Profile = request.Profile;
+            user.Occupation = request.Occupation;
+            user.Gender = request.Gender;
+            user.Email = request.Email;
             iDBRepository.Update(user);
 
             if (!string.IsNullOrEmpty(request.CompanyUniqueId) || !string.IsNullOrEmpty(request.OtherInformation))

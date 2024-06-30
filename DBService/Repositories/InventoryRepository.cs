@@ -71,6 +71,8 @@ namespace DBService.Repositories
                                 .Include(x => x.AppTicket)
                                 .Include(x => x.AdmissionPrescription)
                                 .Include(x => x.AppInventory)
+                                .Include(x => x.TicketInventoryDebtors)
+                                    .ThenInclude(x => x.Payer)
                                 .Include(x => x.Staff)
                                     .ThenInclude(x => x.AppUser)
                                 .Include(x => x.SurgeryTicketPersonnels)

@@ -27,6 +27,9 @@ namespace Application.Command.TicketEntities.AddEmergencyTicket
 
         public string? OverallAppointmentDescription { get; set; }
 
+        [VerifyGuidAnnotation]
+        public string? SponsorId { get; set; }
+
         public string? AppInventoryType { get; set; }
 
         public ICollection<SaveTicketAndInventoryRequest>? TicketInventories { get; set; }
@@ -68,7 +71,8 @@ namespace Application.Command.TicketEntities.AddEmergencyTicket
                 DoctorId = request.DoctorId,
                 PatientId = request.PatientId,
                 AppointmentDate = appointmentDate,
-                OverallDescription = request.OverallAppointmentDescription
+                OverallDescription = request.OverallAppointmentDescription,
+                SponsorId = request.SponsorId,
             };
 
             // Get appointment
@@ -86,6 +90,8 @@ namespace Application.Command.TicketEntities.AddEmergencyTicket
                 OverallDescription = request.OverallTicketDescription,
                 TicketInventories = request.TicketInventories,
             };
+
+            saveAppointmentTicketCommand.SetCurrentUserRequest(request.getCurrentUserRequest());
 
             var newTicket = await TicketHelper.AddOrUpdateExistingTickets(saveAppointmentTicketCommand, _iTicketRepository, _iInventoryRepository, _iDBRepository, _iAppointmentRepository);
 

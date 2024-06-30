@@ -32,10 +32,6 @@ namespace Application.Command.FinancialRecordEntities.BillClient
         private IFinancialRespository? _financialRespository { get; set; }
         private IDBRepository? _dBRepository { get; set; }
 
-        IDictionary<string, string> d = new Dictionary<string, string>();
-
-        public int Count => d.Count;
-
         public BillClientHandler(IDBRepository? dBRepository, IFinancialRespository? financialRespository, ITicketRepository? ticketRepository, ICompanyRepository? companyRepository)
         {
             _dBRepository = dBRepository;
@@ -50,7 +46,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             // Get home company
             var homeCompany = await CompanyHelper.GetHomeCompany(_companyRepository);
 
-            // Get home company
+            // Get individual company
             var individualCompany = await CompanyHelper.GetIndividualCompany(_companyRepository);
 
 
@@ -73,6 +69,8 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                                                             .ThenInclude(x => x.Company)
                                                                 .ThenInclude(x => x.CompanyContracts.OrderByDescending(y => y.DateCreated).Take(1))
                                                    .Include(x => x.TicketInventories)
+                                                        .ThenInclude(x => x.TicketInventoryDebtors)
+                                                   .Include(x => x.TicketInventories)
                                                         .ThenInclude(a => a.AppInventory)
                                                             .ThenInclude(a => a.AppInventoryItems.Where(b => b.CompanyId == companyPaying.Id))
                                                    .FirstOrDefaultAsync(x => x.Id.ToString() == request.AppTicketId);
@@ -86,9 +84,9 @@ namespace Application.Command.FinancialRecordEntities.BillClient
             appTicket.MustHvaeBeenSentToDepartment();
             appTicket.MustHaveBeenSentToFinance();
             
-            if (appTicket.AppTicketStatus != AppTicketStatus.ongoing)
+            if (appTicket.AppCost != null)
             {
-                throw new CustomMessageException("Ticket must be ongoing");
+                throw new CustomMessageException("Patient has been billed");
             }
 
             // Check the companies to make payment
@@ -115,6 +113,8 @@ namespace Application.Command.FinancialRecordEntities.BillClient
 
             // Get the sumtotal
             decimal sumTotal = 0.0m;
+            var debtors = new List<TicketInventoryDebtor>();
+            var description = "Appointment";
 
             foreach (var x in appTicket.TicketInventories)
             {
@@ -122,7 +122,7 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                 {
                     if (x.AppInventory == null)
                     {
-                        throw new CustomMessageException("One the items to bill was not found in the inventory");
+                        throw new CustomMessageException("One of the items to bill was not found in the inventory");
                     }
 
                     var item = x.AppInventory.AppInventoryItems.FirstOrDefault();
@@ -130,6 +130,11 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                     if (item == null)
                     {
                         throw new CustomMessageException($"{x.AppInventory.Name} was not found for {companyName}");
+                    }
+
+                    if (!x.ConcludedDate.HasValue && appTicket.AppInventoryType == AppInventoryType.admission)
+                    {
+                        throw new CustomMessageException($"Item {x.AppInventory.Name} ({x.AppInventory.AppInventoryType}) has not been conluded. This is happening because all admission tickets must be concluded before billing");
                     }
 
                     var addmissionDays = 1;
@@ -146,38 +151,70 @@ namespace Application.Command.FinancialRecordEntities.BillClient
                         }
 
                         addmissionDays = (x.AdmissionEndDate - x.AdmissionStartDate).Value.Days;
+
+                        description = "Admission";
                     }
 
 
 
                     x.TotalPrice = decimal.Parse(x.PrescribedQuantity) * item.PricePerItem * addmissionDays;
                     x.CurrentPrice = item.PricePerItem;
-                    sumTotal += x.TotalPrice.Value;
+
+                    //verify sum of all debtor must equal cost provided
+                    await CollateDebtorsAmount(debtors, x, payerId.Value, _dBRepository, individualCompany.AppUserId.Value, appTicket.Appointment.Patient.AppUserId.Value);
 
                     if (!x.LoggedQuantity.HasValue || (x.LoggedQuantity.HasValue && !x.LoggedQuantity.Value))
                     {
-                        var oldQuantity = x.AppInventory.Quantity;
-
-                        FinancialHelper.UpdateQuantity(x, x.AppInventory, int.Parse(x.PrescribedQuantity));
-
-                        if (oldQuantity != x.AppInventory.Quantity)
-                        {
-                            _dBRepository.Update<AppInventory>(x.AppInventory);
-                        }
+                        FinancialHelper.UpdateQuantity(x, x.AppInventory, int.Parse(x.PrescribedQuantity), request.getCurrentUserRequest().CurrentUser.Id, _dBRepository, nameof(BillClientCommand));
+                    
                     }
 
                     _dBRepository.Update<TicketInventory>(x);
                 }
             }
 
-            // Update the financial record
 
-            sumTotal = Math.Round(sumTotal, 2);
-            AppCost newAppCost = FinancialHelper.AppCostFactory(payerId, homeCompany.AppUserId, 0, "", AppCostType.profit);
+            var groupDebtors = new List<TicketInventoryDebtor>();
+
+            foreach (var x in debtors)
+            {
+                var foundDebtor = groupDebtors.FirstOrDefault(a => a.PayerId == x.PayerId);
+
+                if (foundDebtor == null)
+                {
+                    groupDebtors.Add(new TicketInventoryDebtor
+                    {
+                        PayerId = x.PayerId,
+                        Amount = x.Amount,
+                        Description = x.Description,
+                    });
+                }
+                else
+                {
+                    foundDebtor.Amount += x.Amount;
+                    foundDebtor.Description += " - " + x.Description;
+                }
+            }
+
+            // Update the financial record
+            foreach (var debtor in groupDebtors)
+            {
+                var appCostForDebtor = FinancialHelper.AppCostFactory(debtor.PayerId, homeCompany.AppUserId, 0, description + ": " + debtor.Description, AppCostType.part_ticket);
+                appCostForDebtor.Amount = debtor.Amount;
+                appCostForDebtor.ApprovedPrice = debtor.Amount;
+                appCostForDebtor.Payments = new List<Payment>();
+                appCostForDebtor.PaymentStatus = PaymentStatus.owing;
+                appCostForDebtor.AppTicketPartId = appTicket.Id;
+                await _dBRepository.AddAsync<AppCost>(appCostForDebtor);
+            }
+
+            sumTotal = debtors.Sum(x => x.Amount).Value;
+            AppCost newAppCost = FinancialHelper.AppCostFactory(payerId, homeCompany.AppUserId, 0, description, AppCostType.overall_ticket);
             newAppCost.Amount = sumTotal;
             newAppCost.ApprovedPrice = sumTotal;
             newAppCost.Payments = new List<Payment>();
             newAppCost.PaymentStatus = PaymentStatus.owing;
+            newAppCost.AppTicketId = appTicket.Id;
             await _dBRepository.AddAsync<AppCost>(newAppCost);
 
             appTicket.AppCostId = newAppCost.Id;
@@ -192,9 +229,60 @@ namespace Application.Command.FinancialRecordEntities.BillClient
 
             // Save everything
 
-            await _dBRepository.Complete();
+            try
+            {
+                await _dBRepository.Complete();
+            }
+            catch (Exception e)
+            {
+
+                throw new CustomMessageException(e.Message);
+            }
 
             return Unit.Value;
+        }
+
+        private static async Task CollateDebtorsAmount(List<TicketInventoryDebtor> debtors, TicketInventory x, Guid payerId, IDBRepository dBRepository, Guid? individualId, Guid? userId)
+        {
+
+            if (x.TicketInventoryDebtors == null || x.TicketInventoryDebtors.Count == 0)
+            {
+                TicketInventoryDebtor newDebtor = new TicketInventoryDebtor
+                {
+                    PayerId = payerId,
+                    TicketInventoryId = x.Id,
+                    Amount = x.ConcludedPrice
+                };
+
+                await dBRepository.AddAsync<TicketInventoryDebtor>(newDebtor);
+                x.TicketInventoryDebtors = new List<TicketInventoryDebtor>() { newDebtor };
+            }
+
+            var debtSum = x.TicketInventoryDebtors.Sum(a => a.Amount);
+            if (debtSum == null || debtSum != x.ConcludedPrice)
+            {
+                throw new CustomMessageException($"Kindly add all the list of debtors for {x.AppInventory.Name} to complete amount to be paid");
+            }
+
+            foreach (var debtor in x.TicketInventoryDebtors)
+            {
+                debtor.PayerId = debtor.PayerId == individualId ? userId : debtor.PayerId;
+                debtor.Description = x.AppInventory.Name;
+                debtors.Add(debtor);
+
+                //var foundDebtor = debtors.FirstOrDefault(d => d.PayerId == debtor.PayerId);
+                //if (foundDebtor != null)
+                //{
+                //    foundDebtor.Amount += debtor.Amount;
+                //    foundDebtor.Description += " - " + x.AppInventory.Name;
+                //    //debtors.Add(foundDebtor);
+                //}
+                //else
+                //{
+                //    debtor.Description = x.AppInventory.Name;
+                //    debtors.Add(debtor);
+                //}
+            }
         }
     }
 }

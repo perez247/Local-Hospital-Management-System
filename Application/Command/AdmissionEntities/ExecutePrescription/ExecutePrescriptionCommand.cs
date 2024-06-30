@@ -25,7 +25,11 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
         public string? AppTicketStatus { get; set; }
         public string? PrescribedQuantity { get; set; }
         public string? DepartmentDescription { get; set; }
+        public string? StaffObservation { get; set; }
         public string? AdditionalNote { get; set; }
+
+        [VerifyGuidAnnotation]
+        public string? StaffResponsible { get; set; }
     }
 
     public class ExecutePrescriptionHandler : IRequestHandler<ExecutePrescriptionCommand, Unit>
@@ -48,6 +52,9 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
             var ticketPrecriptionFromDb = await iTicketRepository.TicketInventory()
                                                                 .Include(x => x.AdmissionPrescription)
                                                                     .ThenInclude(x => x.AppTicket)
+                                                                .Include(x => x.AdmissionPrescription)
+                                                                    .ThenInclude(x => x.AppTicket)
+                                                                        .ThenInclude(x => x.Appointment)
                                                                 .Include(x => x.AppTicket)
                                                                     .ThenInclude(x => x.AppCost)
                                                                 .Include(x => x.AppInventory)
@@ -68,7 +75,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 throw new CustomMessageException("Ticket Inventory already has an App Ticket");
             }
 
-            if (ticketPrecriptionFromDb.AppTicket.AppCost != null)
+            if (ticketPrecriptionFromDb.AdmissionPrescription.AppTicket.AppCost != null)
             {
                 throw new CustomMessageException("This patient has been billed, kindly contact a doctor to create a new ticket");
             }
@@ -90,6 +97,7 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                         Dosage = ticketPrecriptionFromDb.Dosage,
                         Frequency = ticketPrecriptionFromDb.Frequency,
                         Duration = ticketPrecriptionFromDb.Duration,
+                        StaffObservation = request.StaffObservation,
                     }
                 },
             };
@@ -104,6 +112,9 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
 
             foreach (var item in newTickets)
             {
+                var inventoryItems = await iInventoryRepository.AppInventoryItems()
+                                                               .FirstOrDefaultAsync(x => x.AppInventoryId == item.AppInventoryId && x.CompanyId == ticketPrecriptionFromDb.AdmissionPrescription.AppTicket.Appointment.CompanyId);
+
                 item.TimeGiven = request.TimeGiven.Value.ToUniversalTime();
                 item.AdmissionPrescriptionId = ticketPrecriptionFromDb.AdmissionPrescriptionId;
                 item.AppTicketId = ticketPrecriptionFromDb.AdmissionPrescription.AppTicketId;
@@ -111,19 +122,20 @@ namespace Application.Command.AdmissionEntities.ExecutePrescription
                 item.AppTicketStatus = request.AppTicketStatus.ParseEnum<AppTicketStatus>();
                 item.AdditionalNote = request.AdditionalNote;
 
-                if (item.AppInventory.AppInventoryType == AppInventoryType.pharmacy)
-                {
-                    item.ConcludedDate = DateTime.Now.ToUniversalTime();
-                }
+                //if (item.AppInventory.AppInventoryType == AppInventoryType.pharmacy)
+                //{
+                //    item.ConcludedDate = DateTime.Now.ToUniversalTime();
+                //}
 
-
+                item.TotalPrice = decimal.Parse(item.PrescribedQuantity) * inventoryItems.PricePerItem;
+                item.ConcludedPrice = item.TotalPrice;
                 item.DepartmentDescription = request.DepartmentDescription;
                 item.Updated = DateTime.Now.ToUniversalTime();
                 item.LoggedQuantity = true;
+                item.StaffResponsible = request.StaffResponsible == Guid.Empty.ToString() ? request.getCurrentUserRequest().CurrentUser.Id : Guid.Parse(request.StaffResponsible);
 
-                FinancialHelper.UpdateQuantity(item, item.AppInventory, Int32.Parse(request.PrescribedQuantity));
+                FinancialHelper.UpdateQuantity(item, item.AppInventory, Int32.Parse(request.PrescribedQuantity), request.getCurrentUserRequest().CurrentUser.Id, iDBRepository, nameof(ExecutePrescriptionCommand));
                 iDBRepository.Update<TicketInventory>(item);
-                iDBRepository.Update<AppInventory>(item.AppInventory);
             }
 
             await iDBRepository.Complete();

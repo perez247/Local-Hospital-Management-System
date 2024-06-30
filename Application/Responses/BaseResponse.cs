@@ -27,6 +27,12 @@ namespace Application.Responses
         public DateTime? DateModified { get; set; }
 
         /// <summary>
+        /// Date modified
+        /// </summary>
+        /// <value></value>
+        public string? StaffResponsible { get; set; }
+
+        /// <summary>
         /// Create a base oject
         /// </summary>
         /// <param name="obj"></param>
@@ -49,6 +55,11 @@ namespace Application.Responses
             if (obj.GetType().GetProperty("DateModified") != null)
             {
                 data.DateModified = obj?.GetType()?.GetProperty("DateModified")?.GetValue(obj, null) as DateTime?;
+            }
+
+            if (obj.GetType().GetProperty("StaffResponsible") != null)
+            {
+                data.StaffResponsible = obj?.GetType()?.GetProperty("StaffResponsible")?.GetValue(obj, null)?.ToString();
             }
 
             return data;

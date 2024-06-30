@@ -19,6 +19,7 @@ namespace Application.Command.CompanyEntities.UpdateCompany
         public string? CompanyId { get; set; }
         public string? Name { get; set; }
         public string? Address { get; set; }
+        public string? Email { get; set; }
         public string? Description { get; set; }
         public string? UniqueId { get; set; }
         public string? OtherId { get; set; }
@@ -30,12 +31,14 @@ namespace Application.Command.CompanyEntities.UpdateCompany
     public class UpdateCompanyHandler : IRequestHandler<UpdateCompanyCommand, Unit>
     {
         private readonly ICompanyRepository iCompanyRepository;
+        private readonly IUserRepository iUserRepository;
         private readonly IDBRepository iDBRepository;
 
-        public UpdateCompanyHandler(IDBRepository IDBRepository, ICompanyRepository ICompanyRepository)
+        public UpdateCompanyHandler(IDBRepository IDBRepository, ICompanyRepository ICompanyRepository, IUserRepository userRepository)
         {
             iDBRepository = IDBRepository;
             iCompanyRepository = ICompanyRepository;
+            iUserRepository = userRepository;
         }
         public async Task<Unit> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
         {
@@ -49,6 +52,15 @@ namespace Application.Command.CompanyEntities.UpdateCompany
             if (company == null)
             {
                 throw new CustomMessageException($"Company to update not found");
+            }
+
+
+            var otherEmail = await iUserRepository.Users()
+                                                 .FirstOrDefaultAsync(x => x.Email == request.Email && x.Id != company.AppUserId);
+
+            if (otherEmail != null)
+            {
+                throw new CustomMessageException($"{otherEmail.Email} belongs to '{otherEmail.FirstName}' in the application");
             }
 
             if (!request.HomeCompany && company.HomeCompany)

@@ -18,7 +18,8 @@ namespace Application.Command.FinancialRecordEntities.UpdateContract
                 .Matches("^[a-zA-Z0-9._ ]*$").WithMessage("Only letters, numbers, periods and underscore");
 
             RuleFor(x => x.Base64String)
-                .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Proof uploaded");
+                .Must(x => CommonValidators.IsBase64String(x)).WithMessage("Invalid Proof uploaded")
+                .When(x => !string.IsNullOrEmpty(x.Base64String));
 
             RuleFor(x => x.Amount)
                 .Must(x => x.HasValue).WithMessage("Amount is required")

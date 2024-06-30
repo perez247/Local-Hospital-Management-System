@@ -106,10 +106,18 @@ namespace DBService.Repositories
         /// <returns></returns>
         public async Task<bool> Complete()
         {
-            if (await _context.SaveChangesAsync() <= 0)
-                throw new CustomMessageException("It seems we are having issues saving at the moment");
+            try
+            {
+                var saved = await _context.SaveChangesAsync();
+                if (saved <= 0)
+                    throw new CustomMessageException("It seems we are having issues saving at the moment");
 
-            return true;
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw new CustomMessageException(e.Message);
+            }
         }
 
         /// <summary>

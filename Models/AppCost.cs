@@ -22,6 +22,9 @@ namespace Models
         public PatientContract? PatientContract { get; set; }
         public CompanyContract? CompanyContract { get; set; }
         public AppTicket? AppTicket { get; set; }
+        public Guid? AppTicketId { get; set; }
+        public AppTicket? AppTicketPart { get; set; }
+        public Guid? AppTicketPartId { get; set; }
         public ICollection<FinancialRecordPayerPayee> FinancialRecordPayerPayees { get; set; } = new List<FinancialRecordPayerPayee>();
 
     }
